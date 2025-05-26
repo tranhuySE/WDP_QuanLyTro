@@ -1,0 +1,21 @@
+.sidebar-link {
+  color: #000000;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background-color: #979090;
+  color: #000000;
+  text-decoration: none;
+}
+.sidebar {
+  background-color: #ffffff;
+  margin: 0;
+  padding: auto;
+  color: rgb(0, 0, 0);
+}

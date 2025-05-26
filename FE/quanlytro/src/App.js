@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { side_nav } from "./navigation/data_link";
+import StartPage from "./pages/StartPage";
+
+function renderRoutes(routes) {
+  return routes.map((route, index) => {
+    if (route.children && route.children.length > 0) {
+      return (
+        <React.Fragment key={index}>
+          <Route path={route.path} element={route.element} />
+          {route.children.map((child, idx) => (
+            <Route
+              key={`${index}-${idx}`}
+              path={child.path}
+              element={child.element}
+            />
+          ))}
+        </React.Fragment>
+      );
+    }
+    return <Route key={index} path={route.path} element={route.element} />;
+  });
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<StartPage />}>
+          {renderRoutes(side_nav)}
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
