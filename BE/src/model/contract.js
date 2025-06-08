@@ -7,12 +7,18 @@ const contractSchema = new Schema(
       ref: "Room",
       required: true,
     },
-    tenants: {
-      userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
+    house_address: { type: String, required: true },
+    landlord: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    tenant: {
+      fullName: { type: String, required: true },
+      citizenId: { type: String, required: true },
+      issueDate: { type: Date, required: true },
+      issuePlace: { type: String, required: true },
+      permanentAddress: { type: String, required: true },
+      phone: { type: String, required: true },
     },
     startDate: {
       type: Date,
@@ -23,22 +29,12 @@ const contractSchema = new Schema(
       required: true,
     },
     price: {
-      amount: {
-        type: Number,
-        required: true,
-      },
-      currency: {
-        type: String,
-        required: true,
-      },
+      type: Number,
+      required: true,
     },
     deposit: {
       amount: {
         type: Number,
-        required: true,
-      },
-      currency: {
-        type: String,
         required: true,
       },
       paymentDate: {
@@ -63,9 +59,15 @@ const contractSchema = new Schema(
         },
         type: {
           type: String,
-          enum: ["pdf", "image"],
           required: true,
         },
+      },
+    ],
+    house_service: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "HouseService",
+        required: true,
       },
     ],
     //điều khoản hợp đồng

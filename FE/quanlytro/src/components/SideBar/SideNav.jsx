@@ -25,25 +25,41 @@ const SideNav = ({ collapsed }) => {
             as={hasChildren ? "button" : Link}
             to={hasChildren ? undefined : item.path}
             onClick={() => hasChildren && toggleOpen(item.path)}
-            className={`sidebar-link d-flex align-items-center gap-2 py-2 w-100 text-start ${
+            className={`sidebar-link d-flex align-items-center w-100 text-start ${
               isActive ? "active" : ""
             }`}
             style={{ paddingLeft: `${level * 20 + 10}px` }}
           >
-            <span>{item.icon}</span>
+            <span className="mx-2">{item.icon}</span>
             {!collapsed && (
               <>
                 <span className="flex-grow-1">{item.name}</span>
-                {hasChildren &&
-                  (isOpen ? (
+                {hasChildren && (
+                  <span
+                    className="chevron-icon"
+                    style={{
+                      transition: "transform 0.2s ease",
+                      transform: isOpen ? "rotate(0deg)" : "rotate(-90deg)",
+                    }}
+                  >
                     <FaChevronDown size={12} />
-                  ) : (
-                    <FaChevronRight size={12} />
-                  ))}
+                  </span>
+                )}
               </>
             )}
           </Nav.Link>
-          {hasChildren && isOpen && renderNavItems(item.children, level + 1)}
+          {hasChildren && !collapsed && (
+            <div
+              className={`children-container ${isOpen ? "open" : "closed"}`}
+              style={{
+                maxHeight: isOpen ? "1000px" : "0",
+                overflow: "hidden",
+                transition: "max-height 0.3s ease-in-out",
+              }}
+            >
+              {renderNavItems(item.children, level + 1)}
+            </div>
+          )}
         </div>
       );
     });

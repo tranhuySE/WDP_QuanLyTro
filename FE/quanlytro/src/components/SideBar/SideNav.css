@@ -19,3 +19,12 @@
   padding: auto;
   color: rgb(0, 0, 0);
 }
+
+.children-container {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.chevron-icon {
+  display: inline-flex;
+  align-items: center;
+}

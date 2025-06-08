@@ -25,7 +25,7 @@ const Breakcum = () => {
   if (breadcrumbItems.length === 0) return null;
 
   return (
-    <Breadcrumb className="my-3">
+    <Breadcrumb>
       {breadcrumbItems.map((item, index) => (
         <Breadcrumb.Item
           key={item.path}

@@ -4,6 +4,7 @@ import SideNav from "../components/SideBar/SideNav";
 import Breakcum from "../components/Breakcum";
 import { Outlet } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import Side_right_header from "../components/SideBar/Side_right_header";
 
 const StartPage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -27,18 +28,17 @@ const StartPage = () => {
           <SideNav collapsed={sidebarCollapsed} />
         </Col>
 
-        <Col md={sidebarCollapsed ? 11 : 10} className="p-4">
-          <Row className="align-items-center mb-4 border-bottom">
+        <Col md={sidebarCollapsed ? 11 : 10} className="pt-2">
+          <Row className="align-items-center border-bottom">
             <Col md={5}>
               <Breakcum />
             </Col>
-            <Col
-              md={7}
-              className="d-flex justify-content-end align-items-center gap-2"
-            ></Col>
+            <Col md={7}>
+              <Side_right_header />
+            </Col>
           </Row>
           <Row
-            className="mt-4"
+            className="mt-3"
             style={{ overflowY: "auto", height: "calc(100vh - 150px)" }}
           >
             <Outlet />

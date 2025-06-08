@@ -15,6 +15,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    citizen_id: {
+      type: String,
+      required: true,
+    },
     fullname: {
       type: String,
       required: true,
@@ -30,7 +34,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin", "building_manager", "guest"],
+      enum: ["user", "admin", "staff"],
     },
     address: {
       type: String,
@@ -47,9 +51,6 @@ const userSchema = new Schema(
     updatedAt: {
       type: Date,
       default: Date.now,
-    },
-    lastLogin: {
-      type: Date,
     },
     status: {
       type: String,

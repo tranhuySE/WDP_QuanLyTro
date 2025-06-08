@@ -5,6 +5,12 @@ const roomSchema = new Schema({
     type: String,
     required: true,
   },
+  tenant: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   floor: {
     type: Number,
     required: true,
@@ -17,11 +23,17 @@ const roomSchema = new Schema({
     type: Number,
     required: true,
   },
+  room_service: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "HouseService",
+      require: true,
+    },
+  ],
   description: {
     type: String,
-    required: true,
   },
-  images: [String],
+  images: [{ type: String }],
   amenities: [
     {
       name: String,

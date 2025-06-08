@@ -13,6 +13,7 @@ import {
   FaMoneyCheckAlt,
   FaConciergeBell,
   FaChartPie,
+  FaPen,
 } from "react-icons/fa";
 import ProfilePage from "../pages/ProfilePage";
 import SettingPage from "../pages/SettingPage";
@@ -26,44 +27,49 @@ export const side_nav = [
     element: <HomePage />,
     name: "Trang chủ",
     icon: <FaHome size={25} />,
-    children: [
-      {
-        path: "/room-manager",
-        element: "",
-        name: "Quản lý phòng",
-        icon: <FaBed />,
-      },
-      {
-        path: "/tenant-manager",
-        element: "",
-        name: "Quản lý người thuê",
-        icon: <FaUser />,
-      },
-      {
-        path: "/invoice-manager",
-        element: "",
-        name: "Quản lý hóa đơn",
-        icon: <FaFileInvoiceDollar />,
-      },
-      {
-        path: "/payment-manager",
-        element: "",
-        name: "Quản lý thanh toán",
-        icon: <FaMoneyCheckAlt />,
-      },
-      {
-        path: "/servicer",
-        element: "",
-        name: "Quản lý dịch vụ",
-        icon: <FaConciergeBell />,
-      },
-      {
-        path: "/dashboard-anlysist",
-        element: "",
-        name: "Phân tích dữ liệu",
-        icon: <FaChartPie />,
-      },
-    ],
+    children: [],
+  },
+  {
+    path: "/room-manager",
+    element: "",
+    name: "Quản lý phòng",
+    icon: <FaBed />,
+  },
+  {
+    path: "/tenant-manager",
+    element: "",
+    name: "Quản lý người thuê",
+    icon: <FaUser />,
+  },
+  {
+    path: "/invoice-manager",
+    element: "",
+    name: "Quản lý hóa đơn",
+    icon: <FaFileInvoiceDollar />,
+  },
+  {
+    path: "/payment-manager",
+    element: "",
+    name: "Quản lý thanh toán",
+    icon: <FaMoneyCheckAlt />,
+  },
+  {
+    path: "/servicer",
+    element: "",
+    name: "Quản lý dịch vụ",
+    icon: <FaConciergeBell />,
+  },
+  {
+    path: "/dashboard-anlysist",
+    element: "",
+    name: "Phân tích dữ liệu",
+    icon: <FaChartPie />,
+  },
+  {
+    path: "/create-request",
+    element: "",
+    name: "Yêu cầu hỗ trợ",
+    icon: <FaPen />,
   },
   {
     path: "/profile",

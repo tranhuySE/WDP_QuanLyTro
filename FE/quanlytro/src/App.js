@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { side_nav } from "./navigation/data_link";
 import StartPage from "./pages/StartPage";
+import LoginWithProgress from "./pages/LoginPage";
 
 function renderRoutes(routes) {
   return routes.map((route, index) => {
@@ -28,6 +29,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<StartPage />}>
+          <Route path="/login" element={<LoginWithProgress />} />
           {renderRoutes(side_nav)}
         </Route>
       </Routes>
