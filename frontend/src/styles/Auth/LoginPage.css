@@ -1,0 +1,13 @@
+.login-page {
+    background: linear-gradient(120deg, #f0f8ff, #e6f2ff);
+    min-height: 100vh;
+    padding-top: 50px;
+}
+
+.card {
+    border-radius: 1.5rem;
+}
+
+input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}

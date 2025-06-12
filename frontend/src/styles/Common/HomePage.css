@@ -1,0 +1,34 @@
+.custom-accordion-item {
+    background: #fefefe;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.custom-accordion-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #eaf4ff;
+    color: #0d6efd;
+}
+
+.accordion-button {
+    font-size: 1rem;
+    padding: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
