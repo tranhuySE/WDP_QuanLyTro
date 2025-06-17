@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import { FaBars } from "react-icons/fa";
-import { Outlet } from "react-router-dom";
-import BreadcrumbLayout from "../components/Breadcrumb.jsx";
-import SideNav from "../components/SideBar/SideNav.jsx";
-import SideRightHeader from "../components/SideBar/SideRightHeader.jsx";
+import { useState } from 'react';
+import { Col, Container, Row } from 'react-bootstrap';
+import { FaBars } from 'react-icons/fa';
+import { Outlet } from 'react-router-dom';
+import BreadcrumbLayout from '../components/Breadcrumb.jsx';
+import SideNav from '../components/SideBar/SideNav.jsx';
+import SideRightHeader from '../components/SideBar/SideRightHeader.jsx';
 
 const AdminLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -20,7 +20,7 @@ const AdminLayout = () => {
                     className="bg-white text-black vh-100 border-end border-2"
                 >
                     <div className="d-flex justify-content-between p-3 text-center">
-                        <h5>{!sidebarCollapsed ? "Trọ Quang Huy" : "..."}</h5>
+                        <h5>{!sidebarCollapsed ? 'Trọ Quang Huy' : '...'}</h5>
                         <div className="d-flex align-items-center">
                             <FaBars size={16} onClick={toggleSidebar} />
                         </div>
@@ -38,8 +38,8 @@ const AdminLayout = () => {
                         </Col>
                     </Row>
                     <Row
-                        className="mt-3"
-                        style={{ overflowY: "auto", height: "calc(100vh - 150px)" }}
+                        className="mt-2"
+                        style={{ overflowY: 'auto', height: 'calc(100vh - 50px)' }}
                     >
                         <Outlet />
                     </Row>
