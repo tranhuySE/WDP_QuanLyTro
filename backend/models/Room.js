@@ -62,6 +62,25 @@ const roomSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  assets: [
+    {
+      type: {
+        type: String,
+        enum: ["motorbike", "car", "bicycle", "other"],
+        required: true,
+      },
+      description: {
+        type: String,
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+      licensePlate: {
+        type: String,
+      },
+    },
+  ],
 });
 
 const Room = model("Room", roomSchema);

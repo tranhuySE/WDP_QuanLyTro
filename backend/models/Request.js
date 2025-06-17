@@ -62,7 +62,7 @@ const requestsSchema = new Schema(
     assignedTo: {
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
+        ref: "User",
       },
       userType: {
         type: String,
@@ -82,7 +82,7 @@ const requestsSchema = new Schema(
     approval: {
       approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
+        ref: "User",
       },
       approvedByName: String,
       approvedAt: Date,
@@ -118,7 +118,7 @@ const requestsSchema = new Schema(
         },
         uploadedBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Account",
+          ref: "User",
           required: true,
         },
         uploadedAt: {
@@ -136,7 +136,7 @@ const requestsSchema = new Schema(
         },
         changedBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Account",
+          ref: "User",
           required: true,
         },
         changedByName: String,

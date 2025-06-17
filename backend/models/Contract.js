@@ -10,7 +10,7 @@ const contractSchema = new Schema(
     house_address: { type: String, required: true },
     landlord: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: "User",
     },
     tenant: {
       fullName: { type: String, required: true },
@@ -77,7 +77,7 @@ const contractSchema = new Schema(
     },
     createBy: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: "User",
       required: true,
     },
     status: {

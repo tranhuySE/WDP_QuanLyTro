@@ -4,7 +4,7 @@ const postSchema = new Schema(
   {
     author: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: "User",
     },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },

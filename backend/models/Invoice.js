@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const invoiceSchema = new Schema(
   {
-    create_by: { type: Schema.Types.ObjectId, ref: "Account" },
+    create_by: { type: Schema.Types.ObjectId, ref: "User" },
     for_room_id: { type: Schema.Types.ObjectId, ref: "Room" },
     content: { type: String, require: true },
     createdAt: { type: Date, default: Date.now },
