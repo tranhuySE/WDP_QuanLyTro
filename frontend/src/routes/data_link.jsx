@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import { ROUTES } from "../constants/routes.js";
 import HomePage from "../pages/Admin/HomePage";
+import UserManagement from "../pages/Admin/Users/UserManagement.jsx";
 import ChangePasswordPage from "../pages/Auth/ChangePasswordPage";
 import EditProfilePage from "../pages/Common/EditProfilePage";
 
@@ -45,7 +46,7 @@ export const side_nav = [
             },
             {
                 path: ROUTES.MANAGE_ACCOUNTS,
-                element: "",
+                element: <UserManagement />,
                 name: "Quản lý tài khoản",
                 icon: <FaUser />,
             },
