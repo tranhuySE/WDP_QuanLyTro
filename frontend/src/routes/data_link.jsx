@@ -19,6 +19,7 @@ import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
 import ChangePasswordPage from '../pages/Auth/ChangePasswordPage';
 import EditProfilePage from '../pages/Common/EditProfilePage';
 import Analyst from '../pages/Admin/Dasboard/Analyst.jsx';
+import ManageRoomPage from '../pages/Admin/Users/ManageRoom.jsx';
 
 export const side_nav = [
     {
@@ -41,7 +42,7 @@ export const side_nav = [
         children: [
             {
                 path: ROUTES.MANAGE_ROOMS,
-                element: '',
+                element: <ManageRoomPage/>,
                 name: 'Quản lý phòng',
                 icon: <FaBed />,
             },
