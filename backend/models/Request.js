@@ -156,4 +156,4 @@ const requestsSchema = new Schema(
 );
 
 const Request = model("Request", requestsSchema);
-export default Request;
+module.exports = Request;

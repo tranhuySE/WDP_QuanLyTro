@@ -1,87 +1,68 @@
-import { Schema, model } from "mongoose";
+const { Schema, model } = require("mongoose");
 
-const roomSchema = new Schema({
-  roomNumber: {
-    type: String,
-    required: true,
-  },
-  tenant: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+const roomSchema = new Schema(
+  {
+    roomNumber: { type: String, required: true },
+    floor: { type: Number, required: true },
+    area: { type: Number, required: true },
+    price: { type: Number, required: true },
+
+    tenant: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    maxOccupants: { type: Number, required: true },
+
+    status: {
+      type: String,
+      enum: ["available", "occupied", "under_maintenance"],
+      default: "available",
     },
-  ],
-  floor: {
-    type: Number,
-    required: true,
-  },
-  area: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  room_service: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "HouseService",
-      require: true,
-    },
-  ],
-  description: {
-    type: String,
-  },
-  images: [{ type: String }],
-  amenities: [
-    {
-      name: String,
-      quantity: Number,
-      status: {
-        type: String,
-        enum: ["available", "unavailable"],
-        default: "available",
+
+    room_service: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "HouseService",
       },
-    },
-  ],
-  maxOccupants: {
-    type: Number,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["available", "occupied", "under_maintenance"],
-    default: "available",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  assets: [
-    {
-      type: {
-        type: String,
-        enum: ["motorbike", "car", "bicycle", "other"],
-        required: true,
+    ],
+
+    description: String,
+    images: [String],
+
+    amenities: [
+      {
+        name: String,
+        quantity: Number,
+        status: {
+          type: String,
+          enum: ["available", "unavailable"],
+          default: "available",
+        },
       },
-      description: {
-        type: String,
+    ],
+
+    assets: [
+      {
+        type: {
+          type: String,
+          enum: ["motorbike", "car", "bicycle", "other"],
+          required: true,
+        },
+        description: String,
+        quantity: { type: Number, default: 1 },
+        licensePlate: String,
       },
-      quantity: {
-        type: Number,
-        default: 1,
-      },
-      licensePlate: {
-        type: String,
-      },
-    },
-  ],
-});
+    ],
+  },
+  {
+    timestamps: true,
+    collection: "rooms",
+    versionKey: false,
+  }
+);
 
 const Room = model("Room", roomSchema);
-export default Room;
+module.exports = Room;

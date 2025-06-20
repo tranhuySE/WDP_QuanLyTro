@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+const { Schema, model } = require("mongoose");
 
 const contractSchema = new Schema(
   {
@@ -7,101 +7,74 @@ const contractSchema = new Schema(
       ref: "Room",
       required: true,
     },
-    house_address: { type: String, required: true },
-    landlord: {
+    tenant: {
       type: Schema.Types.ObjectId,
       ref: "User",
-    },
-    tenant: {
-      fullName: { type: String, required: true },
-      citizenId: { type: String, required: true },
-      issueDate: { type: Date, required: true },
-      issuePlace: { type: String, required: true },
-      permanentAddress: { type: String, required: true },
-      phone: { type: String, required: true },
-    },
-    startDate: {
-      type: Date,
       required: true,
     },
-    endDate: {
-      type: Date,
+    landlord: {
+      type: Schema.Types.ObjectId,
+      ref: "User", // thường là admin
       required: true,
     },
-    price: {
-      type: Number,
+    house_address: {
+      type: String,
       required: true,
     },
+
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+
+    price: { type: Number, required: true },
+
     deposit: {
-      amount: {
-        type: Number,
-        required: true,
-      },
-      paymentDate: {
-        type: Date,
-        required: true,
-      },
+      amount: { type: Number, required: true },
+      paymentDate: { type: Date, required: true },
       status: {
         type: String,
         enum: ["paid", "pending", "refunded"],
         default: "pending",
       },
     },
+
     file: [
       {
-        name: {
-          type: String,
-          required: true,
-        },
-        url: {
-          type: String,
-          required: true,
-        },
-        type: {
-          type: String,
-          required: true,
-        },
+        name: { type: String, required: true },
+        url: { type: String, required: true },
+        type: { type: String, required: true },
       },
     ],
+
     house_service: [
       {
         type: Schema.Types.ObjectId,
         ref: "HouseService",
-        required: true,
       },
     ],
-    //điều khoản hợp đồng
-    terms: {
-      type: String,
-      required: true,
-    },
+
+    terms: { type: String, required: true },
+
     createBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // người tạo: staff
       required: true,
     },
+
     status: {
       type: String,
       enum: ["draft", "active", "terminated", "renewed"],
-      default: "active",
+      default: "draft", // sẽ được admin duyệt để chuyển "active"
     },
-    terminationReason: {
-      type: String,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    terminatedAt: {
-      type: Date,
-    },
+
+    terminationReason: String,
+    terminatedAt: Date,
   },
   {
     timestamps: true,
-    versionKey: false,
     collection: "contracts",
+    versionKey: false,
   }
 );
 
 const Contract = model("Contract", contractSchema);
-export default Contract;
+module.exports = Contract;
