@@ -43,4 +43,4 @@ const assignSchema = new Schema(
 );
 
 const Assign = model("Assign", assignSchema);
-export default Assign;
+module.exports = Assign;

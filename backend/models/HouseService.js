@@ -14,4 +14,4 @@ const House_ServiceSchema = new Schema(
 );
 
 const House_Service = model("House_Service", House_ServiceSchema);
-export default House_Service;
+module.exports = House_Service;

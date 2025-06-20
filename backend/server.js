@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/db.js");
+const router = require("./routes/index.js");
+
 
 app.get("/", async (req, res) => {
     try {
@@ -12,7 +14,7 @@ app.get("/", async (req, res) => {
 
 app.use(express.json());
 
-// app.use("/", router);
+app.use("/", router);
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, async () => {

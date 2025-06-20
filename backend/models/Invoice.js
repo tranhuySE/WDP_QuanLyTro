@@ -57,4 +57,4 @@ const invoiceSchema = new Schema(
 );
 
 const Invoice = model("Invoice", invoiceSchema);
-export default Invoice;
+module.exports = Invoice;

@@ -1,72 +1,37 @@
-import { Schema, model } from "mongoose";
+const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    citizen_id: {
-      type: String,
-      required: true,
-    },
-    fullname: {
-      type: String,
-      required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    fullname: { type: String, required: true },
+    citizen_id: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
     avatar: {
       type: String,
-      default:
-        "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+      default: "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
     },
     role: {
       type: String,
-      enum: ["user", "admin", "staff"],
+      enum: ["user", "staff", "admin"],
+      default: "user",
     },
-    address: {
-      type: String,
-      required: true,
-    },
-    dateOfBirth: {
-      type: Date,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
+    address: { type: String, required: true },
+    dateOfBirth: { type: Date, required: true },
     status: {
       type: String,
       enum: ["active", "inactive", "banned"],
-      default: "active",
+      default: "inactive",
     },
     contactEmergency: {
-      name: {
-        type: String,
-      },
-      relationship: {
-        type: String,
-      },
-      phoneNumber: {
-        type: String,
-      },
+      name: String,
+      relationship: String,
+      phoneNumber: String,
+    },
+    isVerifiedByAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -77,4 +42,4 @@ const userSchema = new Schema(
 );
 
 const User = model("User", userSchema);
-export default User;
+module.exports = User;
