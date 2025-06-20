@@ -22,6 +22,54 @@ const HomePage = () => {
             date: "2025-05-24",
             author: "Ban quản lý",
         },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
+        {
+            id: 2,
+            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
+            content:
+                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
+            date: "2025-05-24",
+            author: "Ban quản lý",
+        },
     ];
 
     // State quản lý posts

@@ -45,7 +45,7 @@ export const side_nav = [
                 icon: <FaBed />,
             },
             {
-                path: ROUTES.MANAGE_ACCOUNTS,
+                path: ROUTES.ACCOUNTS_LIST,
                 element: <UserManagement />,
                 name: "Quản lý tài khoản",
                 icon: <FaUser />,
