@@ -1,11 +1,12 @@
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema, model } = mongoose;
 
 const requestsSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
-      max_length: 255,
+      maxlength: 255,
     },
     description: {
       type: String,
@@ -80,13 +81,21 @@ const requestsSchema = new Schema(
       floor: String,
     },
     approval: {
+      action: {
+        type: String,
+        enum: ["APPROVED", "REJECTED"],
+        default: null, // null = chưa xét duyệt
+      },
+      note: {
+        type: String,
+        trim: true, // Lý do từ chối hoặc phản hồi nếu có
+      },
       approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
       approvedByName: String,
       approvedAt: Date,
-      note: String,
     },
     completion: {
       completedAt: Date,
