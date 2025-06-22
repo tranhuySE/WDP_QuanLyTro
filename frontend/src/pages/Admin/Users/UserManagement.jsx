@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Pagination, Row, Table } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import { getAllUsers } from '../../../api/userAPI.js'; // Adjust the import path as necessary
 import '../../../styles/Admin/User/UserManagement.css'; // Adjust the path as necessary
 
 const UserManagement = () => {
     const location = useLocation();
+    const [users, setUsers] = useState([]); // State to hold user data
 
     const [entriesPerPage, setEntriesPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
@@ -14,32 +16,19 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-    // Updated sample data with new structure
-    const userData = [
-        { id: 1, fullName: 'Nguyễn Văn An', email: 'nguyenvanan@gmail.com', username: 'nguyenvanan', password: 'password123', phone: '0901234567', role: 'Admin' },
-        { id: 2, fullName: 'Trần Thị Bình', email: 'tranthibinh@gmail.com', username: 'tranthibinh', password: 'mypass456', phone: '0912345678', role: 'Staff' },
-        { id: 3, fullName: 'Lê Hoàng Cường', email: 'lehoangcuong@gmail.com', username: 'lehoangcuong', password: 'secure789', phone: '0923456789', role: 'Tenant' },
-        { id: 4, fullName: 'Phạm Thị Dung', email: 'phamthidung@gmail.com', username: 'phamthidung', password: 'admin2024', phone: '0934567890', role: 'Admin' },
-        { id: 5, fullName: 'Võ Minh Đức', email: 'vominhduc@gmail.com', username: 'vominhduc', password: 'user1234', phone: '0945678901', role: 'Staff' },
-        { id: 6, fullName: 'Hoàng Thị Giang', email: 'hoangthigiang@gmail.com', username: 'hoangthigiang', password: 'pass9876', phone: '0956789012', role: 'Tenant' },
-        { id: 7, fullName: 'Đặng Văn Hùng', email: 'dangvanhung@gmail.com', username: 'dangvanhung', password: 'welcome123', phone: '0967890123', role: 'Staff' },
-        { id: 8, fullName: 'Bùi Thị Lan', email: 'buithilan@gmail.com', username: 'buithilan', password: 'login456', phone: '0978901234', role: 'Tenant' },
-        { id: 9, fullName: 'Ngô Văn Minh', email: 'ngovanminh@gmail.com', username: 'ngovanminh', password: 'test789', phone: '0989012345', role: 'Admin' },
-        { id: 10, fullName: 'Lý Thị Nga', email: 'lythinga@gmail.com', username: 'lythinga', password: 'demo2024', phone: '0990123456', role: 'Staff' },
-        { id: 11, fullName: 'Trịnh Văn Phúc', email: 'trinhvanphuc@gmail.com', username: 'trinhvanphuc', password: 'system123', phone: '0901234568', role: 'Tenant' },
-        { id: 12, fullName: 'Đỗ Thị Quỳnh', email: 'dothiquynh@gmail.com', username: 'dothiquynh', password: 'secret456', phone: '0912345679', role: 'Staff' },
-        { id: 13, fullName: 'Vũ Văn Sang', email: 'vuvansang@gmail.com', username: 'vuvansang', password: 'access789', phone: '0923456780', role: 'Tenant' },
-        { id: 14, fullName: 'Phan Thị Tâm', email: 'phanthitam@gmail.com', username: 'phanthitam', password: 'enter2024', phone: '0934567891', role: 'Admin' },
-        { id: 15, fullName: 'Lại Văn Ước', email: 'laivanuoc@gmail.com', username: 'laivanuoc', password: 'login123', phone: '0945678902', role: 'Staff' },
-        { id: 16, fullName: 'Mai Thị Vân', email: 'maithivan@gmail.com', username: 'maithivan', password: 'user456', phone: '0956789013', role: 'Tenant' },
-        { id: 17, fullName: 'Chu Văn Xuân', email: 'chuvanxuan@gmail.com', username: 'chuvanxuan', password: 'pass789', phone: '0967890124', role: 'Staff' },
-        { id: 18, fullName: 'Đinh Thị Yến', email: 'dinhthiyen@gmail.com', username: 'dinhthiyen', password: 'admin2024', phone: '0978901235', role: 'Tenant' },
-        { id: 19, fullName: 'Hồ Văn Zung', email: 'hovanzung@gmail.com', username: 'hovanzung', password: 'secure123', phone: '0989012346', role: 'Admin' },
-        { id: 20, fullName: 'Kim Thị An', email: 'kimthian@gmail.com', username: 'kimthian', password: 'welcome456', phone: '0990123457', role: 'Staff' }
-    ];
+    useEffect(() => {
+        getAllUsers()
+            .then((response) => {
+                console.log('RESPONSE DATA:', response.data);
+                setUsers(response.data); // giả sử response.data là mảng
+            })
+            .catch((error) => {
+                console.error('Lỗi khi lấy danh sách người dùng:', error);
+            });
+    }, []);
 
-    // Filter data based on search term
-    const filteredData = userData.filter(user =>
+
+    const filteredData = users.filter(user =>
         Object.values(user).some(value =>
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         )
@@ -172,10 +161,10 @@ const UserManagement = () => {
                             {currentData.map((user, index) => (
                                 <tr key={user.id}>
                                     <td className="text-center">{startIndex + index + 1}</td>
-                                    <td>{user.fullName}</td>
+                                    <td>{user.fullname}</td>
                                     <td>{user.email}</td>
                                     <td>{user.username}</td>
-                                    <td>{user.phone}</td>
+                                    <td>{user.phoneNumber}</td>
                                     <td>{user.role}</td>
                                     <td>
                                         <div className="d-flex gap-2">
