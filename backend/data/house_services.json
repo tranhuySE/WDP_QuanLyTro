@@ -1,0 +1,52 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439051"
+        },
+        "name": "Electricity",
+        "unit": "kWh",
+        "price": 3500,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439052"
+        },
+        "name": "Water",
+        "unit": "m3",
+        "price": 20000,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439053"
+        },
+        "name": "Internet",
+        "unit": "month",
+        "price": 200000,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439054"
+        },
+        "name": "Cleaning Service",
+        "unit": "session",
+        "price": 150000,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439055"
+        },
+        "name": "Parking",
+        "unit": "month",
+        "price": 100000,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    }
+]

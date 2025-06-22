@@ -1,0 +1,102 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439041"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "deposit_type": "keep_room",
+        "name": "Nguyen Van A",
+        "phone": "0901234567",
+        "amount": "10000000",
+        "file": [
+            {
+                "url": "https://example.com/deposit_receipt1.pdf"
+            }
+        ],
+        "status": "paid",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "updatedAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439042"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "deposit_type": "keep_room",
+        "name": "Tran Thi B",
+        "phone": "0902345678",
+        "amount": "9000000",
+        "file": [
+            {
+                "url": "https://example.com/deposit_receipt2.pdf"
+            }
+        ],
+        "status": "paid",
+        "createdAt": "2025-06-21T09:00:00.000Z",
+        "updatedAt": "2025-06-21T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439043"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e3"
+        },
+        "deposit_type": "all_room",
+        "name": "Le Van C",
+        "phone": "0903456789",
+        "amount": "11000000",
+        "file": [
+            {
+                "url": "https://example.com/deposit_receipt3.pdf"
+            }
+        ],
+        "status": "refunded",
+        "createdAt": "2025-06-22T08:00:00.000Z",
+        "updatedAt": "2025-06-22T08:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439044"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "deposit_type": "keep_room",
+        "name": "Pham Thi D",
+        "phone": "0904567890",
+        "amount": "9600000",
+        "file": [
+            {
+                "url": "https://example.com/deposit_receipt4.pdf"
+            }
+        ],
+        "status": "paid",
+        "createdAt": "2025-06-20T11:00:00.000Z",
+        "updatedAt": "2025-06-20T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439045"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "deposit_type": "keep_room",
+        "name": "Hoang Van E",
+        "phone": "0905678901",
+        "amount": "9400000",
+        "file": [
+            {
+                "url": "https://example.com/deposit_receipt5.pdf"
+            }
+        ],
+        "status": "paid",
+        "createdAt": "2025-06-21T10:00:00.000Z",
+        "updatedAt": "2025-06-21T10:00:00.000Z"
+    }
+]

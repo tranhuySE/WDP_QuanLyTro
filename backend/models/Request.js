@@ -47,38 +47,19 @@ const requestsSchema = new Schema(
       default: "PENDING",
     },
     createdBy: {
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      userType: {
-        type: String,
-        enum: ["ADMIN", "STAFF", "TENANT"],
-        required: true,
-      },
-      userName: String,
-      userEmail: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     assignedTo: {
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      userType: {
-        type: String,
-        enum: ["STAFF", "ADMIN"],
-      },
-      userName: String,
-      assignedAt: Date,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     room: {
       roomId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Room",
       },
-      roomNumber: String,
-      floor: String,
     },
     approval: {
       action: {

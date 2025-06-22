@@ -1,0 +1,224 @@
+[
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "roomNumber": "101",
+        "floor": 1,
+        "area": 25,
+        "price": 5000000,
+        "tenant": [
+            {
+                "$oid": "507f191e810c19729de860ec"
+            }
+        ],
+        "maxOccupants": 2,
+        "status": "occupied",
+        "room_service": [
+            {
+                "$oid": "507f1f77bcf86cd799439051"
+            },
+            {
+                "$oid": "507f1f77bcf86cd799439052"
+            }
+        ],
+        "description": "Cozy room with balcony",
+        "images": [
+            "https://example.com/room101_1.jpg",
+            "https://example.com/room101_2.jpg"
+        ],
+        "amenities": [
+            {
+                "name": "Bed",
+                "quantity": 1,
+                "status": "available"
+            },
+            {
+                "name": "Air Conditioner",
+                "quantity": 1,
+                "status": "available"
+            }
+        ],
+        "assets": [
+            {
+                "type": "motorbike",
+                "description": "Honda Wave",
+                "quantity": 1,
+                "licensePlate": "59A1-12345"
+            }
+        ],
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "roomNumber": "202",
+        "floor": 2,
+        "area": 20,
+        "price": 4500000,
+        "tenant": [
+            {
+                "$oid": "507f191e810c19729de860ed"
+            }
+        ],
+        "maxOccupants": 2,
+        "status": "occupied",
+        "room_service": [
+            {
+                "$oid": "507f1f77bcf86cd799439053"
+            },
+            {
+                "$oid": "507f1f77bcf86cd799439054"
+            }
+        ],
+        "description": "Compact room with good ventilation",
+        "images": [
+            "https://example.com/room202_1.jpg"
+        ],
+        "amenities": [
+            {
+                "name": "Bed",
+                "quantity": 1,
+                "status": "available"
+            },
+            {
+                "name": "Fan",
+                "quantity": 1,
+                "status": "available"
+            }
+        ],
+        "assets": [
+            {
+                "type": "bicycle",
+                "description": "Standard bike",
+                "quantity": 1
+            }
+        ],
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860e3"
+        },
+        "roomNumber": "303",
+        "floor": 3,
+        "area": 30,
+        "price": 5500000,
+        "tenant": [],
+        "maxOccupants": 3,
+        "status": "available",
+        "room_service": [
+            {
+                "$oid": "507f1f77bcf86cd799439051"
+            },
+            {
+                "$oid": "507f1f77bcf86cd799439055"
+            }
+        ],
+        "description": "Spacious room with city view",
+        "images": [
+            "https://example.com/room303_1.jpg",
+            "https://example.com/room303_2.jpg"
+        ],
+        "amenities": [
+            {
+                "name": "Bed",
+                "quantity": 2,
+                "status": "available"
+            },
+            {
+                "name": "Air Conditioner",
+                "quantity": 1,
+                "status": "available"
+            }
+        ],
+        "assets": [],
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860e4"
+        },
+        "roomNumber": "104",
+        "floor": 1,
+        "area": 22,
+        "price": 4800000,
+        "tenant": [],
+        "maxOccupants": 2,
+        "status": "under_maintenance",
+        "room_service": [
+            {
+                "$oid": "507f1f77bcf86cd799439052"
+            },
+            {
+                "$oid": "507f1f77bcf86cd799439054"
+            }
+        ],
+        "description": "Room under renovation",
+        "images": [],
+        "amenities": [
+            {
+                "name": "Bed",
+                "quantity": 1,
+                "status": "unavailable"
+            }
+        ],
+        "assets": [],
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860e5"
+        },
+        "roomNumber": "205",
+        "floor": 2,
+        "area": 25,
+        "price": 4700000,
+        "tenant": [
+            {
+                "$oid": "507f191e810c19729de860ec"
+            }
+        ],
+        "maxOccupants": 2,
+        "status": "occupied",
+        "room_service": [
+            {
+                "$oid": "507f1f77bcf86cd799439053"
+            },
+            {
+                "$oid": "507f1f77bcf86cd799439055"
+            }
+        ],
+        "description": "Modern room with new furniture",
+        "images": [
+            "https://example.com/room205_1.jpg"
+        ],
+        "amenities": [
+            {
+                "name": "Bed",
+                "quantity": 1,
+                "status": "available"
+            },
+            {
+                "name": "Desk",
+                "quantity": 1,
+                "status": "available"
+            }
+        ],
+        "assets": [
+            {
+                "type": "motorbike",
+                "description": "Yamaha Sirius",
+                "quantity": 1,
+                "licensePlate": "59A1-67890"
+            }
+        ],
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    }
+]
