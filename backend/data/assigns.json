@@ -1,0 +1,107 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439011"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Fix leaking faucet in bathroom",
+        "assign_for": {
+            "$oid": "507f191e810c19729de860eb"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "assign_type": "maintenance",
+        "status": "pending",
+        "due_date": "2025-06-30T00:00:00.000Z",
+        "priority": "high",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "updatedAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439012"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Clean common area",
+        "assign_for": {
+            "$oid": "507f191e810c19729de860ec"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "assign_type": "cleaning",
+        "status": "in_progress",
+        "due_date": "2025-06-25T00:00:00.000Z",
+        "priority": "medium",
+        "createdAt": "2025-06-19T09:00:00.000Z",
+        "updatedAt": "2025-06-19T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439013"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Repair air conditioner",
+        "assign_for": {
+            "$oid": "507f191e810c19729de860eb"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e3"
+        },
+        "assign_type": "repair",
+        "status": "completed",
+        "due_date": "2025-06-22T00:00:00.000Z",
+        "priority": "high",
+        "createdAt": "2025-06-18T08:00:00.000Z",
+        "updatedAt": "2025-06-22T12:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439014"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Inspect fire alarms",
+        "assign_for": {
+            "$oid": "507f191e810c19729de860ec"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "assign_type": "maintenance",
+        "status": "pending",
+        "due_date": "2025-07-01T00:00:00.000Z",
+        "priority": "low",
+        "createdAt": "2025-06-21T11:00:00.000Z",
+        "updatedAt": "2025-06-21T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439015"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Replace light bulbs",
+        "assign_for": {
+            "$oid": "507f191e810c19729de860eb"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "assign_type": "maintenance",
+        "status": "in_progress",
+        "due_date": "2025-06-28T00:00:00.000Z",
+        "priority": "medium",
+        "createdAt": "2025-06-20T14:00:00.000Z",
+        "updatedAt": "2025-06-20T14:00:00.000Z"
+    }
+]

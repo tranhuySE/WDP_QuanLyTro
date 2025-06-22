@@ -1,0 +1,328 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439081"
+        },
+        "title": "Leaking pipe in bathroom",
+        "description": "Water leaking from bathroom pipe",
+        "type": "MAINTENANCE",
+        "priority": "HIGH",
+        "status": "PENDING",
+        "createdBy": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ec"
+            }
+        },
+        "assignedTo": {
+            "userId": {
+                "$oid": "507f191e810c19729de860eb"
+            }
+        },
+        "room": {
+            "roomId": {
+                "$oid": "507f191e810c19729de860e1"
+            }
+        },
+        "approval": {
+            "action": null,
+            "note": "",
+            "approvedBy": null,
+            "approvedByName": null,
+            "approvedAt": null
+        },
+        "completion": {
+            "completedAt": null,
+            "note": "",
+            "rating": null,
+            "feedback": ""
+        },
+        "attachments": [
+            {
+                "fileName": "leak.jpg",
+                "filePath": "https://example.com/leak.jpg",
+                "fileType": "image/jpeg",
+                "fileSize": 102400,
+                "uploadedBy": {
+                    "$oid": "507f191e810c19729de860ec"
+                },
+                "uploadedAt": "2025-06-20T10:00:00.000Z"
+            }
+        ],
+        "statusHistory": [
+            {
+                "oldStatus": null,
+                "newStatus": "PENDING",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ec"
+                },
+                "changedByName": "Le Tenant",
+                "note": "Request created",
+                "changedAt": "2025-06-20T10:00:00.000Z"
+            }
+        ],
+        "dueDate": "2025-06-25T00:00:00.000Z",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "updatedAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439082"
+        },
+        "title": "Room cleaning request",
+        "description": "Need deep cleaning for room",
+        "type": "CLEANING",
+        "priority": "MEDIUM",
+        "status": "ASSIGNED",
+        "createdBy": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ed"
+            }
+        },
+        "assignedTo": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ee"
+            }
+        },
+        "room": {
+            "roomId": {
+                "$oid": "507f191e810c19729de860e2"
+            }
+        },
+        "approval": {
+            "action": "APPROVED",
+            "note": "Approved for cleaning",
+            "approvedBy": {
+                "$oid": "507f191e810c19729de860ea"
+            },
+            "approvedByName": "Nguyen Admin",
+            "approvedAt": "2025-06-21T09:00:00.000Z"
+        },
+        "completion": {
+            "completedAt": null,
+            "note": "",
+            "rating": null,
+            "feedback": ""
+        },
+        "attachments": [],
+        "statusHistory": [
+            {
+                "oldStatus": null,
+                "newStatus": "PENDING",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ed"
+                },
+                "changedByName": "Pham Tenant",
+                "note": "Request created",
+                "changedAt": "2025-06-21T08:00:00.000Z"
+            },
+            {
+                "oldStatus": "PENDING",
+                "newStatus": "ASSIGNED",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ea"
+                },
+                "changedByName": "Nguyen Admin",
+                "note": "Assigned to staff",
+                "changedAt": "2025-06-21T09:00:00.000Z"
+            }
+        ],
+        "dueDate": "2025-06-26T00:00:00.000Z",
+        "createdAt": "2025-06-21T08:00:00.000Z",
+        "updatedAt": "2025-06-21T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439083"
+        },
+        "title": "Noise complaint",
+        "description": "Loud music from neighboring room",
+        "type": "COMPLAINT",
+        "priority": "HIGH",
+        "status": "PENDING",
+        "createdBy": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ec"
+            }
+        },
+        "assignedTo": {
+            "userId": null
+        },
+        "room": {
+            "roomId": {
+                "$oid": "507f191e810c19729de860e1"
+            }
+        },
+        "approval": {
+            "action": null,
+            "note": "",
+            "approvedBy": null,
+            "approvedByName": null,
+            "approvedAt": null
+        },
+        "completion": {
+            "completedAt": null,
+            "note": "",
+            "rating": null,
+            "feedback": ""
+        },
+        "attachments": [],
+        "statusHistory": [
+            {
+                "oldStatus": null,
+                "newStatus": "PENDING",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ec"
+                },
+                "changedByName": "Le Tenant",
+                "note": "Request created",
+                "changedAt": "2025-06-22T08:00:00.000Z"
+            }
+        ],
+        "dueDate": "2025-06-24T00:00:00.000Z",
+        "createdAt": "2025-06-22T08:00:00.000Z",
+        "updatedAt": "2025-06-22T08:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439084"
+        },
+        "title": "Payment issue",
+        "description": "Incorrect invoice amount",
+        "type": "PAYMENT_ISSUE",
+        "priority": "URGENT",
+        "status": "IN_PROGRESS",
+        "createdBy": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ed"
+            }
+        },
+        "assignedTo": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ea"
+            }
+        },
+        "room": {
+            "roomId": {
+                "$oid": "507f191e810c19729de860e2"
+            }
+        },
+        "approval": {
+            "action": "APPROVED",
+            "note": "Issue verified",
+            "approvedBy": {
+                "$oid": "507f191e810c19729de860ea"
+            },
+            "approvedByName": "Nguyen Admin",
+            "approvedAt": "2025-06-20T11:00:00.000Z"
+        },
+        "completion": {
+            "completedAt": null,
+            "note": "",
+            "rating": null,
+            "feedback": ""
+        },
+        "attachments": [
+            {
+                "fileName": "invoice_error.pdf",
+                "filePath": "https://example.com/invoice_error.pdf",
+                "fileType": "application/pdf",
+                "fileSize": 204800,
+                "uploadedBy": {
+                    "$oid": "507f191e810c19729de860ed"
+                },
+                "uploadedAt": "2025-06-20T11:00:00.000Z"
+            }
+        ],
+        "statusHistory": [
+            {
+                "oldStatus": null,
+                "newStatus": "PENDING",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ed"
+                },
+                "changedByName": "Pham Tenant",
+                "note": "Request created",
+                "changedAt": "2025-06-20T10:00:00.000Z"
+            },
+            {
+                "oldStatus": "PENDING",
+                "newStatus": "IN_PROGRESS",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ea"
+                },
+                "changedByName": "Nguyen Admin",
+                "note": "Assigned for review",
+                "changedAt": "2025-06-20T11:00:00.000Z"
+            }
+        ],
+        "dueDate": "2025-06-23T00:00:00.000Z",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "updatedAt": "2025-06-20T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439085"
+        },
+        "title": "Request new furniture",
+        "description": "Need a new desk for room",
+        "type": "ROOM_ISSUE",
+        "priority": "MEDIUM",
+        "status": "COMPLETED",
+        "createdBy": {
+            "userId": {
+                "$oid": "507f191e810c19729de860ec"
+            }
+        },
+        "assignedTo": {
+            "userId": {
+                "$oid": "507f191e810c19729de860eb"
+            }
+        },
+        "room": {
+            "roomId": {
+                "$oid": "507f191e810c19729de860e1"
+            }
+        },
+        "approval": {
+            "action": "APPROVED",
+            "note": "Desk approved",
+            "approvedBy": {
+                "$oid": "507f191e810c19729de860ea"
+            },
+            "approvedByName": "Nguyen Admin",
+            "approvedAt": "2025-06-21T10:00:00.000Z"
+        },
+        "completion": {
+            "completedAt": "2025-06-22T09:00:00.000Z",
+            "note": "Desk delivered",
+            "rating": 5,
+            "feedback": "Great service!"
+        },
+        "attachments": [],
+        "statusHistory": [
+            {
+                "oldStatus": null,
+                "newStatus": "PENDING",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860ec"
+                },
+                "changedByName": "Le Tenant",
+                "note": "Request created",
+                "changedAt": "2025-06-21T09:00:00.000Z"
+            },
+            {
+                "oldStatus": "PENDING",
+                "newStatus": "COMPLETED",
+                "changedBy": {
+                    "$oid": "507f191e810c19729de860eb"
+                },
+                "changedByName": "Tran Staff",
+                "note": "Desk delivered",
+                "changedAt": "2025-06-22T09:00:00.000Z"
+            }
+        ],
+        "dueDate": "2025-06-22T00:00:00.000Z",
+        "createdAt": "2025-06-21T09:00:00.000Z",
+        "updatedAt": "2025-06-22T09:00:00.000Z"
+    }
+]

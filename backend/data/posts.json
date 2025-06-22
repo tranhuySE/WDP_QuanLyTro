@@ -1,0 +1,62 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439031"
+        },
+        "author": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "New room available for rent starting July 2025!",
+        "tag": "announcement",
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439032"
+        },
+        "author": {
+            "$oid": "507f191e810c19729de860eb"
+        },
+        "content": "Maintenance scheduled for June 25, 2025.",
+        "tag": "maintenance",
+        "createdAt": "2025-06-19T10:00:00.000Z",
+        "updatedAt": "2025-06-19T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439033"
+        },
+        "author": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "Reminder: Pay rent by June 30, 2025.",
+        "tag": "reminder",
+        "createdAt": "2025-06-21T08:00:00.000Z",
+        "updatedAt": "2025-06-21T08:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439034"
+        },
+        "author": {
+            "$oid": "507f191e810c19729de860ec"
+        },
+        "content": "Community event this weekend!",
+        "tag": "event",
+        "createdAt": "2025-06-20T11:00:00.000Z",
+        "updatedAt": "2025-06-20T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439035"
+        },
+        "author": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "content": "New house rules updated.",
+        "tag": "announcement",
+        "createdAt": "2025-06-22T09:00:00.000Z",
+        "updatedAt": "2025-06-22T09:00:00.000Z"
+    }
+]
