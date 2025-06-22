@@ -101,10 +101,6 @@ export default function UserDetail({ isModal, selectedUser }) {
                                 <td>{user.email}</td>
                             </tr>
                             <tr>
-                                <th>Mật khẩu</th>
-                                <td>{user.password}</td>
-                            </tr>
-                            <tr>
                                 <th>CMND/CCCD</th>
                                 <td>{user.citizen_id}</td>
                             </tr>
