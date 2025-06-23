@@ -8,3 +8,7 @@ export const getAllUsers = () => {
 export const getUserById = (id) => {
     return axiosInstance.get(`/users/${id}`); 
 };
+
+export const deleteUserById = (id) => {
+    return axiosInstance.delete(`/users/${id}`); 
+};
