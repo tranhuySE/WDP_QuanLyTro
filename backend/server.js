@@ -1,10 +1,17 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const connectDB = require("./config/db.js");
 const router = require("./routes/index.js");
 
-const cors = require("cors");
+const allowOrigins = [
+    "http://localhost:3000",
+]
 
+app.use(cors({
+    origin: allowOrigins,
+    credentials: true,
+}))
 
 app.get("/", async (req, res) => {
     try {
