@@ -1,0 +1,172 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439021"
+        },
+        "fullname": "Nguyen Van A",
+        "email": "nguyenvana@example.com",
+        "citizen_id": "123456789012",
+        "phoneNumber": "0901234567",
+        "address": "123 Le Loi, District 1, HCMC",
+        "dateOfBirth": "1990-05-15T00:00:00.000Z",
+        "contactEmergency": {
+            "name": "Nguyen Thi B",
+            "relationship": "Mother",
+            "phoneNumber": "0901234568"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "startDate": "2025-07-01T00:00:00.000Z",
+        "endDate": "2026-06-30T00:00:00.000Z",
+        "price": 5000000,
+        "deposit": {
+            "amount": 10000000,
+            "paymentDate": "2025-06-20T00:00:00.000Z"
+        },
+        "terms": "No pets, no smoking",
+        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "staffId": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "status": "pending",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "updatedAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439022"
+        },
+        "fullname": "Tran Thi B",
+        "email": "tranthib@example.com",
+        "citizen_id": "987654321098",
+        "phoneNumber": "0902345678",
+        "address": "789 Nguyen Trai, District 5, HCMC",
+        "dateOfBirth": "1992-08-20T00:00:00.000Z",
+        "contactEmergency": {
+            "name": "Tran Van C",
+            "relationship": "Father",
+            "phoneNumber": "0902345679"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "startDate": "2025-07-15T00:00:00.000Z",
+        "endDate": "2026-07-14T00:00:00.000Z",
+        "price": 4500000,
+        "deposit": {
+            "amount": 9000000,
+            "paymentDate": "2025-06-21T00:00:00.000Z"
+        },
+        "terms": "No loud music after 10 PM",
+        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "staffId": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "status": "accepted",
+        "createdAt": "2025-06-21T09:00:00.000Z",
+        "updatedAt": "2025-06-21T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439023"
+        },
+        "fullname": "Le Van C",
+        "email": "levanc@example.com",
+        "citizen_id": "456789123456",
+        "phoneNumber": "0903456789",
+        "address": "101 Vo Van Tan, District 3, HCMC",
+        "dateOfBirth": "1988-03-10T00:00:00.000Z",
+        "contactEmergency": {
+            "name": "Le Thi D",
+            "relationship": "Sister",
+            "phoneNumber": "0903456790"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e3"
+        },
+        "startDate": "2025-08-01T00:00:00.000Z",
+        "endDate": "2026-07-31T00:00:00.000Z",
+        "price": 5500000,
+        "deposit": {
+            "amount": 11000000,
+            "paymentDate": "2025-06-22T00:00:00.000Z"
+        },
+        "terms": "No subleasing",
+        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "staffId": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "status": "pending",
+        "createdAt": "2025-06-22T08:00:00.000Z",
+        "updatedAt": "2025-06-22T08:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439024"
+        },
+        "fullname": "Pham Thi D",
+        "email": "phamthid@example.com",
+        "citizen_id": "321654987123",
+        "phoneNumber": "0904567890",
+        "address": "202 Ly Tu Trong, District 1, HCMC",
+        "dateOfBirth": "1995-11-25T00:00:00.000Z",
+        "contactEmergency": {
+            "name": "Pham Van E",
+            "relationship": "Brother",
+            "phoneNumber": "0904567891"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "startDate": "2025-07-10T00:00:00.000Z",
+        "endDate": "2026-07-09T00:00:00.000Z",
+        "price": 4800000,
+        "deposit": {
+            "amount": 9600000,
+            "paymentDate": "2025-06-20T00:00:00.000Z"
+        },
+        "terms": "No pets, no smoking",
+        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "staffId": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "status": "rejected",
+        "createdAt": "2025-06-20T11:00:00.000Z",
+        "updatedAt": "2025-06-20T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439025"
+        },
+        "fullname": "Hoang Van E",
+        "email": "hoangvane@example.com",
+        "citizen_id": "654321987654",
+        "phoneNumber": "0905678901",
+        "address": "303 Nguyen Van Cu, District 5, HCMC",
+        "dateOfBirth": "1993-02-14T00:00:00.000Z",
+        "contactEmergency": {
+            "name": "Hoang Thi F",
+            "relationship": "Wife",
+            "phoneNumber": "0905678902"
+        },
+        "roomId": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "startDate": "2025-07-20T00:00:00.000Z",
+        "endDate": "2026-07-19T00:00:00.000Z",
+        "price": 4700000,
+        "deposit": {
+            "amount": 9400000,
+            "paymentDate": "2025-06-21T00:00:00.000Z"
+        },
+        "terms": "No parties",
+        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "staffId": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "status": "pending",
+        "createdAt": "2025-06-21T10:00:00.000Z",
+        "updatedAt": "2025-06-21T10:00:00.000Z"
+    }
+]

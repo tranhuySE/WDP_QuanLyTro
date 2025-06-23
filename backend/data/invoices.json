@@ -1,0 +1,198 @@
+[
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439071"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "content": "Monthly rent for July 2025",
+        "createdAt": "2025-06-20T10:00:00.000Z",
+        "invoice_type": "rent",
+        "items": [
+            {
+                "name": "Room rent",
+                "unit": "month",
+                "price_unit": 5000000,
+                "subTotal": 5000000
+            },
+            {
+                "name": "Electricity",
+                "unit": "kWh",
+                "price_unit": 3500,
+                "subTotal": 175000
+            }
+        ],
+        "total_amount": 5175000,
+        "notify_status": "sent",
+        "note": {
+            "img": [
+                {
+                    "url": "https://example.com/invoice1_receipt.pdf"
+                }
+            ],
+            "text": "Please pay by June 30, 2025"
+        },
+        "payment_type": "e-banking",
+        "payment_status": "pending",
+        "paid_date": null,
+        "updatedAt": "2025-06-20T10:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439072"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "content": "Monthly rent for July 2025",
+        "createdAt": "2025-06-21T09:00:00.000Z",
+        "invoice_type": "rent",
+        "items": [
+            {
+                "name": "Room rent",
+                "unit": "month",
+                "price_unit": 4500000,
+                "subTotal": 4500000
+            },
+            {
+                "name": "Internet",
+                "unit": "month",
+                "price_unit": 200000,
+                "subTotal": 200000
+            }
+        ],
+        "total_amount": 4700000,
+        "notify_status": "sent",
+        "note": {
+            "img": [
+                {
+                    "url": "https://example.com/invoice2_receipt.pdf"
+                }
+            ],
+            "text": "Payment due by June 30, 2025"
+        },
+        "payment_type": "Cash",
+        "payment_status": "paid",
+        "paid_date": "2025-06-22T00:00:00.000Z",
+        "updatedAt": "2025-06-21T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439073"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e3"
+        },
+        "content": "Monthly rent for August 2025",
+        "createdAt": "2025-06-22T08:00:00.000Z",
+        "invoice_type": "rent",
+        "items": [
+            {
+                "name": "Room rent",
+                "unit": "month",
+                "price_unit": 5500000,
+                "subTotal": 5500000
+            },
+            {
+                "name": "Parking",
+                "unit": "month",
+                "price_unit": 100000,
+                "subTotal": 100000
+            }
+        ],
+        "total_amount": 5600000,
+        "notify_status": "pending",
+        "note": {
+            "img": [],
+            "text": "Please confirm payment method"
+        },
+        "payment_type": "e-banking",
+        "payment_status": "pending",
+        "paid_date": null,
+        "updatedAt": "2025-06-22T08:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439074"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
+        "content": "Cleaning service fee",
+        "createdAt": "2025-06-20T11:00:00.000Z",
+        "invoice_type": "service",
+        "items": [
+            {
+                "name": "Cleaning Service",
+                "unit": "session",
+                "price_unit": 150000,
+                "subTotal": 150000
+            }
+        ],
+        "total_amount": 150000,
+        "notify_status": "sent",
+        "note": {
+            "img": [
+                {
+                    "url": "https://example.com/invoice4_receipt.pdf"
+                }
+            ],
+            "text": "Payment due by June 25, 2025"
+        },
+        "payment_type": "e-banking",
+        "payment_status": "paid",
+        "paid_date": "2025-06-21T00:00:00.000Z",
+        "updatedAt": "2025-06-20T11:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f1f77bcf86cd799439075"
+        },
+        "create_by": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "for_room_id": {
+            "$oid": "507f191e810c19729de860e2"
+        },
+        "content": "Monthly rent for July 2025",
+        "createdAt": "2025-06-21T10:00:00.000Z",
+        "invoice_type": "rent",
+        "items": [
+            {
+                "name": "Room rent",
+                "unit": "month",
+                "price_unit": 4700000,
+                "subTotal": 4700000
+            },
+            {
+                "name": "Water",
+                "unit": "m3",
+                "price_unit": 20000,
+                "subTotal": 100000
+            }
+        ],
+        "total_amount": 4800000,
+        "notify_status": "sent",
+        "note": {
+            "img": [],
+            "text": "Please pay by June 30, 2025"
+        },
+        "payment_type": "e-banking",
+        "payment_status": "pending",
+        "paid_date": null,
+        "updatedAt": "2025-06-21T10:00:00.000Z"
+    }
+]

@@ -4,12 +4,12 @@ const assignSchema = new Schema(
   {
     create_by: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: "User",
     },
     content: { type: String },
     assign_for: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: "User",
     },
     for_room_id: {
       type: Schema.Types.ObjectId,
@@ -43,4 +43,4 @@ const assignSchema = new Schema(
 );
 
 const Assign = model("Assign", assignSchema);
-export default Assign;
+module.exports = Assign;

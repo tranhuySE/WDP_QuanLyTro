@@ -1,0 +1,417 @@
+
+.container-fluid {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col {
+  flex: 1;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.main-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  /* Ensure card fits within container without creating overflow */
+  height: fit-content;
+}
+
+.title {
+  color: #007bff;
+  margin-bottom: 5px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.description {
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.header {
+  background-color: #f8f9fa;
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+  border: 1px solid #e9ecef;
+}
+
+.title {
+  color: #007bff;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.entries-control {
+  display: flex;
+  align-items: center;
+}
+
+.control-label {
+  font-size: 14px;
+  color: #333;
+}
+
+.entries-control .control-label:first-child {
+  margin-right: 8px;
+}
+
+.entries-control .control-label:last-child {
+  margin-left: 8px;
+}
+
+.entries-select {
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 70px;
+  background-color: white;
+}
+
+.entries-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.search-control {
+  display: flex;
+  align-items: center;
+}
+
+.search-control .control-label {
+  margin-right: 8px;
+}
+
+.search-input {
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  /* Set max height for table if needed to prevent excessive height */
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #dee2e6;
+  font-size: 14px;
+}
+
+.table-header {
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  color: #333;
+  /* Make header sticky */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-header:hover {
+  background-color: #e9ecef;
+}
+
+.table-row.even {
+  background-color: #ffffff;
+}
+
+.table-row.odd {
+  background-color: #f8f9fa;
+}
+
+.table-row:hover {
+  background-color: #e9ecef !important;
+}
+
+.table-cell {
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  color: #333;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.entries-info {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2px;
+}
+
+.pagination li {
+  display: flex;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.pagination-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-btn.disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.pagination li:first-child .pagination-btn {
+  border-radius: 4px 0 0 4px;
+}
+
+.pagination li:last-child .pagination-btn {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Password Container Styles */
+.password-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-text {
+  font-family: monospace;
+  font-size: 14px;
+  min-width: 80px;
+}
+
+.password-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #6c757d;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+/* Action Buttons Styles */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.add-btn {
+  color: #0dc420;
+  border-color: #0dc420;
+  margin-bottom: 10px;
+}
+
+.add-btn:hover {
+  background-color: #0dc420;
+  color: #212529;
+}
+
+.view-btn {
+  color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.view-btn:hover {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.edit-btn {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.edit-btn:hover {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.delete-btn {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.delete-btn:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Text alignment utilities */
+.text-center {
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-management {
+    padding: 10px;
+  }
+  
+  .main-card {
+    padding: 20px;
+  }
+  
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-control {
+    justify-content: space-between;
+  }
+  
+  .search-input {
+    width: 150px;
+  }
+  
+  .footer-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .table-container {
+    font-size: 12px;
+    max-height: 50vh; /* Adjust for mobile */
+  }
+  
+  .table-header,
+  .table-cell {
+    padding: 8px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    width: 120px;
+  }
+  
+  .pagination-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .entries-select {
+    width: 60px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .action-btn {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+  
+  .password-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .password-text {
+    font-size: 12px;
+  }
+}

@@ -31,4 +31,4 @@ const depositSchema = new Schema(
 );
 
 const Deposit = model("Deposit", depositSchema);
-export default Deposit;
+module.exports = Deposit;

@@ -1,11 +1,12 @@
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema, model } = mongoose;
 
 const requestsSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
-      max_length: 255,
+      maxlength: 255,
     },
     description: {
       type: String,
@@ -46,47 +47,36 @@ const requestsSchema = new Schema(
       default: "PENDING",
     },
     createdBy: {
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      userType: {
-        type: String,
-        enum: ["ADMIN", "STAFF", "TENANT"],
-        required: true,
-      },
-      userName: String,
-      userEmail: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     assignedTo: {
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
-      },
-      userType: {
-        type: String,
-        enum: ["STAFF", "ADMIN"],
-      },
-      userName: String,
-      assignedAt: Date,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     room: {
       roomId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Room",
       },
-      roomNumber: String,
-      floor: String,
     },
     approval: {
+      action: {
+        type: String,
+        enum: ["APPROVED", "REJECTED"],
+        default: null, // null = chưa xét duyệt
+      },
+      note: {
+        type: String,
+        trim: true, // Lý do từ chối hoặc phản hồi nếu có
+      },
       approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
+        ref: "User",
       },
       approvedByName: String,
       approvedAt: Date,
-      note: String,
     },
     completion: {
       completedAt: Date,
@@ -118,7 +108,7 @@ const requestsSchema = new Schema(
         },
         uploadedBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Account",
+          ref: "User",
           required: true,
         },
         uploadedAt: {
@@ -136,7 +126,7 @@ const requestsSchema = new Schema(
         },
         changedBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Account",
+          ref: "User",
           required: true,
         },
         changedByName: String,
@@ -156,4 +146,4 @@ const requestsSchema = new Schema(
 );
 
 const Request = model("Request", requestsSchema);
-export default Request;
+module.exports = Request;

@@ -11,11 +11,13 @@ export const ROUTES = {
     // Admin
     DASHBOARD: '/admin/dashboard',
     ADMIN_HOMEPAGE: '/admin/homepage',
-    MANAGE_ROOMS: '/admin/manage-rooms',
-    MANAGE_ACCOUNTS: '/admin/manage-accounts',
-    TENANT_REQUESTS: '/admin/tenant-requests',
+    MANAGE_ROOMS: '/admin/rooms',
+    ACCOUNTS_LIST: '/admin/users',
+    ACCOUNTS_DETAIL: '/admin/users/:id',
+    TENANT_REQUESTS: '/admin/requests',
 
     //Staff
 
     //Tenant
+    
 };

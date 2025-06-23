@@ -38,8 +38,8 @@ const AdminLayout = () => {
                         </Col>
                     </Row>
                     <Row
-                        className="mt-3"
-                        style={{ overflowY: 'auto', height: 'calc(100vh - 150px)' }}
+                        className="mt-2"
+                        style={{ overflowY: 'auto', height: 'calc(100vh - 50px)' }}
                     >
                         <Outlet />
                     </Row>

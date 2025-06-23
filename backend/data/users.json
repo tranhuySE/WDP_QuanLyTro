@@ -1,0 +1,122 @@
+[
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860ea"
+        },
+        "username": "nqminh21123",
+        "email": "nqminh02112003@gmail.com",
+        "password": "hashedpassword1",
+        "fullname": "Nguyen Quang Minh",
+        "citizen_id": "111222333444",
+        "phoneNumber": "0901112222",
+        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+        "role": "admin",
+        "address": "456 Tran Hung Dao, District 5, HCMC",
+        "dateOfBirth": "1980-01-01T00:00:00.000Z",
+        "status": "active",
+        "contactEmergency": {
+            "name": "Nguyen Thi A",
+            "relationship": "Father",
+            "phoneNumber": "0901112223"
+        },
+        "isVerifiedByAdmin": true,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860eb"
+        },
+        "username": "staff1",
+        "email": "staff1@example.com",
+        "password": "hashedpassword2",
+        "fullname": "Tran Staff",
+        "citizen_id": "222333444555",
+        "phoneNumber": "0902223333",
+        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+        "role": "staff",
+        "address": "789 Nguyen Trai, District 5, HCMC",
+        "dateOfBirth": "1985-05-10T00:00:00.000Z",
+        "status": "active",
+        "contactEmergency": {
+            "name": "Tran Van B",
+            "relationship": "Father",
+            "phoneNumber": "0902223334"
+        },
+        "isVerifiedByAdmin": true,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860ec"
+        },
+        "username": "tenant1",
+        "email": "tenant1@example.com",
+        "password": "hashedpassword3",
+        "fullname": "Le Tenant",
+        "citizen_id": "333444555666",
+        "phoneNumber": "0903334444",
+        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+        "role": "user",
+        "address": "101 Vo Van Tan, District 3, HCMC",
+        "dateOfBirth": "1990-03-15T00:00:00.000Z",
+        "status": "active",
+        "contactEmergency": {
+            "name": "Le Thi C",
+            "relationship": "Sister",
+            "phoneNumber": "0903334445"
+        },
+        "isVerifiedByAdmin": true,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860ed"
+        },
+        "username": "tenant2",
+        "email": "tenant2@example.com",
+        "password": "hashedpassword4",
+        "fullname": "Pham Tenant",
+        "citizen_id": "444555666777",
+        "phoneNumber": "0904445555",
+        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+        "role": "user",
+        "address": "202 Ly Tu Trong, District 1, HCMC",
+        "dateOfBirth": "1992-07-20T00:00:00.000Z",
+        "status": "inactive",
+        "contactEmergency": {
+            "name": "Pham Van D",
+            "relationship": "Brother",
+            "phoneNumber": "0904445556"
+        },
+        "isVerifiedByAdmin": false,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    },
+    {
+        "_id": {
+            "$oid": "507f191e810c19729de860ee"
+        },
+        "username": "staff2",
+        "email": "staff2@example.com",
+        "password": "hashedpassword5",
+        "fullname": "Hoang Staff",
+        "citizen_id": "555666777888",
+        "phoneNumber": "0905556666",
+        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+        "role": "staff",
+        "address": "303 Nguyen Van Cu, District 5, HCMC",
+        "dateOfBirth": "1987-09-25T00:00:00.000Z",
+        "status": "active",
+        "contactEmergency": {
+            "name": "Hoang Thi E",
+            "relationship": "Wife",
+            "phoneNumber": "0905556667"
+        },
+        "isVerifiedByAdmin": true,
+        "createdAt": "2025-06-20T09:00:00.000Z",
+        "updatedAt": "2025-06-20T09:00:00.000Z"
+    }
+]
