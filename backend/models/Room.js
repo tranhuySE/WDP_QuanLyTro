@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-
 const roomSchema = new Schema(
   {
     roomNumber: { type: String, required: true },
@@ -29,13 +28,13 @@ const roomSchema = new Schema(
       },
     ],
 
-    description: String,
-    images: [String],
+    description: { type: String, default: "" },
+    images: { type: [String], default: [] },
 
     amenities: [
       {
-        name: String,
-        quantity: Number,
+        name: { type: String, required: true },
+        quantity: { type: Number, required: true },
         status: {
           type: String,
           enum: ["available", "unavailable"],
@@ -51,9 +50,9 @@ const roomSchema = new Schema(
           enum: ["motorbike", "car", "bicycle", "other"],
           required: true,
         },
-        description: String,
+        description: { type: String, default: "" },
         quantity: { type: Number, default: 1 },
-        licensePlate: String,
+        licensePlate: { type: String },
       },
     ],
   },
