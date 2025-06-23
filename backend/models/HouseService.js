@@ -1,17 +1,17 @@
 const { Schema, model } = require("mongoose");
 
-const House_ServiceSchema = new Schema(
+const houseServiceSchema = new Schema(
   {
-    name: { type: String, require: true },
-    unit: { type: String, require: true },
-    price: { type: Number, require: true },
-    updateAt: { type: Date },
+    name: { type: String, required: true }, // tên dịch vụ
+    unit: { type: String, required: true }, // đơn vị tính: "kWh", "m3", "month"...
+    price: { type: Number, required: true }, // giá dịch vụ
   },
   {
-    timestamps: true,
-    collection: "HouseService",
+    timestamps: true, // tự động thêm createdAt, updatedAt
+    collection: "house_services", // khớp với tên collection trong MongoDB
+    versionKey: false, // loại bỏ __v
   }
 );
 
-const House_Service = model("House_Service", House_ServiceSchema);
-module.exports = House_Service;
+const HouseService = model("HouseService", houseServiceSchema); // trùng với ref trong Room schema
+module.exports = HouseService;
