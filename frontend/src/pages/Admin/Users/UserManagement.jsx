@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Pagination, Row, Table } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
-import { getAllUsers } from '../../../api/userAPI.js'; // Adjust the import path as necessary
+import { deleteUserById, getAllUsers } from '../../../api/userAPI.js'; // Adjust the import path as necessary
 import '../../../styles/Admin/User/UserManagement.css'; // Adjust the path as necessary
 
 const UserManagement = () => {
@@ -19,7 +19,6 @@ const UserManagement = () => {
     useEffect(() => {
         getAllUsers()
             .then((response) => {
-                console.log('RESPONSE DATA:', response.data);
                 setUsers(response.data); // giả sử response.data là mảng
             })
             .catch((error) => {
@@ -67,11 +66,19 @@ const UserManagement = () => {
     };
 
     const handleDelete = (user) => {
-        if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng "${user.fullName}"?`)) {
-            console.log('Delete user:', user);
-            // Implement delete logic here
-        }
-    };
+    if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng "${user.fullname}"?`)) {
+        deleteUserById(user._id)
+            .then(() => {
+                alert('Xóa người dùng thành công!');
+                // Xóa khỏi danh sách hiện tại trên frontend
+                setUsers(prevUsers => prevUsers.filter(u => u._id !== user._id));
+            })
+            .catch((error) => {
+                console.error('Lỗi khi xóa người dùng:', error);
+                alert('Đã xảy ra lỗi khi xóa người dùng.');
+            });
+    }
+};
 
     const renderPaginationItems = () => {
         const items = [];
@@ -170,7 +177,7 @@ const UserManagement = () => {
                                         <div className="d-flex gap-2">
                                             <Button
                                                 as={Link}
-                                                to={`/admin/users/${user.id}`}
+                                                to={`/admin/users/${user._id}`}
                                                 variant="outline-primary"
                                                 size="sm"
                                                 title="View-Details"
@@ -178,21 +185,21 @@ const UserManagement = () => {
                                             >
                                                 Xem chi tiết
                                             </Button>
-                                            <Button
+                                            {/* <Button
                                                 variant="outline-warning"
                                                 size="sm"
                                                 onClick={() => handleEdit(user)}
                                                 title="Edit"
                                             >
                                                 <i className="bi bi-pencil"></i>
-                                            </Button>
+                                            </Button> */}
                                             <Button
                                                 variant="outline-danger"
                                                 size="sm"
                                                 onClick={() => handleDelete(user)}
                                                 title="Delete"
                                             >
-                                                <i className="bi bi-trash"></i>
+                                                Xóa
                                             </Button>
                                         </div>
                                     </td>

@@ -1,85 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Accordion, Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Calendar2Date, PencilSquare, PersonCircle, Trash } from "react-bootstrap-icons";
+import { getAllPosts } from "../../api/postAPI";
 import "../../styles/Common/HomePage.css";
 
 const HomePage = () => {
-    // Dữ liệu khởi tạo
-    const data = [
-        {
-            id: 1,
-            title: "Thông báo về thời gian đóng tiền phòng tháng 5",
-            content:
-                "Kính gửi các bạn sinh viên, hạn đóng tiền phòng là ngày 5 hàng tháng. Vui lòng thực hiện đúng hạn để tránh bị phạt và đảm bảo quyền lợi lưu trú của bạn.",
-            date: "2025-05-25",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-        {
-            id: 2,
-            title: "Hướng dẫn sử dụng hệ thống quản lý trọ",
-            content:
-                "Để sử dụng hệ thống, bạn cần đăng nhập bằng tài khoản sinh viên được cấp. Sau đó bạn có thể xem hóa đơn, lịch sử thanh toán và các thông tin phòng.",
-            date: "2025-05-24",
-            author: "Ban quản lý",
-        },
-    ];
-
     // State quản lý posts
-    const [posts, setPosts] = useState(data);
+    const [posts, setPosts] = useState([]);
 
     // State quản lý form tạo/sửa bài
     const [form, setForm] = useState({ id: null, title: "", content: "", date: "", author: "Ban quản lý" });
 
     // State để phân biệt đang ở chế độ edit hay tạo mới
     const [isEditing, setIsEditing] = useState(false);
+
+    useEffect(() => {
+        getAllPosts()
+            .then((response) => {
+                setPosts(response.data);
+            })
+            .catch((error) => {
+                console.error("Lỗi khi lấy danh sách bài viết:", error);
+                alert("Không thể tải dữ liệu bài viết. Vui lòng thử lại sau.");
+            });
+    }, []);
 
     // Hàm xử lý thay đổi input
     const handleChange = (e) => {
@@ -213,7 +157,7 @@ const HomePage = () => {
                             <Accordion.Header>
                                 <Row className="w-100 align-items-center">
                                     <Col xs={12} md={8} className="fw-semibold d-flex align-items-center">
-                                        {post.title}
+                                        {post.tag}
                                         {/* Nút chỉnh sửa */}
                                         <Button
                                             variant="link"
@@ -244,11 +188,11 @@ const HomePage = () => {
                                     <Col xs={12} md={4} className="text-md-end mt-2 mt-md-0">
                                         <Badge bg="light" text="dark" className="me-2">
                                             <Calendar2Date className="me-1" />
-                                            {new Date(post.date).toLocaleDateString("vi-VN")}
+                                            {new Date(post.createAt).toLocaleDateString("vi-VN")}
                                         </Badge>
                                         <Badge bg="light" text="dark">
                                             <PersonCircle className="me-1" />
-                                            {post.author}
+                                            {post.author?.fullname || 'Ban quản lý'}
                                         </Badge>
                                     </Col>
                                 </Row>
