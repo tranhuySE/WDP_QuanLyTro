@@ -1,27 +1,51 @@
+import { useEffect, useState } from "react";
 import { Button, Image } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const SideRightHeader = () => {
-    const isLoggedIn = false;
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userInfo, setUserInfo] = useState({});
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        const username = localStorage.getItem("username");
+        const fullname = localStorage.getItem("fullname");
+
+        if (token) {
+            setIsLoggedIn(true);
+            setUserInfo({ role, username, fullname });
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+        localStorage.removeItem("fullname");
+
+        setIsLoggedIn(false);
+        navigate("/login");
+    };
 
     return (
-        <div className="d-flex h-100 justify-content-end">
+        <div className="d-flex h-100 justify-content-end align-items-center">
             {isLoggedIn && (
-                <Image
-                    src="https://via.placeholder.com/32"
-                    alt="User Avatar"
-                    roundedCircle
-                    width={32}
-                    height={32}
-                />
-            )}
-
-            {isLoggedIn && (
-                <span className="text-dark" style={{ fontSize: "0.9rem" }}>
-                    Nguyen Van A
-                </span>
+                <>
+                    <Image
+                        src="https://via.placeholder.com/32"
+                        alt="User Avatar"
+                        roundedCircle
+                        width={32}
+                        height={32}
+                        className="me-2"
+                    />
+                    <span className="text-dark me-2" style={{ fontSize: "0.9rem" }}>
+                        <strong>Xin chào, {userInfo.fullname || userInfo.username || "Người dùng"}</strong>
+                    </span>
+                </>
             )}
 
             <Button
@@ -30,11 +54,7 @@ const SideRightHeader = () => {
                 className="ms-2"
                 style={{ fontSize: "0.8rem" }}
                 onClick={() => {
-                    if (isLoggedIn) {
-                        console.log("Logging out...");
-                    } else {
-                        navigate("/login");
-                    }
+                    isLoggedIn ? handleLogout() : navigate("/login");
                 }}
             >
                 {isLoggedIn ? (

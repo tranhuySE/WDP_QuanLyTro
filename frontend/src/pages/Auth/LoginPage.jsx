@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../../styles/Auth/LoginPage.css"; // Import your custom styles
+import authAPI from "../../api/authAPI";
+import "../../styles/Auth/LoginPage.css";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -12,17 +13,32 @@ const LoginPage = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const { username, password } = form;
+    const handleLogin = async () => {
+        try {
+            const res = await authAPI.login(form);
 
-        // Demo: Giả lập đăng nhập
-        if (username === "admin" && password === "admin123") {
-            setError("");
-            navigate("/dashboard"); // Điều hướng sau khi đăng nhập thành công
-        } else {
+            if (res.status === 200) {
+                const { token, user } = res.data;
+
+                // Lưu thông tin vào localStorage
+                localStorage.setItem("token", token);
+                localStorage.setItem("role", user.role);
+                localStorage.setItem("fullname", user.fullname); 
+
+                // Điều hướng dựa vào role
+                if (user.role === "admin") navigate("/admin/homepage");
+                else if (user.role === "staff") navigate("/staff/homepage");
+                else navigate("/tenant/homepage");
+            }
+        } catch (err) {
+            console.error("Login error:", err);
             setError("Tài khoản hoặc mật khẩu không đúng.");
         }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleLogin();
     };
 
     return (
