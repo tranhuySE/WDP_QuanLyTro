@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout.jsx";
+import StaffLayout from "./layouts/StaffLayout.jsx";
+import TenantLayout from "./layouts/TenantLayout.jsx";
 import LoginPage from "./pages/Auth/LoginPage.jsx";
-import AdminRoutes from "./routes/AdminRoutes";
+import AdminRoutes from "./routes/AdminRoutes.jsx";
 import { side_nav } from "./routes/data_link";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 function renderRoutes(routes) {
   return routes.map((route, index) => {
@@ -26,17 +29,56 @@ function renderRoutes(routes) {
 }
 
 function App() {
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+  }, []);
+
+  if (!role) return null;
+
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<AdminLayout />}>
-          {/* render side_nav routes */}
-          {renderRoutes(side_nav)}
+        <Route path="/" element={<LoginPage />} />
 
-          {/* render thêm AdminRoutes nếu cần */}
-          <Route path="*" element={<AdminRoutes />} />
-        </Route>
+        {role === "admin" && (
+          <Route path="/admin/" element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
+            {renderRoutes(side_nav)}
+            {/* <Route path="*" element={<AdminRoutes />} /> BUG */}
+            
+          </Route>
+        )}
+
+        <Route path="*" element={<AdminRoutes />} />
+
+
+        {role === "staff" && (
+          <Route path="/staff/*" element={
+            <ProtectedRoute allowedRoles={["staff"]}>
+              <StaffLayout />
+            </ProtectedRoute>
+          }>
+            {/* route con cho staff */}
+          </Route>
+        )}
+
+        {role === "tenant" && (
+          <Route path="/tenant/*" element={
+            <ProtectedRoute allowedRoles={["user", "tenant"]}>
+              <TenantLayout />
+            </ProtectedRoute>
+          }>
+            {/* route con cho tenant */}
+          </Route>
+        )}
+
+        <Route path="*" element={<LoginPage />} />
       </Routes>
     </Router>
   );
