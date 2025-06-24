@@ -41,7 +41,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
 
         {role === "admin" && (
           <Route path="/admin/" element={
