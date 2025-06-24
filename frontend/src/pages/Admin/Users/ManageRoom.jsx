@@ -1,455 +1,781 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Badge,
   Container,
-  Row,
-  Col,
-  InputGroup,
-} from "react-bootstrap";
-import { FaEdit, FaTrash, FaPlus, FaFilter } from "react-icons/fa";
+  Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  MenuItem,
+  ImageList,
+  ImageListItem,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Box,
+  IconButton,
+  Tooltip,
+  Select,
+  InputLabel,
+  FormControl,
+  OutlinedInput,
+  Chip,
+  Grid,
+  FormHelperText,
+} from "@mui/material";
+import { MaterialReactTable } from "material-react-table";
+import { Add, Delete, Visibility } from "@mui/icons-material";
+import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { FaEdit, FaTrash } from "react-icons/fa";
+
+// --- YUP VALIDATION SCHEMA HOÀN CHỈNH VÀ NGHIÊM NGẶT ---
+const roomValidationSchema = Yup.object().shape({
+  roomNumber: Yup.string().trim().required("Số phòng là bắt buộc"),
+
+  floor: Yup.number()
+    .positive("Tầng phải là số dương")
+    .integer("Tầng phải là số nguyên")
+    .required("Tầng là bắt buộc"),
+
+  area: Yup.number()
+    .positive("Diện tích phải là số dương")
+    .required("Diện tích là bắt buộc"),
+
+  price: Yup.number()
+    .positive("Giá phòng phải lớn hơn 0")
+    .required("Giá là bắt buộc"),
+
+  maxOccupants: Yup.number()
+    .positive("Số người tối đa phải là số dương")
+    .integer("Số người phải là số nguyên")
+    .required("Số người tối đa là bắt buộc"),
+
+  status: Yup.string().required("Trạng thái là bắt buộc"),
+
+  description: Yup.string().max(500, "Mô tả không được vượt quá 500 ký tự"),
+
+  tenant: Yup.array()
+    .of(Yup.string())
+    .when("status", {
+      is: "occupied",
+      then: (schema) =>
+        schema.min(
+          1,
+          'Phòng ở trạng thái "occupied" phải có ít nhất 1 người thuê.'
+        ),
+      otherwise: (schema) => schema.optional(),
+    }),
+
+  room_service: Yup.array().of(Yup.string()),
+
+  images: Yup.array()
+    .of(
+      Yup.string()
+        .url("Phải là một URL hợp lệ")
+        .required("URL không được để trống")
+    )
+    .min(1, "Phải có ít nhất một hình ảnh cho phòng"),
+
+  amenities: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Tên tiện nghi là bắt buộc"),
+        quantity: Yup.number()
+          .positive("Số lượng phải > 0")
+          .integer()
+          .required("Số lượng là bắt buộc"),
+        status: Yup.string().required("Trạng thái là bắt buộc"),
+      })
+    )
+    .min(1, "Phải cung cấp ít nhất một tiện nghi"),
+
+  assets: Yup.array().of(
+    Yup.object().shape({
+      type: Yup.string().required("Loại tài sản là bắt buộc"),
+      description: Yup.string(),
+      quantity: Yup.number()
+        .positive("Số lượng phải > 0")
+        .integer()
+        .required("Số lượng là bắt buộc"),
+      licensePlate: Yup.string().when("type", {
+        is: (type) => type === "motorbike" || type === "car",
+        then: (schema) =>
+          schema.trim().required("Biển số xe là bắt buộc cho xe máy và ô tô"),
+        otherwise: (schema) => schema.optional(),
+      }),
+    })
+  ),
+});
 
 const ManageRoomPage = () => {
+  // ... (Toàn bộ state và functions không thay đổi)
   const [rooms, setRooms] = useState([]);
-  const [filteredRooms, setFilteredRooms] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
   const [viewingRoom, setViewingRoom] = useState(null);
-
-  const [formData, setFormData] = useState({
-    roomNumber: "",
-    floor: 1,
-    area: 20,
-    price: 0,
-    maxOccupants: 1,
-    status: "available",
-    description: "",
-  });
-
-  const [filters, setFilters] = useState({
-    status: "",
-    floor: "",
-  });
+  const [users, setUsers] = useState([]);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     fetchRooms();
+    fetchUsers();
+    fetchServices();
   }, []);
 
   const fetchRooms = async () => {
     try {
       const res = await axios.get("http://localhost:9999/rooms");
       setRooms(res.data);
-      setFilteredRooms(res.data);
     } catch (error) {
-      console.error("Error fetching rooms:", error);
+      toast.error("Không thể tải danh sách phòng!");
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get("http://localhost:9999/users");
+      setUsers(res.data);
+    } catch (error) {
+      toast.error("Không thể tải danh sách người dùng!");
+    }
   };
 
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+  const fetchServices = async () => {
+    try {
+      const res = await axios.get("http://localhost:9999/services");
+      setServices(res.data);
+    } catch (error) {
+      toast.error("Không thể tải danh sách dịch vụ!");
+    }
   };
 
-  const applyFilter = () => {
-    let result = [...rooms];
-    if (filters.status)
-      result = result.filter((r) => r.status === filters.status);
-    if (filters.floor)
-      result = result.filter((r) => r.floor === parseInt(filters.floor));
-    setFilteredRooms(result);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      const payload = { ...values };
+      if (editingRoom) {
+        await axios.put(
+          `http://localhost:9999/rooms/${editingRoom._id}`,
+          payload
+        );
+        toast.success("Cập nhật phòng thành công!");
+      } else {
+        await axios.post("http://localhost:9999/rooms", payload);
+        toast.success("Thêm phòng mới thành công!");
+      }
+      fetchRooms();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Failed to save room:", err);
+      toast.error(err.response?.data?.message || "Lưu phòng thất bại!");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const resetForm = () => {
-    setFormData({
-      roomNumber: "",
-      floor: 1,
-      area: 20,
-      price: 0,
-      maxOccupants: 1,
-      status: "available",
-      description: "",
-    });
-    setEditingRoom(null);
+  const handleDeleteRoom = async (id) => {
+    if (window.confirm("Bạn có chắc muốn xoá phòng này không?")) {
+      try {
+        await axios.delete(`http://localhost:9999/rooms/${id}`);
+        setRooms(rooms.filter((r) => r._id !== id));
+        toast.success("Xoá phòng thành công!");
+      } catch (err) {
+        toast.error("Xoá phòng thất bại!");
+      }
+    }
   };
 
-  const handleAddRoom = () => {
-    resetForm();
-    setShowModal(true);
-  };
-
-  const handleEditRoom = (room) => {
-    setFormData({
-      roomNumber: room.roomNumber,
-      floor: room.floor,
-      area: room.area,
-      price: room.price,
-      maxOccupants: room.maxOccupants,
-      status: room.status,
-      description: room.description || "",
-    });
+  const handleOpenModal = (room = null) => {
     setEditingRoom(room);
-    setShowModal(true);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingRoom(null);
+    setIsModalOpen(false);
   };
 
   const handleViewRoom = (room) => {
     setViewingRoom(room);
   };
 
-  const handleSubmit = async () => {
-    try {
-      if (editingRoom) {
-        const res = await axios.put(
-          `http://localhost:9999/rooms/${editingRoom._id}`,
-          formData
-        );
-        const updatedRooms = rooms.map((room) =>
-          room._id === editingRoom._id ? res.data : room
-        );
-        setRooms(updatedRooms);
-        setFilteredRooms(updatedRooms);
-      } else {
-        const res = await axios.post("http://localhost:9999/rooms", formData);
-        const updatedRooms = [...rooms, res.data];
-        setRooms(updatedRooms);
-        setFilteredRooms(updatedRooms);
-      }
-      setShowModal(false);
-      resetForm();
-    } catch (err) {
-      console.error("Failed to save room:", err);
-    }
-  };
+  const columns = useMemo(
+    () => [
+      { accessorKey: "roomNumber", header: "Số phòng", size: 120 },
+      {
+        accessorKey: "price",
+        header: "Giá (VNĐ)",
+        size: 120,
+        Cell: ({ cell }) => cell.getValue().toLocaleString(),
+      },
+      { accessorKey: "status", header: "Trạng thái" },
+      {
+        accessorKey: "tenant",
+        header: "Người thuê",
+        Cell: ({ cell }) => cell.getValue()?.length || 0,
+      },
+      { accessorKey: "maxOccupants", header: "Tối đa", size: 100 },
+    ],
+    []
+  );
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc muốn xoá phòng này không?")) {
-      try {
-        await axios.delete(`http://localhost:9999/rooms/${id}`);
-        const updatedRooms = rooms.filter((r) => r._id !== id);
-        setRooms(updatedRooms);
-        setFilteredRooms(updatedRooms);
-      } catch (err) {
-        console.error("Failed to delete room:", err);
-      }
-    }
-  };
+  const getInitialValues = () => {
+    const defaults = {
+      roomNumber: "",
+      floor: 1,
+      area: 20,
+      price: 1000000,
+      maxOccupants: 1,
+      status: "available",
+      description: "",
+      tenant: [],
+      room_service: [],
+      images: [],
+      amenities: [],
+      assets: [],
+    };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    resetForm();
-  };
-
-  const renderStatusBadge = (status) => {
-    switch (status) {
-      case "available":
-        return <Badge bg="success">Available</Badge>;
-      case "occupied":
-        return <Badge bg="warning">Occupied</Badge>;
-      case "under_maintenance":
-        return <Badge bg="danger">Under Maintenance</Badge>;
-      default:
-        return <Badge bg="secondary">{status}</Badge>;
+    if (editingRoom) {
+      return {
+        ...defaults,
+        ...editingRoom,
+        tenant: editingRoom.tenant?.map((t) => t._id) || [],
+        room_service: editingRoom.room_service?.map((s) => s._id) || [],
+        amenities: editingRoom.amenities || [],
+        assets: editingRoom.assets || [],
+        images: editingRoom.images || [],
+      };
     }
+    return defaults;
   };
+  // ...
 
   return (
-    <Container className="my-4">
-      <Row className="mb-3">
-        <Col>
-          <h2>Quản lý phòng</h2>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={handleAddRoom}>
-            <FaPlus className="me-2" /> Thêm phòng
-          </Button>
-        </Col>
-      </Row>
+    <Container maxWidth="xl" sx={{ my: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Quản lý phòng
+      </Typography>
 
-      <Row className="mb-4">
-        <Col md={4}>
-          <Form.Select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <option value="">-- Lọc theo trạng thái --</option>
-            <option value="available">Available</option>
-            <option value="occupied">Occupied</option>
-            <option value="under_maintenance">Under Maintenance</option>
-          </Form.Select>
-        </Col>
-        <Col md={4}>
-          <InputGroup>
-            <Form.Control
-              type="number"
-              placeholder="Lọc theo tầng"
-              name="floor"
-              value={filters.floor}
-              onChange={handleFilterChange}
-            />
-            <Button variant="secondary" onClick={applyFilter}>
-              <FaFilter /> Lọc
-            </Button>
-          </InputGroup>
-        </Col>
-      </Row>
-
-      <Table striped bordered hover responsive>
-        <thead className="table-primary">
-          <tr>
-            <th>Số phòng</th>
-            <th>Tầng</th>
-            <th>Diện tích (m²)</th>
-            <th>Giá ($)</th>
-            <th>Số người tối đa</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRooms.map((room) => (
-            <tr key={room._id}>
-              <td>{room.roomNumber}</td>
-              <td>{room.floor}</td>
-              <td>{room.area}</td>
-              <td>{room.price}</td>
-              <td>{room.maxOccupants}</td>
-              <td>{renderStatusBadge(room.status)}</td>
-              <td className="text-center">
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleViewRoom(room)}
-                >
-                  Xem
-                </Button>
-                <Button
-                  variant="warning"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleEditRoom(room)}
-                >
-                  <FaEdit />
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(room._id)}
-                >
-                  <FaTrash />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{editingRoom ? "Sửa phòng" : "Thêm phòng"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Số phòng</Form.Label>
-              <Form.Control
-                type="text"
-                name="roomNumber"
-                value={formData.roomNumber}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Tầng</Form.Label>
-              <Form.Control
-                type="number"
-                name="floor"
-                value={formData.floor}
-                onChange={handleChange}
-                min="1"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Diện tích (m²)</Form.Label>
-              <Form.Control
-                type="number"
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                min="1"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Giá ($)</Form.Label>
-              <Form.Control
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                min="0"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Số người tối đa</Form.Label>
-              <Form.Control
-                type="number"
-                name="maxOccupants"
-                value={formData.maxOccupants}
-                onChange={handleChange}
-                min="1"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Trạng thái</Form.Label>
-              <Form.Select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
+      <MaterialReactTable
+        columns={columns}
+        data={rooms}
+        enableRowActions
+        renderRowActions={({ row }) => (
+          <Box sx={{ display: "flex", gap: "0.5rem" }}>
+            <Tooltip title="Xem">
+              <IconButton onClick={() => handleViewRoom(row.original)}>
+                <Visibility />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Sửa">
+              <IconButton
+                color="primary"
+                onClick={() => handleOpenModal(row.original)}
               >
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
-                <option value="under_maintenance">Under Maintenance</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Mô tả</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Huỷ
+                <FaEdit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Xoá">
+              <IconButton
+                color="error"
+                onClick={() => handleDeleteRoom(row.original._id)}
+              >
+                <FaTrash />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+        renderTopToolbarCustomActions={() => (
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => handleOpenModal()}
+          >
+            Thêm phòng mới
           </Button>
-          <Button variant="success" onClick={handleSubmit}>
-            {editingRoom ? "Cập nhật" : "Lưu"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        )}
+      />
 
-      {/* Modal Chi Tiết */}
-      <Modal
-        show={!!viewingRoom}
-        onHide={() => setViewingRoom(null)}
-        centered
-        size="lg"
+      {/* --- ADD/EDIT DIALOG --- */}
+      <Dialog
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="md"
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Chi tiết phòng</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {viewingRoom && (
-            <div>
-              <p>
-                <strong>Số phòng:</strong> {viewingRoom.roomNumber}
-              </p>
-              <p>
-                <strong>Tầng:</strong> {viewingRoom.floor}
-              </p>
-              <p>
-                <strong>Diện tích:</strong> {viewingRoom.area} m²
-              </p>
-              <p>
-                <strong>Giá:</strong> {viewingRoom.price} $
-              </p>
-              <p>
-                <strong>Số người tối đa:</strong> {viewingRoom.maxOccupants}
-              </p>
-              <p>
-                <strong>Trạng thái:</strong> {viewingRoom.status}
-              </p>
-              <p>
-                <strong>Mô tả:</strong> {viewingRoom.description}
-              </p>
+        <DialogTitle>
+          {editingRoom ? "Sửa thông tin phòng" : "Thêm phòng mới"}
+        </DialogTitle>
+        <Formik
+          initialValues={getInitialValues()}
+          validationSchema={roomValidationSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, errors, touched, isSubmitting, handleChange }) => (
+            <Form>
+              <DialogContent>
+                <Grid container spacing={2}>
+                  {/* Basic Info */}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      name="roomNumber"
+                      label="Số phòng"
+                      fullWidth
+                      error={touched.roomNumber && !!errors.roomNumber}
+                      helperText={<ErrorMessage name="roomNumber" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      name="floor"
+                      label="Tầng"
+                      type="number"
+                      fullWidth
+                      error={touched.floor && !!errors.floor}
+                      helperText={<ErrorMessage name="floor" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      name="area"
+                      label="Diện tích (m²)"
+                      type="number"
+                      fullWidth
+                      error={touched.area && !!errors.area}
+                      helperText={<ErrorMessage name="area" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      name="price"
+                      label="Giá (VNĐ)"
+                      type="number"
+                      fullWidth
+                      error={touched.price && !!errors.price}
+                      helperText={<ErrorMessage name="price" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      name="maxOccupants"
+                      label="Số người tối đa"
+                      type="number"
+                      fullWidth
+                      error={touched.maxOccupants && !!errors.maxOccupants}
+                      helperText={<ErrorMessage name="maxOccupants" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Field
+                      as={TextField}
+                      select
+                      name="status"
+                      label="Trạng thái"
+                      fullWidth
+                      error={touched.status && !!errors.status}
+                      helperText={<ErrorMessage name="status" />}
+                    >
+                      <MenuItem value="available">Available</MenuItem>
+                      <MenuItem value="occupied">Occupied</MenuItem>
+                      <MenuItem value="under_maintenance">
+                        Under Maintenance
+                      </MenuItem>
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      as={TextField}
+                      name="description"
+                      label="Mô tả"
+                      multiline
+                      rows={2}
+                      fullWidth
+                      error={touched.description && !!errors.description}
+                      helperText={<ErrorMessage name="description" />}
+                    />
+                  </Grid>
 
-              {viewingRoom.images && viewingRoom.images.length > 0 && (
-                <>
-                  <p>
-                    <strong>Hình ảnh:</strong>
-                  </p>
-                  <div className="d-flex flex-wrap gap-2">
-                    {viewingRoom.images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={`img-${idx}`}
-                        style={{ width: 100, height: 100, objectFit: "cover" }}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
+                  {/* --- LINKED DATA (TENANTS & SERVICES) --- */}
+                  <Grid item xs={12} sm={6}>
+                    <FormControl
+                      fullWidth
+                      error={touched.tenant && !!errors.tenant}
+                    >
+                      {" "}
+                      <InputLabel>Người thuê</InputLabel>{" "}
+                      <Select
+                        multiple
+                        name="tenant"
+                        value={values.tenant || []}
+                        onChange={handleChange}
+                        input={<OutlinedInput label="Người thuê" />}
+                        renderValue={(selected) => (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                          >
+                            {selected.map((id) => (
+                              <Chip
+                                key={id}
+                                label={
+                                  users.find((u) => u._id === id)?.fullName ||
+                                  id
+                                }
+                              />
+                            ))}
+                          </Box>
+                        )}
+                      >
+                        {users.map((user) => (
+                          <MenuItem key={user._id} value={user._id}>
+                            {user.fullName} ({user.email})
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        <ErrorMessage name="tenant" />
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Dịch vụ phòng</InputLabel>
+                      <Select
+                        multiple
+                        name="room_service"
+                        value={values.room_service || []}
+                        onChange={handleChange}
+                        input={<OutlinedInput label="Dịch vụ phòng" />}
+                        renderValue={(selected) => (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                          >
+                            {selected.map((id) => (
+                              <Chip
+                                key={id}
+                                label={
+                                  services.find((s) => s._id === id)?.name || id
+                                }
+                              />
+                            ))}
+                          </Box>
+                        )}
+                      >
+                        {services.map((service) => (
+                          <MenuItem key={service._id} value={service._id}>
+                            {service.name} - {service.price.toLocaleString()}đ
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
 
-              {viewingRoom.amenities && viewingRoom.amenities.length > 0 && (
-                <>
-                  <hr />
-                  <h5>Tiện nghi</h5>
-                  <ul>
-                    {viewingRoom.amenities.map((item, idx) => (
-                      <li key={idx}>
-                        {item.name} - {item.quantity} ({item.status})
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+                  {/* --- IMAGES FIELD ARRAY --- */}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }}>
+                      <Chip label="Hình ảnh" />
+                    </Divider>
+                    <ErrorMessage
+                      name="images"
+                      render={(msg) => (
+                        <FormHelperText error>{msg}</FormHelperText>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FieldArray name="images">
+                      {({ push, remove }) => (
+                        <Box>
+                          {values.images?.map((_, index) => (
+                            <Box
+                              key={index}
+                              sx={{ display: "flex", gap: 1, mb: 1 }}
+                            >
+                              <Field
+                                as={TextField}
+                                name={`images[${index}]`}
+                                label={`URL Hình ảnh ${index + 1}`}
+                                fullWidth
+                                size="small"
+                                error={
+                                  touched.images?.[index] &&
+                                  !!errors.images?.[index]
+                                }
+                                helperText={
+                                  <ErrorMessage name={`images[${index}]`} />
+                                }
+                              />
+                              <IconButton
+                                color="error"
+                                onClick={() => remove(index)}
+                              >
+                                <Delete />
+                              </IconButton>
+                            </Box>
+                          ))}
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => push("")}
+                          >
+                            Thêm URL hình ảnh
+                          </Button>
+                        </Box>
+                      )}
+                    </FieldArray>
+                  </Grid>
 
-              {viewingRoom.assets && viewingRoom.assets.length > 0 && (
-                <>
-                  <hr />
-                  <h5>Tài sản</h5>
-                  <ul>
-                    {viewingRoom.assets.map((item, idx) => (
-                      <li key={idx}>
-                        {item.type}: {item.description || "Không mô tả"} – SL:{" "}
-                        {item.quantity}{" "}
-                        {item.licensePlate
-                          ? `(Biển số: ${item.licensePlate})`
-                          : ""}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+                  {/* --- AMENITIES FIELD ARRAY --- */}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }}>
+                      <Chip label="Tiện nghi" />
+                    </Divider>
+                    <ErrorMessage
+                      name="amenities"
+                      render={(msg) => (
+                        <FormHelperText error>{msg}</FormHelperText>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FieldArray name="amenities">
+                      {({ push, remove }) => (
+                        <Box>
+                          {values.amenities?.map((_, index) => (
+                            <Grid
+                              container
+                              spacing={1}
+                              key={index}
+                              sx={{ mb: 1 }}
+                            >
+                              <Grid item xs={12} sm={5}>
+                                <Field
+                                  as={TextField}
+                                  size="small"
+                                  fullWidth
+                                  name={`amenities[${index}].name`}
+                                  label="Tên tiện nghi"
+                                  error={
+                                    touched.amenities?.[index]?.name &&
+                                    !!errors.amenities?.[index]?.name
+                                  }
+                                  helperText={
+                                    <ErrorMessage
+                                      name={`amenities[${index}].name`}
+                                    />
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={6} sm={3}>
+                                <Field
+                                  as={TextField}
+                                  size="small"
+                                  fullWidth
+                                  name={`amenities[${index}].quantity`}
+                                  type="number"
+                                  label="Số lượng"
+                                  error={
+                                    touched.amenities?.[index]?.quantity &&
+                                    !!errors.amenities?.[index]?.quantity
+                                  }
+                                  helperText={
+                                    <ErrorMessage
+                                      name={`amenities[${index}].quantity`}
+                                    />
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={6} sm={3}>
+                                <Field
+                                  as={TextField}
+                                  select
+                                  size="small"
+                                  fullWidth
+                                  name={`amenities[${index}].status`}
+                                  label="Trạng thái"
+                                >
+                                  <MenuItem value="available">
+                                    Available
+                                  </MenuItem>
+                                  <MenuItem value="unavailable">
+                                    Unavailable
+                                  </MenuItem>
+                                </Field>
+                              </Grid>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={1}
+                                sx={{ textAlign: "center" }}
+                              >
+                                <IconButton
+                                  color="error"
+                                  onClick={() => remove(index)}
+                                >
+                                  <Delete />
+                                </IconButton>
+                              </Grid>
+                            </Grid>
+                          ))}
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() =>
+                              push({
+                                name: "",
+                                quantity: 1,
+                                status: "available",
+                              })
+                            }
+                          >
+                            Thêm tiện nghi
+                          </Button>
+                        </Box>
+                      )}
+                    </FieldArray>
+                  </Grid>
 
-              {viewingRoom.room_service &&
-                viewingRoom.room_service.length > 0 && (
-                  <>
-                    <hr />
-                    <h5>Dịch vụ</h5>
-                    <ul>
-                      {viewingRoom.room_service.map((service, idx) => (
-                        <li key={idx}>
-                          {typeof service === "object" && service.name
-                            ? `${service.name} - ${service.unit} - ${service.price}đ`
-                            : `ID: ${service}`}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-            </div>
+                  {/* --- ASSETS FIELD ARRAY --- */}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }}>
+                      <Chip label="Tài sản" />
+                    </Divider>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FieldArray name="assets">
+                      {({ push, remove }) => (
+                        <Box>
+                          {values.assets?.map((_, index) => (
+                            <Grid
+                              container
+                              spacing={1}
+                              key={index}
+                              sx={{ mb: 1 }}
+                            >
+                              <Grid item xs={6} sm={3}>
+                                <Field
+                                  as={TextField}
+                                  select
+                                  size="small"
+                                  fullWidth
+                                  name={`assets[${index}].type`}
+                                  label="Loại tài sản"
+                                >
+                                  <MenuItem value="motorbike">
+                                    Motorbike
+                                  </MenuItem>
+                                  <MenuItem value="car">Car</MenuItem>
+                                  <MenuItem value="bicycle">Bicycle</MenuItem>
+                                  <MenuItem value="other">Other</MenuItem>
+                                </Field>
+                              </Grid>
+                              <Grid item xs={6} sm={2}>
+                                <Field
+                                  as={TextField}
+                                  size="small"
+                                  fullWidth
+                                  name={`assets[${index}].quantity`}
+                                  type="number"
+                                  label="Số lượng"
+                                  error={
+                                    touched.assets?.[index]?.quantity &&
+                                    !!errors.assets?.[index]?.quantity
+                                  }
+                                  helperText={
+                                    <ErrorMessage
+                                      name={`assets[${index}].quantity`}
+                                    />
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={3}>
+                                <Field
+                                  as={TextField}
+                                  size="small"
+                                  fullWidth
+                                  name={`assets[${index}].licensePlate`}
+                                  label="Biển số xe"
+                                  error={
+                                    touched.assets?.[index]?.licensePlate &&
+                                    !!errors.assets?.[index]?.licensePlate
+                                  }
+                                  helperText={
+                                    <ErrorMessage
+                                      name={`assets[${index}].licensePlate`}
+                                    />
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={3}>
+                                <Field
+                                  as={TextField}
+                                  size="small"
+                                  fullWidth
+                                  name={`assets[${index}].description`}
+                                  label="Mô tả"
+                                />
+                              </Grid>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={1}
+                                sx={{ textAlign: "center" }}
+                              >
+                                <IconButton
+                                  color="error"
+                                  onClick={() => remove(index)}
+                                >
+                                  <Delete />
+                                </IconButton>
+                              </Grid>
+                            </Grid>
+                          ))}
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() =>
+                              push({
+                                type: "motorbike",
+                                quantity: 1,
+                                licensePlate: "",
+                                description: "",
+                              })
+                            }
+                          >
+                            Thêm tài sản
+                          </Button>
+                        </Box>
+                      )}
+                    </FieldArray>
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseModal}>Huỷ</Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={isSubmitting}
+                >
+                  Lưu
+                </Button>
+              </DialogActions>
+            </Form>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setViewingRoom(null)}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        </Formik>
+      </Dialog>
+
+      {/* View Dialog... (không thay đổi) */}
     </Container>
   );
 };
