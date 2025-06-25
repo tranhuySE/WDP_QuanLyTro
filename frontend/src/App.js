@@ -30,13 +30,15 @@ function renderRoutes(routes) {
 
 function App() {
   const [role, setRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     setRole(storedRole);
+    setIsLoading(false);
   }, []);
 
-  if (!role) return null;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Router>
@@ -44,44 +46,48 @@ function App() {
         <Route path="/" element={<LoginPage />} />
 
         {role === "admin" && (
-          <Route path="/admin/" element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
+          <Route
+            path="/admin/"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
             {renderRoutes(side_nav)}
-            {/* <Route path="*" element={<AdminRoutes />} /> BUG */}
-            
           </Route>
         )}
 
         <Route path="*" element={<AdminRoutes />} />
 
-
         {role === "staff" && (
-          <Route path="/staff/*" element={
-            <ProtectedRoute allowedRoles={["staff"]}>
-              <StaffLayout />
-            </ProtectedRoute>
-          }>
-            {/* route con cho staff */}
-          </Route>
+          <Route
+            path="/staff/"
+            element={
+              <ProtectedRoute allowedRoles={["staff"]}>
+                <StaffLayout />
+              </ProtectedRoute>
+            }
+          />
         )}
 
         {role === "tenant" && (
-          <Route path="/tenant/*" element={
-            <ProtectedRoute allowedRoles={["user", "tenant"]}>
-              <TenantLayout />
-            </ProtectedRoute>
-          }>
-            {/* route con cho tenant */}
-          </Route>
+          <Route
+            path="/tenant/"
+            element={
+              <ProtectedRoute allowedRoles={["tenant", "user"]}>
+                <TenantLayout />
+              </ProtectedRoute>
+            }
+          />
         )}
 
+        {/* fallback nếu không khớp */}
         <Route path="*" element={<LoginPage />} />
       </Routes>
     </Router>
   );
 }
+
 
 export default App;

@@ -27,7 +27,7 @@ const SideRightHeader = () => {
         localStorage.removeItem("fullname");
 
         setIsLoggedIn(false);
-        navigate("/login");
+        navigate("/");
     };
 
     return (
@@ -54,7 +54,7 @@ const SideRightHeader = () => {
                 className="ms-2"
                 style={{ fontSize: "0.8rem" }}
                 onClick={() => {
-                    isLoggedIn ? handleLogout() : navigate("/login");
+                    isLoggedIn ? handleLogout() : navigate("/");
                 }}
             >
                 {isLoggedIn ? (
