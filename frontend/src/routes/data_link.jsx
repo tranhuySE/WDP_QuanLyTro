@@ -19,7 +19,7 @@ import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
 import ChangePasswordPage from '../pages/Auth/ChangePasswordPage';
 import EditProfilePage from '../pages/Common/EditProfilePage';
 import Analyst from '../pages/Admin/Dasboard/Analyst.jsx';
-import ManageRoomPage from '../pages/Admin/Users/ManageRoom.jsx';
+import ManageRoomPage from "../pages/Admin/Rooms/ManageRoomPage.jsx"; 
 import RequestManagement from '../pages/Admin/RequestManagement/index.jsx';
 
 export const side_nav = [
