@@ -21,6 +21,7 @@ import ManageRoomPage from '../pages/Admin/Users/ManageRoom.jsx';
 import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
 import ChangePasswordPage from '../pages/Auth/ChangePasswordPage';
 import EditProfilePage from '../pages/Common/EditProfilePage';
+import ManageRoomPage from "../pages/Admin/Rooms/ManageRoomPage.jsx"; 
 
 export const side_nav = [
     {
