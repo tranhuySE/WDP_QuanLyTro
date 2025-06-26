@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import axios from "axios"; // BƯỚC 1: THÊM IMPORT AXIOS
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -20,12 +21,19 @@ import {
   Chip,
   TextField,
   MenuItem,
-  ListItemIcon,
   Autocomplete,
   CircularProgress,
   Card,
   CardMedia,
-  CardActions,
+  Tabs,
+  Tab,
+  Avatar,
+  ListItemAvatar,
+  Paper,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Stack,
 } from "@mui/material";
 import {
   Edit,
@@ -36,11 +44,25 @@ import {
   RemoveCircleOutline,
   Person,
   Close,
+  InfoOutlined,
+  GroupOutlined,
+  PhotoLibraryOutlined,
+  ConstructionOutlined,
+  ApartmentOutlined,
+  SquareFootOutlined,
+  AttachMoneyOutlined,
+  ImageNotSupported,
+  NoMeetingRoom,
+  HomeWork,
+  CameraAlt,
+  PlaylistAddCheck,
+  ExpandMore,
+  Category,
+  Wallet,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { roomValidationSchema } from "../../validation/roomSchema";
-
 import {
   getAllRooms,
   createRoom,
@@ -49,141 +71,214 @@ import {
 } from "../../api/roomAPI";
 import { getAllUsers } from "../../api/userAPI";
 
-// Component hiển thị chi tiết thông tin phòng
-const RoomDetails = ({ room }) => {
-  if (!room) return null;
+// Ánh xạ trạng thái từ tiếng Anh sang tiếng Việt và màu sắc tương ứng
+const statusMapping = {
+  available: { text: "Còn trống", color: "success" },
+  occupied: { text: "Đã thuê", color: "warning" },
+  under_maintenance: { text: "Đang bảo trì", color: "info" },
+};
 
+// Helper component để quản lý nội dung của các tab
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
   return (
-    <Box sx={{ p: 2 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Typography variant="h6" gutterBottom>
-            Thông tin cơ bản
-          </Typography>
-          <Typography>
-            <strong>Số phòng:</strong> {room.roomNumber}
-          </Typography>
-          <Typography>
-            <strong>Tầng:</strong> {room.floor}
-          </Typography>
-          <Typography>
-            <strong>Giá phòng:</strong> {room.price?.toLocaleString("vi-VN")}{" "}
-            VND
-          </Typography>
-          <Typography>
-            <strong>Diện tích:</strong> {room.area} m²
-          </Typography>
-          <Typography>
-            <strong>Số người tối đa:</strong> {room.maxOccupants}
-          </Typography>
-          <Typography>
-            <strong>Trạng thái:</strong>{" "}
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`room-details-tabpanel-${index}`}
+      aria-labelledby={`room-details-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+// Component hiển thị chi tiết phòng
+const RoomDetails = ({ room }) => {
+  const [tabIndex, setTabIndex] = useState(0);
+  if (!room) return null;
+  const handleTabChange = (event, newValue) => setTabIndex(newValue);
+  const EmptyState = ({ icon, text }) => (
+    <Box textAlign="center" p={4} color="text.secondary">
+      {icon} <Typography>{text}</Typography>
+    </Box>
+  );
+  const currentStatus = statusMapping[room.status] || {
+    text: room.status,
+    color: "default",
+  };
+  return (
+    <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
+      <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Typography variant="h5" gutterBottom>
+              Phòng {room.roomNumber}
+            </Typography>
+          </Grid>
+          <Grid item>
             <Chip
-              label={room.status}
-              color={room.status === "available" ? "success" : "warning"}
-              size="small"
+              label={currentStatus.text}
+              color={currentStatus.color}
+              size="medium"
             />
-          </Typography>
-          <Typography>
-            <strong>Mô tả:</strong> {room.description || "Không có"}
-          </Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Typography variant="h6" gutterBottom>
-            Người thuê
-          </Typography>
-          {room.tenant?.length > 0 ? (
-            <List dense>
-              {room.tenant.map((t) => (
-                <ListItem key={t._id}>
-                  <ListItemText primary={t.fullname} secondary={t.email} />
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography>Chưa có người thuê</Typography>
-          )}
+        <Grid container spacing={2} color="text.secondary" mt={1}>
+          <Grid item xs={12} sm={4} container alignItems="center" gap={1}>
+            <AttachMoneyOutlined fontSize="small" />{" "}
+            <Typography variant="body1">
+              {room.price?.toLocaleString("vi-VN")} VND
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4} container alignItems="center" gap={1}>
+            <SquareFootOutlined fontSize="small" />{" "}
+            <Typography variant="body1">{room.area} m²</Typography>
+          </Grid>
+          <Grid item xs={12} sm={4} container alignItems="center" gap={1}>
+            <ApartmentOutlined fontSize="small" />{" "}
+            <Typography variant="body1">Tầng {room.floor}</Typography>
+          </Grid>
         </Grid>
-        {/* NEW: Hiển thị hình ảnh */}
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Hình ảnh
-          </Typography>
-          {room.images?.length > 0 ? (
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              {room.images.map((img, i) => (
-                <Card key={i} sx={{ width: 150, height: 100 }}>
+      </Box>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={tabIndex}
+          onChange={handleTabChange}
+          aria-label="room details tabs"
+          variant="fullWidth"
+        >
+          <Tab icon={<InfoOutlined />} iconPosition="start" label="Thông tin" />
+          <Tab
+            icon={<GroupOutlined />}
+            iconPosition="start"
+            label="Người thuê"
+          />
+          <Tab
+            icon={<PhotoLibraryOutlined />}
+            iconPosition="start"
+            label="Hình ảnh"
+          />
+          <Tab
+            icon={<ConstructionOutlined />}
+            iconPosition="start"
+            label="Tiện ích & Tài sản"
+          />
+        </Tabs>
+      </Box>
+      <TabPanel value={tabIndex} index={0}>
+        <Typography variant="h6" gutterBottom>
+          Mô tả chi tiết
+        </Typography>
+        <Typography paragraph>
+          {room.description || "Không có mô tả."}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Số người ở tối đa: {room.maxOccupants}
+        </Typography>
+      </TabPanel>
+      <TabPanel value={tabIndex} index={1}>
+        {room.tenant?.filter(Boolean).length > 0 ? (
+          <List>
+            {room.tenant.filter(Boolean).map((t) => (
+              <ListItem key={t._id}>
+                <ListItemAvatar>
+                  <Avatar>
+                    <Person />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={t.fullname} secondary={t.email} />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <EmptyState
+            icon={<NoMeetingRoom sx={{ fontSize: 40, mb: 1 }} />}
+            text="Phòng này hiện chưa có người thuê."
+          />
+        )}
+      </TabPanel>
+      <TabPanel value={tabIndex} index={2}>
+        {room.images?.length > 0 ? (
+          <Grid container spacing={2}>
+            {room.images.map((img, i) => (
+              <Grid item xs={12} sm={6} md={4} key={i}>
+                <Card>
                   <CardMedia
                     component="img"
-                    height="100"
+                    height="160"
                     image={img}
                     alt={`Hình ảnh phòng ${i + 1}`}
                   />
                 </Card>
-              ))}
-            </Box>
-          ) : (
-            <Typography>Chưa có hình ảnh.</Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Tiện ích trong phòng
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <EmptyState
+            icon={<ImageNotSupported sx={{ fontSize: 40, mb: 1 }} />}
+            text="Chưa có hình ảnh nào."
+          />
+        )}
+      </TabPanel>
+      <TabPanel value={tabIndex} index={3}>
+        <Typography variant="h6" gutterBottom>
+          Tiện ích trong phòng
+        </Typography>
+        {room.amenities?.length > 0 ? (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}>
+            {room.amenities.map((a, i) => (
+              <Chip
+                key={i}
+                label={`${a.name} (SL: ${a.quantity})`}
+                variant="outlined"
+              />
+            ))}
+          </Box>
+        ) : (
+          <Typography color="text.secondary" sx={{ mb: 4 }}>
+            Không có tiện ích.
           </Typography>
-          {room.amenities?.length > 0 ? (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {room.amenities.map((a, i) => (
-                <Chip key={i} label={`${a.name} (SL: ${a.quantity})`} />
-              ))}
-            </Box>
-          ) : (
-            <Typography>Không có tiện ích nào.</Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Tài sản của người thuê
-          </Typography>
-          {room.assets?.length > 0 ? (
-            <List dense>
-              {room.assets.map((a, i) => (
-                <ListItem key={i}>
-                  <ListItemText
-                    primary={`${a.type}: ${a.licensePlate || "Không có BKS"}`}
-                    secondary={a.description}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography>Không có tài sản nào.</Typography>
-          )}
-        </Grid>
-      </Grid>
+        )}
+        <Typography variant="h6" gutterBottom>
+          Tài sản của người thuê
+        </Typography>
+        {room.assets?.length > 0 ? (
+          <List dense>
+            {room.assets.map((a, i) => (
+              <ListItem key={i}>
+                <ListItemText
+                  primary={`${a.type}: ${a.licensePlate || "Không có BKS"}`}
+                  secondary={a.description}
+                />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography color="text.secondary">Không có tài sản.</Typography>
+        )}
+      </TabPanel>
     </Box>
   );
 };
 
-// Component TextField tích hợp với Formik để hiển thị lỗi
-const FormikTextField = ({ name, label, ...props }) => {
-  return (
-    <Field name={name}>
-      {({ field, meta }) => (
-        <TextField
-          {...field}
-          {...props}
-          label={label}
-          fullWidth
-          variant="outlined"
-          error={meta.touched && Boolean(meta.error)}
-          helperText={meta.touched && meta.error}
-        />
-      )}
-    </Field>
-  );
-};
+const FormikTextField = ({ name, label, ...props }) => (
+  <Field name={name}>
+    {({ field, meta }) => (
+      <TextField
+        {...field}
+        {...props}
+        label={label}
+        fullWidth
+        variant="outlined"
+        error={meta.touched && Boolean(meta.error)}
+        helperText={meta.touched && meta.error}
+      />
+    )}
+  </Field>
+);
 
-// Form để thêm và sửa phòng
 const RoomForm = ({
   initialValues,
   onSubmit,
@@ -193,29 +288,43 @@ const RoomForm = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
 
-  // NEW: Hàm giả lập upload ảnh.
-  // Trong thực tế, bạn sẽ gọi API upload của mình ở đây.
+  // BƯỚC 2: THAY THẾ HOÀN TOÀN HÀM NÀY
   const handleImageUpload = async (files, push) => {
     setIsUploading(true);
     try {
-      // Lặp qua từng file và "upload"
-      for (const file of files) {
-        // Đây là nơi bạn sẽ dùng axios để gửi file lên server
-        // const formData = new FormData();
-        // formData.append('image', file);
-        // const response = await axios.post('/api/upload', formData);
-        // const imageUrl = response.data.url;
+      // Tạo một mảng các promise cho mỗi lần tải ảnh
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        // "image" phải khớp với tên trong upload.single("image") ở backend
+        formData.append("image", file);
 
-        // ---- Giả lập API call ----
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Giả lập độ trễ mạng
-        const imageUrl = `https://placehold.co/600x400/EEE/31343C?text=Uploaded!`;
-        // ---- Kết thúc giả lập ----
+        // Gọi API backend của bạn
+        const response = await axios.post(
+          "http://localhost:9999/api/upload",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-        push(imageUrl); // Thêm URL mới vào mảng images của Formik
-      }
-      toast.success("Tải ảnh lên thành công!");
+        // Trả về URL của ảnh từ response
+        return response.data.imageUrl;
+      });
+
+      // Chờ tất cả các ảnh được tải lên
+      const imageUrls = await Promise.all(uploadPromises);
+
+      // Đẩy tất cả các URL mới vào Formik state
+      imageUrls.forEach((url) => push(url));
+
+      toast.success(`Đã tải lên ${imageUrls.length} ảnh thành công!`);
     } catch (error) {
-      toast.error("Tải ảnh lên thất bại!");
+      console.error("Lỗi khi tải ảnh:", error);
+      const errorMessage =
+        error.response?.data?.message || "Tải ảnh lên thất bại!";
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }
@@ -228,303 +337,351 @@ const RoomForm = ({
       onSubmit={onSubmit}
       enableReinitialize
     >
-      {({ values, setFieldValue, errors }) => (
+      {({ values, setFieldValue }) => (
         <Form>
           <DialogTitle>
             {initialValues._id
-              ? `Chỉnh sửa phòng ${initialValues.roomNumber}`
+              ? `Chỉnh sửa phòng ${initialValues.roomNumber || ""}`
               : "Thêm phòng mới"}
           </DialogTitle>
           <DialogContent>
-            <Grid container spacing={2} sx={{ pt: 1 }}>
-              {/* Các trường cơ bản */}
-              <Grid item xs={12} sm={6}>
-                <FormikTextField name="roomNumber" label="Số phòng" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormikTextField name="floor" label="Tầng" type="number" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormikTextField
-                  name="area"
-                  label="Diện tích (m²)"
-                  type="number"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormikTextField name="price" label="Giá (VND)" type="number" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormikTextField
-                  name="maxOccupants"
-                  label="Số người tối đa"
-                  type="number"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field name="status">
-                  {({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      label="Trạng thái"
-                      fullWidth
-                      variant="outlined"
-                      onChange={(e) => {
-                        const newStatus = e.target.value;
-                        field.onChange(e);
-                        if (newStatus !== "occupied") {
-                          setFieldValue("tenant", []);
-                        }
-                      }}
-                    >
-                      <MenuItem value="available">Còn trống</MenuItem>
-                      <MenuItem value="occupied">Đã thuê</MenuItem>
-                      <MenuItem value="under_maintenance">
-                        Đang bảo trì
-                      </MenuItem>
-                    </TextField>
-                  )}
-                </Field>
-              </Grid>
-
-              {/* Hiển thị ô chọn người thuê khi trạng thái là "Đã thuê" */}
-              {values.status === "occupied" && (
-                <Grid item xs={12}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Người thuê
-                  </Typography>
-                  <Autocomplete
-                    multiple
-                    options={allUsers}
-                    getOptionLabel={(option) =>
-                      `${option.fullname} (${option.email})`
-                    }
-                    value={values.tenant}
-                    isOptionEqualToValue={(option, value) =>
-                      option._id === value._id
-                    }
-                    onChange={(event, newValue) =>
-                      setFieldValue("tenant", newValue)
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        label="Chọn hoặc tìm người thuê"
+            <Grid container spacing={3} sx={{ pt: 1 }}>
+              <Grid item xs={12} md={7}>
+                <Paper sx={{ p: 2 }}>
+                  <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+                    <HomeWork color="primary" />
+                    <Typography variant="h6">Thông tin cơ bản</Typography>
+                  </Stack>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <FormikTextField name="roomNumber" label="Số phòng" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <FormikTextField
+                        name="floor"
+                        label="Tầng"
+                        type="number"
                       />
-                    )}
-                  />
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <FormikTextField
-                  name="description"
-                  label="Mô tả"
-                  multiline
-                  rows={3}
-                />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <FormikTextField
+                        name="area"
+                        label="Diện tích (m²)"
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <FormikTextField
+                        name="price"
+                        label="Giá (VND)"
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <FormikTextField
+                        name="maxOccupants"
+                        label="Số người tối đa"
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormikTextField
+                        name="description"
+                        label="Mô tả"
+                        multiline
+                        rows={3}
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
               </Grid>
-
-              {/* NEW: Quản lý Hình ảnh */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                  Hình ảnh
-                </Typography>
-                <FieldArray name="images">
-                  {({ push, remove }) => (
-                    <Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 2,
-                          mb: 2,
-                        }}
-                      >
-                        {values.images?.map((img, index) => (
-                          <Card
-                            key={index}
-                            sx={{ width: 150, position: "relative" }}
+              <Grid item xs={12} md={5}>
+                <Paper sx={{ p: 2, height: "100%" }}>
+                  <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+                    <PlaylistAddCheck color="primary" />
+                    <Typography variant="h6">
+                      Trạng thái & Người thuê
+                    </Typography>
+                  </Stack>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Field name="status">
+                        {({ field }) => (
+                          <TextField
+                            {...field}
+                            select
+                            label="Trạng thái"
+                            fullWidth
+                            variant="outlined"
+                            onChange={(e) => {
+                              field.onChange(e);
+                              if (e.target.value !== "occupied") {
+                                setFieldValue("tenant", []);
+                              }
+                            }}
                           >
-                            <CardMedia
-                              component="img"
-                              height="100"
-                              image={img}
-                              alt={`Image ${index + 1}`}
-                            />
-                            <IconButton
-                              size="small"
-                              sx={{
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                backgroundColor: "rgba(255,255,255,0.7)",
-                              }}
-                              onClick={() => remove(index)}
-                            >
-                              <Close fontSize="small" />
-                            </IconButton>
-                          </Card>
-                        ))}
-                      </Box>
-                      <Button
-                        variant="outlined"
-                        component="label"
-                        disabled={isUploading}
-                        startIcon={
-                          isUploading ? <CircularProgress size={20} /> : <Add />
-                        }
-                      >
-                        Tải ảnh lên
-                        <input
-                          type="file"
-                          hidden
+                            <MenuItem value="available">Còn trống</MenuItem>
+                            <MenuItem value="occupied">Đã thuê</MenuItem>
+                            <MenuItem value="under_maintenance">
+                              Đang bảo trì
+                            </MenuItem>
+                          </TextField>
+                        )}
+                      </Field>
+                    </Grid>
+                    {values.status === "occupied" && (
+                      <Grid item xs={12}>
+                        <Autocomplete
                           multiple
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleImageUpload(e.currentTarget.files, push)
+                          options={allUsers}
+                          getOptionLabel={(option) =>
+                            `${option.fullname} (${option.email})`
                           }
+                          value={values.tenant}
+                          isOptionEqualToValue={(option, value) =>
+                            option?._id === value?._id
+                          }
+                          onChange={(_, newValue) =>
+                            setFieldValue("tenant", newValue)
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              label="Chọn người thuê"
+                            />
+                          )}
                         />
-                      </Button>
-                    </Box>
-                  )}
-                </FieldArray>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Paper>
               </Grid>
-
-              {/* Quản lý Tiện ích */}
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                  Tiện ích
-                </Typography>
-                <FieldArray name="amenities">
-                  {({ push, remove }) => (
-                    <Box>
-                      {values.amenities?.map((_, index) => (
-                        <Grid
-                          container
-                          spacing={1}
-                          key={index}
-                          sx={{ mb: 1, alignItems: "center" }}
-                        >
-                          <Grid item xs={4}>
-                            <FormikTextField
-                              name={`amenities[${index}].name`}
-                              label="Tên tiện ích"
-                              size="small"
-                            />
-                          </Grid>
-                          <Grid item xs={3}>
-                            <FormikTextField
-                              name={`amenities[${index}].quantity`}
-                              label="Số lượng"
-                              type="number"
-                              size="small"
-                            />
-                          </Grid>
-                          <Grid item xs={3}>
-                            <FormikTextField
-                              name={`amenities[${index}].status`}
-                              label="Trạng thái"
-                              size="small"
-                              select
-                            >
-                              <MenuItem value="available">Tốt</MenuItem>
-                              <MenuItem value="unavailable">Hỏng</MenuItem>
-                            </FormikTextField>
-                          </Grid>
-                          <Grid item xs={2}>
-                            <IconButton
-                              onClick={() => remove(index)}
-                              color="error"
-                            >
-                              <RemoveCircleOutline />
-                            </IconButton>
-                          </Grid>
+                <Paper sx={{ p: 2 }}>
+                  <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+                    <CameraAlt color="primary" />
+                    <Typography variant="h6">Hình ảnh</Typography>
+                  </Stack>
+                  <FieldArray name="images">
+                    {({ push, remove }) => (
+                      <>
+                        <Grid container spacing={2} sx={{ mb: 2 }}>
+                          {values.images?.map((img, index) => (
+                            <Grid item xs={6} sm={4} md={3} key={index}>
+                              <Card sx={{ position: "relative" }}>
+                                <CardMedia
+                                  component="img"
+                                  height="120"
+                                  image={img}
+                                  alt={`Image ${index + 1}`}
+                                />
+                                <IconButton
+                                  size="small"
+                                  onClick={() => remove(index)}
+                                  sx={{
+                                    position: "absolute",
+                                    top: 4,
+                                    right: 4,
+                                    bgcolor: "rgba(255,255,255,0.7)",
+                                  }}
+                                >
+                                  <Close fontSize="small" />
+                                </IconButton>
+                              </Card>
+                            </Grid>
+                          ))}
                         </Grid>
-                      ))}
-                      <Button
-                        startIcon={<AddCircleOutline />}
-                        onClick={() =>
-                          push({ name: "", quantity: 1, status: "available" })
-                        }
-                      >
-                        Thêm tiện ích
-                      </Button>
-                    </Box>
-                  )}
-                </FieldArray>
+                        <Button
+                          variant="contained"
+                          component="label"
+                          disabled={isUploading}
+                          startIcon={
+                            isUploading ? (
+                              <CircularProgress size={20} />
+                            ) : (
+                              <Add />
+                            )
+                          }
+                        >
+                          Tải ảnh lên
+                          <input
+                            type="file"
+                            hidden
+                            multiple
+                            accept="image/*"
+                            onChange={(e) =>
+                              handleImageUpload(e.currentTarget.files, push)
+                            }
+                          />
+                        </Button>
+                      </>
+                    )}
+                  </FieldArray>
+                </Paper>
               </Grid>
-
-              {/* Quản lý Tài sản */}
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                  Tài sản của người thuê
-                </Typography>
-                <FieldArray name="assets">
-                  {({ push, remove }) => (
-                    <Box>
-                      {values.assets?.map((_, index) => (
-                        <Grid
-                          container
-                          spacing={1}
-                          key={index}
-                          sx={{ mb: 1, alignItems: "center" }}
-                        >
-                          <Grid item xs={12} sm={3}>
-                            <FormikTextField
-                              name={`assets[${index}].type`}
-                              label="Loại tài sản"
-                              size="small"
-                              select
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Category color="primary" />
+                      <Typography>Quản lý Tiện ích</Typography>
+                    </Stack>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <FieldArray name="amenities">
+                      {({ push, remove }) => (
+                        <>
+                          {values.amenities?.map((_, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                border: "1px solid",
+                                borderColor: "divider",
+                                p: 1.5,
+                                mb: 1.5,
+                                borderRadius: 1,
+                                position: "relative",
+                              }}
                             >
-                              <MenuItem value="motorbike">Xe máy</MenuItem>
-                              <MenuItem value="car">Ô tô</MenuItem>
-                              <MenuItem value="bicycle">Xe đạp</MenuItem>
-                              <MenuItem value="other">Khác</MenuItem>
-                            </FormikTextField>
-                          </Grid>
-                          <Grid item xs={12} sm={3}>
-                            <FormikTextField
-                              name={`assets[${index}].licensePlate`}
-                              label="Biển số"
-                              size="small"
-                            />
-                          </Grid>
-                          <Grid item xs={12} sm={4}>
-                            <FormikTextField
-                              name={`assets[${index}].description`}
-                              label="Mô tả"
-                              size="small"
-                            />
-                          </Grid>
-                          <Grid item xs={12} sm={2}>
-                            <IconButton
-                              onClick={() => remove(index)}
-                              color="error"
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} sm={4}>
+                                  <FormikTextField
+                                    name={`amenities[${index}].name`}
+                                    label="Tên tiện ích"
+                                    size="small"
+                                  />
+                                </Grid>
+                                <Grid item xs={6} sm={4}>
+                                  <FormikTextField
+                                    name={`amenities[${index}].quantity`}
+                                    label="Số lượng"
+                                    type="number"
+                                    size="small"
+                                  />
+                                </Grid>
+                                <Grid item xs={6} sm={4}>
+                                  <FormikTextField
+                                    name={`amenities[${index}].status`}
+                                    label="Trạng thái"
+                                    size="small"
+                                    select
+                                  >
+                                    <MenuItem value="available">Tốt</MenuItem>
+                                    <MenuItem value="unavailable">
+                                      Hỏng
+                                    </MenuItem>
+                                  </FormikTextField>
+                                </Grid>
+                              </Grid>
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => remove(index)}
+                                sx={{ position: "absolute", top: 4, right: 4 }}
+                              >
+                                <RemoveCircleOutline />
+                              </IconButton>
+                            </Box>
+                          ))}
+                          <Button
+                            startIcon={<AddCircleOutline />}
+                            onClick={() =>
+                              push({
+                                name: "",
+                                quantity: 1,
+                                status: "available",
+                              })
+                            }
+                          >
+                            Thêm tiện ích
+                          </Button>
+                        </>
+                      )}
+                    </FieldArray>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Wallet color="primary" />
+                      <Typography>Quản lý Tài sản của người thuê</Typography>
+                    </Stack>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <FieldArray name="assets">
+                      {({ push, remove }) => (
+                        <>
+                          {values.assets?.map((_, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                border: "1px solid",
+                                borderColor: "divider",
+                                p: 1.5,
+                                mb: 1.5,
+                                borderRadius: 1,
+                                position: "relative",
+                              }}
                             >
-                              <RemoveCircleOutline />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      ))}
-                      <Button
-                        startIcon={<AddCircleOutline />}
-                        onClick={() =>
-                          push({
-                            type: "motorbike",
-                            licensePlate: "",
-                            description: "",
-                            quantity: 1,
-                          })
-                        }
-                      >
-                        Thêm tài sản
-                      </Button>
-                    </Box>
-                  )}
-                </FieldArray>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} sm={3}>
+                                  <FormikTextField
+                                    name={`assets[${index}].type`}
+                                    label="Loại tài sản"
+                                    size="small"
+                                    select
+                                  >
+                                    <MenuItem value="motorbike">
+                                      Xe máy
+                                    </MenuItem>
+                                    <MenuItem value="car">Ô tô</MenuItem>
+                                    <MenuItem value="bicycle">Xe đạp</MenuItem>
+                                    <MenuItem value="other">Khác</MenuItem>
+                                  </FormikTextField>
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                  <FormikTextField
+                                    name={`assets[${index}].licensePlate`}
+                                    label="Biển số"
+                                    size="small"
+                                  />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                  <FormikTextField
+                                    name={`assets[${index}].description`}
+                                    label="Mô tả"
+                                    size="small"
+                                  />
+                                </Grid>
+                              </Grid>
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => remove(index)}
+                                sx={{ position: "absolute", top: 4, right: 4 }}
+                              >
+                                <RemoveCircleOutline />
+                              </IconButton>
+                            </Box>
+                          ))}
+                          <Button
+                            startIcon={<AddCircleOutline />}
+                            onClick={() =>
+                              push({
+                                type: "motorbike",
+                                licensePlate: "",
+                                description: "",
+                              })
+                            }
+                          >
+                            Thêm tài sản
+                          </Button>
+                        </>
+                      )}
+                    </FieldArray>
+                  </AccordionDetails>
+                </Accordion>
               </Grid>
             </Grid>
           </DialogContent>
@@ -551,12 +708,10 @@ const RoomTable = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-
   const [editingRoom, setEditingRoom] = useState(null);
   const [viewingRoom, setViewingRoom] = useState(null);
   const [deletingRoomId, setDeletingRoomId] = useState(null);
@@ -676,8 +831,13 @@ const RoomTable = () => {
     const populatedRoom = {
       ...room,
       tenant: (room.tenant || [])
-        .map((t) => allUsers.find((u) => u._id === (t._id || t)) || t)
-        .filter((t) => t._id),
+        .filter(Boolean)
+        .map((tenantInRoom) =>
+          allUsers.find(
+            (user) => user._id === (tenantInRoom._id || tenantInRoom)
+          )
+        )
+        .filter(Boolean),
     };
     setEditingRoom(populatedRoom);
     setIsEditModalOpen(true);
@@ -703,13 +863,20 @@ const RoomTable = () => {
       {
         accessorKey: "status",
         header: "Trạng thái",
-        Cell: ({ cell }) => (
-          <Chip
-            label={cell.getValue()}
-            color={cell.getValue() === "available" ? "success" : "warning"}
-            size="small"
-          />
-        ),
+        Cell: ({ cell }) => {
+          const status = cell.getValue();
+          const statusInfo = statusMapping[status] || {
+            text: status,
+            color: "default",
+          };
+          return (
+            <Chip
+              label={statusInfo.text}
+              color={statusInfo.color}
+              size="small"
+            />
+          );
+        },
       },
       {
         accessorKey: "tenant",
@@ -717,7 +884,8 @@ const RoomTable = () => {
         Cell: ({ cell }) =>
           cell
             .getValue()
-            ?.map((t) => t.fullname)
+            ?.filter(Boolean)
+            .map((t) => t.fullname)
             .join(", ") || "Trống",
       },
     ],
@@ -768,9 +936,9 @@ const RoomTable = () => {
 
   const createFormInitialValues = {
     roomNumber: "",
-    floor: 0,
-    area: 0,
-    price: 0,
+    floor: 1,
+    area: 20,
+    price: 1000000,
     maxOccupants: 1,
     status: "available",
     description: "",
@@ -780,45 +948,63 @@ const RoomTable = () => {
     tenant: [],
   };
 
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingRoom(null);
+  };
+  const closeCreateModal = () => setIsCreateModalOpen(false);
+
   return (
     <>
       <MaterialReactTable table={table} />
+
       <Dialog
         open={isCreateModalOpen || isEditModalOpen}
-        onClose={() => {
-          setIsCreateModalOpen(false);
-          setIsEditModalOpen(false);
-        }}
-        maxWidth="md"
+        onClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
+        maxWidth="lg"
         fullWidth
       >
-        <RoomForm
-          initialValues={
-            isCreateModalOpen ? createFormInitialValues : editingRoom
-          }
-          onSubmit={isCreateModalOpen ? handleCreateRoom : handleUpdateRoom}
-          onCancel={() => {
-            setIsCreateModalOpen(false);
-            setIsEditModalOpen(false);
-          }}
-          isSaving={isSaving}
-          allUsers={allUsers}
-        />
+        {(isCreateModalOpen || editingRoom) && (
+          <RoomForm
+            initialValues={
+              isCreateModalOpen ? createFormInitialValues : editingRoom
+            }
+            onSubmit={isCreateModalOpen ? handleCreateRoom : handleUpdateRoom}
+            onCancel={isCreateModalOpen ? closeCreateModal : closeEditModal}
+            isSaving={isSaving}
+            allUsers={allUsers}
+          />
+        )}
       </Dialog>
+
       <Dialog
         open={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Chi tiết phòng</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ m: 0, p: 2, pr: 4 }}>
+          <IconButton
+            aria-label="close"
+            onClick={() => setIsViewModalOpen(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 0 }}>
           <RoomDetails room={viewingRoom} />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsViewModalOpen(false)}>Đóng</Button>
         </DialogActions>
       </Dialog>
+
       <Dialog
         open={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}

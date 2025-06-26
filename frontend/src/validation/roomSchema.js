@@ -1,68 +1,69 @@
-import * as Yup from "yup";
+import * as yup from "yup";
 
-// Schema validation này phải khớp với yêu cầu của backend
-export const roomValidationSchema = Yup.object({
-  roomNumber: Yup.string().required("Số phòng là bắt buộc"),
-  floor: Yup.number()
-    .typeError("Tầng phải là một con số")
-    .integer("Tầng phải là số nguyên")
-    .min(0, "Tầng không được là số âm")
-    .required("Tầng là bắt buộc"),
-  area: Yup.number()
-    .typeError("Diện tích phải là một con số")
-    .positive("Diện tích phải là số dương")
-    .required("Diện tích là bắt buộc"),
-  price: Yup.number()
-    .typeError("Giá phòng phải là một con số")
-    .min(0, "Giá phòng không được là số âm")
-    .required("Giá phòng là bắt buộc"),
-  maxOccupants: Yup.number()
-    .typeError("Số người phải là một con số")
-    .integer("Số người tối đa phải là số nguyên")
-    .min(1, "Phải có ít nhất 1 người")
-    .required("Số người tối đa là bắt buộc"),
-  status: Yup.string()
-    .oneOf(
-      ["available", "occupied", "under_maintenance"],
-      "Trạng thái không hợp lệ"
-    )
-    .required("Trạng thái là bắt buộc"),
-  description: Yup.string().optional(),
-  images: Yup.array().of(Yup.string().url("Phải là một URL hợp lệ")).optional(),
+export const roomValidationSchema = yup.object().shape({
+  // --- Các quy tắc đã có ---
+  roomNumber: yup
+    .string()
+    .trim()
+    .required("Vui lòng nhập số phòng."),
+  floor: yup
+    .number()
+    .typeError("Tầng phải là một con số.")
+    .required("Vui lòng nhập số tầng.")
+    .moreThan(0, "Số tầng phải lớn hơn 0."),
+  area: yup
+    .number()
+    .typeError("Diện tích phải là một con số.")
+    .required("Vui lòng nhập diện tích.")
+    .positive("Diện tích phải là một số dương."),
+  price: yup
+    .number()
+    .typeError("Giá phòng phải là một con số.")
+    .required("Vui lòng nhập giá phòng.")
+    .min(0, "Giá phòng không được là số âm."),
+  maxOccupants: yup
+    .number()
+    .typeError("Số người tối đa phải là một con số.")
+    .required("Vui lòng nhập số người tối đa.")
+    .positive("Số người tối đa phải là số dương.")
+    .integer("Số người tối đa phải là số nguyên."),
+  description: yup
+    .string()
+    .trim()
+    .required("Vui lòng nhập mô tả cho phòng."),
+  status: yup.string(),
+  images: yup.array(),
+  tenant: yup.array(),
 
-  amenities: Yup.array()
-    .of(
-      Yup.object().shape({
-        name: Yup.string().required("Tên tiện ích là bắt buộc"),
-        quantity: Yup.number()
-          .typeError("Số lượng phải là một con số")
-          .integer("Số lượng phải là số nguyên")
-          .min(1, "Số lượng ít nhất là 1")
-          .required("Số lượng là bắt buộc"),
-        status: Yup.string()
-          .oneOf(["available", "unavailable"], "Trạng thái không hợp lệ")
-          .required("Trạng thái tiện ích là bắt buộc"),
-      })
-    )
-    .optional(),
 
-  assets: Yup.array()
-    .of(
-      Yup.object().shape({
-        type: Yup.string()
-          .oneOf(
-            ["motorbike", "car", "bicycle", "other"],
-            "Loại tài sản không hợp lệ"
-          )
-          .required("Loại tài sản là bắt buộc"),
-        description: Yup.string().optional(),
-        quantity: Yup.number()
-          .typeError("Số lượng phải là một con số")
-          .integer("Số lượng phải là số nguyên")
-          .min(1, "Số lượng ít nhất là 1")
-          .default(1),
-        licensePlate: Yup.string().optional(),
-      })
-    )
-    .optional(),
+  // Validation cho mỗi mục trong danh sách Tiện ích
+  amenities: yup.array().of(
+    yup.object().shape({
+      name: yup
+        .string()
+        .trim()
+        .required("Vui lòng nhập tên tiện ích."),
+      quantity: yup
+        .number()
+        .typeError("Số lượng phải là số.")
+        .required("Vui lòng nhập số lượng.")
+        .positive("Số lượng phải lớn hơn 0.")
+        .integer("Số lượng phải là số nguyên."),
+      status: yup
+        .string()
+        .required("Vui lòng chọn trạng thái."),
+    })
+  ),
+
+  // Validation cho mỗi mục trong danh sách Tài sản
+  assets: yup.array().of(
+    yup.object().shape({
+      type: yup
+        .string()
+        .required("Vui lòng chọn loại tài sản."),
+      // Biển số và mô tả có thể không bắt buộc, nên chỉ cần định nghĩa là string
+      licensePlate: yup.string().trim(),
+      description: yup.string().trim(),
+    })
+  ),
 });
