@@ -19,9 +19,10 @@ import HomePage from '../pages/Admin/HomePage';
 import RequestManagement from '../pages/Admin/RequestManagement/index.jsx';
 import ManageRoomPage from '../pages/Admin/Rooms/ManageRoomPage.jsx';
 import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
-import ChangePasswordPage from '../pages/Auth/ChangePasswordPage';
-import EditProfilePage from '../pages/Common/EditProfilePage';
+import ChangePasswordPage from '../pages/Auth/ChangePasswordPage.jsx';
+import EditProfilePage from '../pages/Common/EditProfilePage.jsx';
 
+//ádasd
 export const side_nav = [
     {
         path: ROUTES.ADMIN_HOMEPAGE,
