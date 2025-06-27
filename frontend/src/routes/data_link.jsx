@@ -21,6 +21,7 @@ import ManageRoomPage from '../pages/Admin/Rooms/ManageRoomPage.jsx';
 import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
 import ChangePasswordPage from '../pages/Auth/ChangePasswordPage.jsx';
 import EditProfilePage from '../pages/Common/EditProfilePage.jsx';
+import ContractPage from '../pages/Admin/Contract/ContractPage.jsx';
 
 //ádasd
 export const side_nav = [
@@ -61,8 +62,8 @@ export const side_nav = [
                 icon: <FaFileInvoiceDollar />,
             },
             {
-                path: '',
-                element: '',
+                path: ROUTES.MANGE_CONTRACT,
+                element: <ContractPage />,
                 name: 'Quản lý hợp đồng',
                 icon: <FaUser />,
             },
