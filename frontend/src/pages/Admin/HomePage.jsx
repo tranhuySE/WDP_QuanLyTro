@@ -1,215 +1,398 @@
-import { useEffect, useState } from "react";
-import { Accordion, Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { Calendar2Date, PencilSquare, PersonCircle, Trash } from "react-bootstrap-icons";
-import { getAllPosts } from "../../api/postAPI";
-import "../../styles/Common/HomePage.css";
+import {
+    AlertTriangle,
+    Bell,
+    CheckCircle,
+    ClipboardList,
+    Edit,
+    Info,
+    MoreVertical,
+    Pin,
+    Plus,
+    Trash2,
+    X
+} from 'lucide-react';
+import { useState } from 'react';
+import { Button, Card, Container, Dropdown, Form, ListGroup, Modal } from 'react-bootstrap';
 
-const HomePage = () => {
-    // State quản lý posts
-    const [posts, setPosts] = useState([]);
+const Homepage = () => {
+    // State for announcements
+    const [announcements, setAnnouncements] = useState([
+        {
+            id: 1,
+            title: 'Mất điện từ 14h-16h ngày 15/6',
+            content: 'Sẽ có kế hoạch bảo trì hệ thống điện toà nhà từ 14h đến 16h ngày 15/6. Xin cư dân lưu ý và chuẩn bị.',
+            type: 'warning',
+            date: '10/6/2023',
+            author: 'Ban quản lý',
+            pinned: true
+        },
+        {
+            id: 2,
+            title: 'Thông báo thu phí dịch vụ tháng 6',
+            content: 'Kính nhờ cư dân nộp phí dịch vụ tháng 6 trước ngày 10/6. Mọi thắc mắc vui lòng liên hệ bộ phận quản lý.',
+            type: 'info',
+            date: '1/6/2023',
+            author: 'Kế toán',
+            pinned: false
+        },
+        {
+            id: 3,
+            title: 'Hoàn thành sửa chữa thang máy',
+            content: 'Thang máy tòa A đã được sửa chữa xong và hoạt động bình thường trở lại.',
+            type: 'success',
+            date: '25/5/2023',
+            author: 'Kỹ thuật',
+            pinned: false
+        }
+    ]);
 
-    // State quản lý form tạo/sửa bài
-    const [form, setForm] = useState({ id: null, title: "", content: "", date: "", author: "Ban quản lý" });
+    // State for modals
+    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // State để phân biệt đang ở chế độ edit hay tạo mới
-    const [isEditing, setIsEditing] = useState(false);
+    // State for current announcement being edited/deleted
+    const [currentAnnouncement, setCurrentAnnouncement] = useState(null);
+    const [newAnnouncement, setNewAnnouncement] = useState({
+        title: '',
+        content: '',
+        type: 'info'
+    });
 
-    useEffect(() => {
-        getAllPosts()
-            .then((response) => {
-                setPosts(response.data);
-            })
-            .catch((error) => {
-                console.error("Lỗi khi lấy danh sách bài viết:", error);
-                alert("Không thể tải dữ liệu bài viết. Vui lòng thử lại sau.");
-            });
-    }, []);
-
-    // Hàm xử lý thay đổi input
-    const handleChange = (e) => {
+    // Handle input change for new/edit announcement
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        if (currentAnnouncement) {
+            setCurrentAnnouncement({
+                ...currentAnnouncement,
+                [name]: value
+            });
+        } else {
+            setNewAnnouncement({
+                ...newAnnouncement,
+                [name]: value
+            });
+        }
     };
 
-    // Thêm bài mới
-    const handleCreate = () => {
-        if (!form.title.trim() || !form.content.trim() || !form.date.trim()) {
-            alert("Vui lòng điền đầy đủ tiêu đề, nội dung và ngày tháng.");
-            return;
-        }
-        const newPost = {
-            id: Date.now(),
-            title: form.title,
-            content: form.content,
-            date: form.date,
-            author: form.author,
+    // Handle submit new announcement
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!newAnnouncement.title.trim() || !newAnnouncement.content.trim()) return;
+
+        const announcement = {
+            id: Math.max(...announcements.map(a => a.id), 0) + 1,
+            title: newAnnouncement.title,
+            content: newAnnouncement.content,
+            type: newAnnouncement.type,
+            date: new Date().toLocaleDateString('vi-VN'),
+            author: 'Ban quản lý',
+            pinned: false
         };
-        setPosts((prev) => [newPost, ...prev]);
-        setForm({ id: null, title: "", content: "", date: "", author: "Ban quản lý" });
+
+        setAnnouncements([announcement, ...announcements]);
+        setNewAnnouncement({
+            title: '',
+            content: '',
+            type: 'info'
+        });
+        setShowModal(false);
     };
 
-    // Bắt đầu chỉnh sửa
-    const handleEditClick = (post) => {
-        setIsEditing(true);
-        setForm(post);
+    // Handle edit announcement
+    const handleEdit = (announcement) => {
+        setCurrentAnnouncement({ ...announcement });
+        setShowEditModal(true);
     };
 
-    // Lưu bài chỉnh sửa
-    const handleUpdate = () => {
-        if (!form.title.trim() || !form.content.trim() || !form.date.trim()) {
-            alert("Vui lòng điền đầy đủ tiêu đề, nội dung và ngày tháng.");
-            return;
+    // Handle save edited announcement
+    const handleSaveEdit = (e) => {
+        e.preventDefault();
+
+        if (!currentAnnouncement.title.trim() || !currentAnnouncement.content.trim()) return;
+
+        setAnnouncements(announcements.map(a =>
+            a.id === currentAnnouncement.id ? currentAnnouncement : a
+        ));
+        setShowEditModal(false);
+        setCurrentAnnouncement(null);
+    };
+
+    // Handle delete confirmation
+    const handleDeleteClick = (announcement) => {
+        setCurrentAnnouncement(announcement);
+        setShowDeleteModal(true);
+    };
+
+    // Handle confirm delete
+    const handleConfirmDelete = () => {
+        setAnnouncements(announcements.filter(a => a.id !== currentAnnouncement.id));
+        setShowDeleteModal(false);
+        setCurrentAnnouncement(null);
+    };
+
+    // Handle pin/unpin announcement
+    const togglePin = (id) => {
+        setAnnouncements(announcements.map(a =>
+            a.id === id ? { ...a, pinned: !a.pinned } : a
+        ));
+    };
+
+    // Get icon by announcement type
+    const getIconByType = (type) => {
+        switch (type) {
+            case 'warning':
+                return <AlertTriangle size={20} className="text-warning me-2" />;
+            case 'success':
+                return <CheckCircle size={20} className="text-success me-2" />;
+            default:
+                return <Info size={20} className="text-info me-2" />;
         }
-        setPosts((prev) =>
-            prev.map((p) => (p.id === form.id ? { ...p, title: form.title, content: form.content, date: form.date } : p))
-        );
-        setForm({ id: null, title: "", content: "", date: "", author: "Ban quản lý" });
-        setIsEditing(false);
     };
 
-    // Hủy chỉnh sửa
-    const handleCancelEdit = () => {
-        setForm({ id: null, title: "", content: "", date: "", author: "Ban quản lý" });
-        setIsEditing(false);
-    };
-
-    // Xóa bài viết
-    const handleDelete = (id) => {
-        if (window.confirm("Bạn có chắc muốn xóa bài thông báo này?")) {
-            setPosts((prev) => prev.filter((p) => p.id !== id));
+    // Get border color based on type and pinned status
+    const getBorderColor = (announcement) => {
+        if (announcement.pinned) return '3px solid #FFC107'; // Màu vàng cho thông báo ghim
+        switch (announcement.type) {
+            case 'warning': return '2px solid #FD7E14';
+            case 'success': return '2px solid #20C997';
+            default: return '2px solid #0D6EFD';
         }
     };
+
+    // Sort announcements: pinned first, then by date (newest first)
+    const sortedAnnouncements = [...announcements].sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.date.split('/').reverse().join('/')) - new Date(a.date.split('/').reverse().join('/'));
+    });
 
     return (
-        <Container className="mt-5 mb-5">
-            <div className="text-center mb-4">
-                <h2 className="fw-bold text-primary">📢 Bảng tin thông báo</h2>
-                <p className="text-muted">Cập nhật mới nhất từ Ban quản lý và hệ thống.</p>
+        <Container className="py-4">
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="mb-0">
+                    <ClipboardList size={28} className="me-2 text-primary" />
+                    Thông Báo Chung Cư
+                </h2>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    <Plus size={18} className="me-1" />
+                    Thêm Thông Báo
+                </Button>
             </div>
 
-            {/* Form tạo / chỉnh sửa */}
-            <Card className="mb-4">
-                <Card.Body>
-                    <h5 className="mb-3">{isEditing ? "✏️ Chỉnh sửa bài thông báo" : "✍️ Thêm bài thông báo mới"}</h5>
-                    <Row className="g-3">
-                        <Col md={6}>
+            {/* Announcements List */}
+            <ListGroup>
+                {sortedAnnouncements.map(announcement => (
+                    <ListGroup.Item
+                        key={announcement.id}
+                        className="mb-3 rounded position-relative p-0 overflow-visible"
+                        style={{
+                            border: getBorderColor(announcement),
+                            boxShadow: announcement.pinned ? '0 0.5rem 1rem rgba(255, 193, 7, 0.15)' : 'none',
+                            zIndex: 0
+                        }}
+                    >
+                        {/* Pin icon in top-left corner */}
+                        {announcement.pinned && (
+                            <div className="position-absolute top-0 start-0 bg-warning rounded-circle p-2 shadow"
+                                style={{
+                                    zIndex: 1,
+                                    transform: 'translate(-30%, -30%)',
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    togglePin(announcement.id);
+                                }}
+                                title="Bỏ ghim">
+                                <Pin size={20} className="text-white" fill="white" />
+                            </div>
+                        )}
+
+                        <Card className="border-0">
+                            <Card.Body className={announcement.pinned ? "bg-warning bg-opacity-10" : ""}>
+                                <div className="d-flex align-items-start" style={{ marginLeft: '10px' }}>
+                                    {getIconByType(announcement.type)}
+                                    <div className="flex-grow-1">
+                                        <div className="d-flex justify-content-between align-items-start">
+                                            <h5 className="mb-1">{announcement.title}</h5>
+                                            <Dropdown>
+                                                <Dropdown.Toggle variant="light" size="sm" className="p-1">
+                                                    <MoreVertical size={18} />
+                                                </Dropdown.Toggle>
+                                                <Dropdown.Menu>
+                                                    <Dropdown.Item onClick={() => handleEdit(announcement)}>
+                                                        <Edit size={16} className="me-2" /> Sửa
+                                                    </Dropdown.Item>
+                                                    <Dropdown.Item onClick={() => togglePin(announcement.id)}>
+                                                        <Pin size={16} className="me-2" />
+                                                        {announcement.pinned ? 'Bỏ ghim' : 'Ghim'}
+                                                    </Dropdown.Item>
+                                                    <Dropdown.Item
+                                                        onClick={() => handleDeleteClick(announcement)}
+                                                        className="text-danger"
+                                                    >
+                                                        <Trash2 size={16} className="me-2" /> Xóa
+                                                    </Dropdown.Item>
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        </div>
+                                        <small className="text-muted d-block mb-2">{announcement.date}</small>
+                                        <p className="mb-2">{announcement.content}</p>
+                                        <small className="text-muted">Đăng bởi: {announcement.author}</small>
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+
+            {/* Add Announcement Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <Bell className="me-2" />
+                        Thêm Thông Báo Mới
+                    </Modal.Title>
+                </Modal.Header>
+                <Form onSubmit={handleSubmit}>
+                    <Modal.Body>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Tiêu đề</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Tiêu đề"
                                 name="title"
-                                value={form.title}
-                                onChange={handleChange}
+                                value={newAnnouncement.title}
+                                onChange={handleInputChange}
+                                placeholder="Nhập tiêu đề thông báo"
+                                required
                             />
-                        </Col>
-                        <Col md={3}>
-                            <Form.Control
-                                type="date"
-                                name="date"
-                                value={form.date}
-                                onChange={handleChange}
-                            />
-                        </Col>
-                        <Col md={3}>
-                            {/* Author cố định */}
-                            <Form.Control type="text" value={form.author} disabled />
-                        </Col>
-                        <Col md={12}>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Nội dung</Form.Label>
                             <Form.Control
                                 as="textarea"
-                                rows={3}
-                                placeholder="Nội dung"
+                                rows={4}
                                 name="content"
-                                value={form.content}
-                                onChange={handleChange}
+                                value={newAnnouncement.content}
+                                onChange={handleInputChange}
+                                placeholder="Nhập nội dung thông báo"
+                                required
                             />
-                        </Col>
-                        <Col className="text-end">
-                            {isEditing ? (
-                                <>
-                                    <Button variant="success" className="me-2" onClick={handleUpdate}>
-                                        Lưu
-                                    </Button>
-                                    <Button variant="secondary" onClick={handleCancelEdit}>
-                                        Hủy
-                                    </Button>
-                                </>
-                            ) : (
-                                <Button variant="primary" onClick={handleCreate}>
-                                    Thêm bài
-                                </Button>
-                            )}
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
+                        </Form.Group>
 
-            {/* Danh sách bài post */}
-            {posts.length === 0 ? (
-                <p className="text-center text-muted">Không có thông báo nào.</p>
-            ) : (
-                <Accordion defaultActiveKey={null} alwaysOpen>
-                    {posts.map((post, index) => (
-                        <Accordion.Item
-                            eventKey={index.toString()}
-                            key={post.id}
-                            className="custom-accordion-item"
-                        >
-                            <Accordion.Header>
-                                <Row className="w-100 align-items-center">
-                                    <Col xs={12} md={8} className="fw-semibold d-flex align-items-center">
-                                        {post.tag}
-                                        {/* Nút chỉnh sửa */}
-                                        <Button
-                                            variant="link"
-                                            size="sm"
-                                            className="ms-2 text-primary"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleEditClick(post);
-                                            }}
-                                            title="Chỉnh sửa"
-                                        >
-                                            <PencilSquare />
-                                        </Button>
-                                        {/* Nút xóa */}
-                                        <Button
-                                            variant="link"
-                                            size="sm"
-                                            className="ms-1 text-danger"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDelete(post.id);
-                                            }}
-                                            title="Xóa"
-                                        >
-                                            <Trash />
-                                        </Button>
-                                    </Col>
-                                    <Col xs={12} md={4} className="text-md-end mt-2 mt-md-0">
-                                        <Badge bg="light" text="dark" className="me-2">
-                                            <Calendar2Date className="me-1" />
-                                            {new Date(post.createAt).toLocaleDateString("vi-VN")}
-                                        </Badge>
-                                        <Badge bg="light" text="dark">
-                                            <PersonCircle className="me-1" />
-                                            {post.author?.fullname || 'Ban quản lý'}
-                                        </Badge>
-                                    </Col>
-                                </Row>
-                            </Accordion.Header>
-                            <Accordion.Body className="fade-in">
-                                <Card className="border-0">
-                                    <Card.Body>
-                                        <p className="mb-0">{post.content}</p>
-                                    </Card.Body>
-                                </Card>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    ))}
-                </Accordion>
-            )}
+                        <Form.Group className="mb-3">
+                            <Form.Label>Loại thông báo</Form.Label>
+                            <Form.Select
+                                name="type"
+                                value={newAnnouncement.type}
+                                onChange={handleInputChange}
+                            >
+                                <option value="info">Thông tin thường</option>
+                                <option value="warning">Cảnh báo quan trọng</option>
+                                <option value="success">Thông báo hoàn thành</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowModal(false)}>
+                            <X className="me-1" />
+                            Hủy
+                        </Button>
+                        <Button variant="primary" type="submit">
+                            Đăng Thông Báo
+                        </Button>
+                    </Modal.Footer>
+                </Form>
+            </Modal>
+
+            {/* Edit Announcement Modal */}
+            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <Edit className="me-2" />
+                        Chỉnh Sửa Thông Báo
+                    </Modal.Title>
+                </Modal.Header>
+                {currentAnnouncement && (
+                    <Form onSubmit={handleSaveEdit}>
+                        <Modal.Body>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Tiêu đề</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="title"
+                                    value={currentAnnouncement.title}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Nội dung</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={4}
+                                    name="content"
+                                    value={currentAnnouncement.content}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Loại thông báo</Form.Label>
+                                <Form.Select
+                                    name="type"
+                                    value={currentAnnouncement.type}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="info">Thông tin thường</option>
+                                    <option value="warning">Cảnh báo quan trọng</option>
+                                    <option value="success">Thông báo hoàn thành</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+                                <X className="me-1" />
+                                Hủy
+                            </Button>
+                            <Button variant="primary" type="submit">
+                                Lưu Thay Đổi
+                            </Button>
+                        </Modal.Footer>
+                    </Form>
+                )}
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        <Trash2 className="me-2 text-danger" />
+                        Xác Nhận Xóa
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Bạn có chắc chắn muốn xóa thông báo "{currentAnnouncement?.title}" không?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        <X className="me-1" />
+                        Hủy
+                    </Button>
+                    <Button variant="danger" onClick={handleConfirmDelete}>
+                        <Trash2 className="me-1" />
+                        Xóa
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };
 
-export default HomePage;
+export default Homepage;

@@ -1,35 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import AdminLayout from './layouts/AdminLayout.jsx';
-import StaffLayout from './layouts/StaffLayout.jsx';
-import TenantLayout from './layouts/TenantLayout.jsx';
-import LoginPage from './pages/Auth/LoginPage.jsx';
-import AdminRoutes from './routes/AdminRoutes.jsx';
-import { side_nav } from './routes/data_link';
-import ProtectedRoute from './routes/ProtectedRoute.jsx';
-
-function renderRoutes(routes) {
-    return routes.map((route, index) => {
-        if (route.children && route.children.length > 0) {
-            return (
-                <React.Fragment key={index}>
-                    <Route path={route.path} element={route.element} />
-                    {route.children.map((child, idx) => (
-                        <Route key={`${index}-${idx}`} path={child.path} element={child.element} />
-                    ))}
-                </React.Fragment>
-            );
-        }
-        return <Route key={index} path={route.path} element={route.element} />;
-    });
-}
+// src/App.js
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LoginPage from "./pages/Auth/LoginPage.jsx"; // Giả sử bạn có một trang đăng nhập
+import AdminRoutes from "./routes/AdminRoutes";
+import StaffRoutes from "./routes/StaffRoutes.jsx";
+import TenantRoutes from "./routes/TenantRoutes.jsx";
 
 function App() {
     const [role, setRole] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const storedRole = localStorage.getItem('role');
+        const storedRole = localStorage.getItem("role");
         setRole(storedRole);
         setIsLoading(false);
     }, []);
@@ -37,51 +19,42 @@ function App() {
     if (isLoading) return <div>Loading...</div>;
 
     return (
-        <Router>
+        <BrowserRouter>
             <Routes>
+                {/* Các route public có thể thêm ở đây */}
+                {/* ... */}
                 <Route path="/" element={<LoginPage />} />
 
-                {role === 'admin' && (
-                    <Route
-                        path="/admin/"
-                        element={
-                            <ProtectedRoute allowedRoles={['admin']}>
-                                <AdminLayout />
-                            </ProtectedRoute>
-                        }
-                    >
-                        {renderRoutes(side_nav)}
+                {/* Route admin */}
+                {role === "admin" && (
+                    <Route path={AdminRoutes.path} element={AdminRoutes.element}>
+                        {AdminRoutes.children.map((route, index) => (
+                            <Route key={index} path={route.path} element={route.element} />
+                        ))}
                     </Route>
                 )}
 
-                <Route path="*" element={<AdminRoutes />} />
-
-                {role === 'staff' && (
-                    <Route
-                        path="/staff/"
-                        element={
-                            <ProtectedRoute allowedRoles={['staff']}>
-                                <StaffLayout />
-                            </ProtectedRoute>
-                        }
-                    />
+                {/* Route staff */}
+                {role === "staff" && (
+                    <Route path={StaffRoutes.path} element={StaffRoutes.element}>
+                        {StaffRoutes.children.map((route, index) => (
+                            <Route key={index} path={route.path} element={route.element} />
+                        ))}
+                    </Route>
                 )}
 
-                {role === 'tenant' && (
-                    <Route
-                        path="/tenant/"
-                        element={
-                            <ProtectedRoute allowedRoles={['tenant', 'user']}>
-                                <TenantLayout />
-                            </ProtectedRoute>
-                        }
-                    />
+                {/* Route user */}
+                {role === "tenant" && (
+                    <Route path={TenantRoutes.path} element={TenantRoutes.element}>
+                        {TenantRoutes.children.map((route, index) => (
+                            <Route key={index} path={route.path} element={route.element} />
+                        ))}
+                    </Route>
                 )}
 
-                {/* fallback nếu không khớp */}
                 <Route path="*" element={<LoginPage />} />
             </Routes>
-        </Router>
+        </BrowserRouter>
     );
 }
 
