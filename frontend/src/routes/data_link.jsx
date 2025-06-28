@@ -14,13 +14,14 @@ import {
     FaUsersCog,
 } from 'react-icons/fa';
 import { ROUTES } from '../constants/routes.js';
+import ContractPage from '../pages/Admin/Contract/ContractPage.jsx';
 import Analyst from '../pages/Admin/Dasboard/Analyst.jsx';
 import HomePage from '../pages/Admin/HomePage';
 import RequestManagement from '../pages/Admin/RequestManagement/index.jsx';
 import ManageRoomPage from "../pages/Admin/Rooms/ManageRoomPage.jsx";
 import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
-import ChangePasswordPage from '../pages/Auth/ChangePasswordPage';
-import EditProfilePage from '../pages/Common/EditProfilePage';
+import ChangePasswordPage from '../pages/Auth/ChangePasswordPage.jsx';
+import EditProfilePage from '../pages/Common/EditProfilePage.jsx';
 
 export const side_nav = [
     {
@@ -60,8 +61,8 @@ export const side_nav = [
                 icon: <FaFileInvoiceDollar />,
             },
             {
-                path: '',
-                element: '',
+                path: ROUTES.MANGE_CONTRACT,
+                element: <ContractPage />,
                 name: 'Quản lý hợp đồng',
                 icon: <FaUser />,
             },
