@@ -3,6 +3,9 @@
         "_id": {
             "$oid": "507f191e810c19729de860ea"
         },
+        "room_id": {
+            "$oid": "507f191e810c19729de860e1"
+        },
         "username": "nqminh21123",
         "email": "nqminh02112003@gmail.com",
         "password": "hashedpassword1",
