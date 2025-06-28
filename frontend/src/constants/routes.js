@@ -15,7 +15,7 @@ export const ROUTES = {
     ACCOUNTS_LIST: '/admin/users',
     ACCOUNTS_DETAIL: '/admin/users/:id',
     TENANT_REQUESTS: '/admin/requests',
-    MANGE_CONTRACT: '/admin/contract',
+    MANGE_CONTRACT: '/admin/contracts',
 
     //Staff
 

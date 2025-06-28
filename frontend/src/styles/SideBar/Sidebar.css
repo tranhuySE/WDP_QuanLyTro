@@ -1,0 +1,251 @@
+/* Sidebar.css - Kết hợp tối ưu */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: #1e293b; /* Giữ màu nền ban đầu */
+    border-right: 1px solid #334155; /* Giữ viền ban đầu */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Thêm hiệu ứng mượt */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng mờ nhẹ */
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* Header - Giữ nguyên phong cách ban đầu */
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid #334155;
+    min-height: 70px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.brand-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    font-size: 24px;
+    color: white;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    color: white;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.brand-subtitle {
+    color: #94a3b8;
+    margin: 0;
+    font-size: 12px;
+}
+
+.toggle-btn {
+    background: rgba(30, 41, 59, 0.5); /* Làm mờ nút */
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #334155;
+    color: white;
+    transform: scale(1.05); /* Thêm hiệu ứng phóng nhẹ */
+}
+
+/* Navigation - Giữ màu sắc ban đầu nhưng cải tiến hiệu ứng */
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+}
+
+.nav-item-wrapper {
+    padding: 0 1rem;
+    margin-bottom: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    color: #94a3b8;
+    background-color: transparent;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    width: 100%;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    gap: 0;
+}
+
+.nav-item:hover {
+    background-color: #334155;
+    color: #ffffff;
+    transform: translateX(3px); /* Thêm hiệu ứng dịch chuyển */
+}
+
+.nav-item.active {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.nav-item.active:hover {
+    background-color: #3b82f6;
+    transform: translateX(3px);
+}
+
+.nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-label {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: opacity 0.3s ease; /* Thêm hiệu ứng mờ dần */
+}
+
+.sidebar.collapsed .nav-label {
+    opacity: 0;
+}
+
+.active-indicator {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 2px;
+}
+
+.sidebar.collapsed .active-indicator {
+    display: none;
+}
+
+/* Footer - Giữ nguyên phong cách ban đầu */
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #334155;
+}
+
+.footer-card {
+    background-color: #334155;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+}
+
+.admin-avatar {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.admin-title {
+    color: white;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-version {
+    color: #94a3b8;
+    margin: 0;
+    font-size: 12px;
+}
+
+/* Scrollbar - Giữ nguyên */
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* Mobile responsive - Cải tiến từ phiên bản mới */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease, width 0.3s ease;
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .sidebar.collapsed {
+        transform: translateX(-100%);
+        width: 70px;
+    }
+}
+
+/* Thêm animation từ phiên bản mới */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.nav-item {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Thêm focus state cho accessibility */
+.nav-item:focus,
+.toggle-btn:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.3);
+    outline-offset: 2px;
+}
