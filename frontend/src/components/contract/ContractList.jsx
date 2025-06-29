@@ -28,14 +28,17 @@ const ContractList = () => {
         {
             header: 'Mã Hợp Đồng',
             accessorKey: '_id',
+            size: 100,
         },
         {
             header: 'Người Thuê',
             accessorFn: (row) => row.tenant?.fullname || 'Chưa có',
+            size: 40,
         },
         {
             header: 'Phòng',
             accessorFn: (row) => `Phòng ${row.roomId?.roomNumber}`,
+            size: 40,
         },
         {
             header: 'Tiền Cọc',
@@ -44,6 +47,7 @@ const ContractList = () => {
                 const value = cell.getValue();
                 return `${Number(value).toLocaleString()}đ`;
             },
+            size: 50,
         },
         {
             header: 'Trạng Thái Cọc',
@@ -58,6 +62,7 @@ const ContractList = () => {
                         Chờ xử lý
                     </span>
                 ),
+            size: 40,
         },
         {
             header: 'Tệp Hợp Đồng',
@@ -69,6 +74,7 @@ const ContractList = () => {
                 ) : (
                     'Không có'
                 ),
+            size: 50,
         },
         {
             header: 'Trạng Thái',
@@ -89,6 +95,7 @@ const ContractList = () => {
                 };
                 return <Badge bg={getVariant(status)}>{status.toUpperCase()}</Badge>;
             },
+            size: 40,
         },
         {
             header: 'Thao tác',
@@ -123,6 +130,7 @@ const ContractList = () => {
                     </ButtonGroup>
                 );
             },
+            size: 100,
         },
     ];
 
@@ -142,6 +150,10 @@ const ContractList = () => {
                     enableRowNumbers
                     enableColumnResizing={false}
                     layoutMode="semantic"
+                    initialState={{
+                        density: 'compact',
+                    }}
+                    enableDensityToggle={false}
                     muiTableContainerProps={{
                         sx: {
                             maxWidth: '100%',

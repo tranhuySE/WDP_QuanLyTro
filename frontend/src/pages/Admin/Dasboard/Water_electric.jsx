@@ -103,7 +103,7 @@ const UtilityStats = () => {
                     </div>
                 </div>
 
-                <Tabs activeKey={activeTab} onSelect={handleTabChange} className="mb-3">
+                <Tabs activeKey={activeTab} onSelect={handleTabChange} className="mb-3" justify>
                     <Tab eventKey="electric" title="Điện">
                         <div style={{ height: '400px' }}>
                             <ResponsiveContainer width="100%" height="100%">
