@@ -14,6 +14,7 @@ import { FaMoneyBillWave, FaBed, FaExclamationTriangle, FaChartLine } from 'reac
 import { BsFillHouseFill } from 'react-icons/bs';
 import { MdPayments } from 'react-icons/md';
 import UtilityStats from './Water_electric';
+import { getStats } from '../../../api/invoiceAPI';
 // import api from '../api';
 
 const Analyst = () => {
@@ -67,67 +68,70 @@ const Analyst = () => {
                 // setStats(response.data);
 
                 // Dữ liệu mẫu (sau này sẽ thay bằng API thực)
-                const mockData = {
-                    revenue: {
-                        total: 125000000,
-                        thisMonth: 45000000,
-                        lastMonth: 38000000,
-                        trend: 18.42, // %
-                    },
-                    debt: {
-                        total: 12000000,
-                        overdue: 3500000,
-                        trend: -5.2,
-                    },
-                    occupancy: {
-                        totalRooms: 50,
-                        occupied: 42,
-                        rate: 84,
-                        trend: 2.5,
-                    },
-                    recentPayments: [
-                        {
-                            id: 1,
-                            room: 'P101',
-                            tenant: 'Nguyễn Văn A',
-                            amount: 2500000,
-                            date: '15/06/2023',
-                            status: 'paid',
-                        },
-                        {
-                            id: 2,
-                            room: 'P205',
-                            tenant: 'Trần Thị B',
-                            amount: 3000000,
-                            date: '14/06/2023',
-                            status: 'paid',
-                        },
-                        {
-                            id: 3,
-                            room: 'P302',
-                            tenant: 'Lê Văn C',
-                            amount: 2800000,
-                            date: '10/06/2023',
-                            status: 'paid',
-                        },
-                        {
-                            id: 4,
-                            room: 'P104',
-                            tenant: 'Phạm Thị D',
-                            amount: 2500000,
-                            date: '05/06/2023',
-                            status: 'overdue',
-                        },
-                    ],
-                    monthlyRevenue: [
-                        { month: 'Tháng 1', revenue: 38000000 },
-                        { month: 'Tháng 2', revenue: 42000000 },
-                        { month: 'Tháng 3', revenue: 40000000 },
-                        { month: 'Tháng 4', revenue: 43000000 },
-                        { month: 'Tháng 5', revenue: 38000000 },
-                        { month: 'Tháng 6', revenue: 45000000 },
-                    ],
-                };
+                // const mockData = {
+                //     revenue: {
+                //         total: 125000000,
+                //         thisMonth: 45000000,
+                //         lastMonth: 38000000,
+                //         trend: 18.42, // %
+                //     },
+                //     debt: {
+                //         total: 12000000,
+                //         overdue: 3500000,
+                //         trend: -5.2,
+                //     },
+                //     occupancy: {
+                //         totalRooms: 50,
+                //         occupied: 42,
+                //         rate: 84,
+                //         trend: 2.5,
+                //     },
+                //     recentPayments: [
+                //         {
+                //             id: 1,
+                //             room: 'P101',
+                //             tenant: 'Nguyễn Văn A',
+                //             amount: 2500000,
+                //             date: '15/06/2023',
+                //             status: 'paid',
+                //         },
+                //         {
+                //             id: 2,
+                //             room: 'P205',
+                //             tenant: 'Trần Thị B',
+                //             amount: 3000000,
+                //             date: '14/06/2023',
+                //             status: 'paid',
+                //         },
+                //         {
+                //             id: 3,
+                //             room: 'P302',
+                //             tenant: 'Lê Văn C',
+                //             amount: 2800000,
+                //             date: '10/06/2023',
+                //             status: 'paid',
+                //         },
+                //         {
+                //             id: 4,
+                //             room: 'P104',
+                //             tenant: 'Phạm Thị D',
+                //             amount: 2500000,
+                //             date: '05/06/2023',
+                //             status: 'overdue',
+                //         },
+                //     ],
+                //     monthlyRevenue: [
+                //         { month: 'Tháng 1', revenue: 38000000 },
+                //         { month: 'Tháng 2', revenue: 42000000 },
+                //         { month: 'Tháng 3', revenue: 40000000 },
+                //         { month: 'Tháng 4', revenue: 43000000 },
+                //         { month: 'Tháng 5', revenue: 38000000 },
+                //         { month: 'Tháng 6', revenue: 45000000 },
+                //     ],
+                // };
+
+                const data = await getStats();
+                const mockData = data.data;
 
                 setStats(mockData);
                 setLoading(false);
@@ -282,7 +286,7 @@ const Analyst = () => {
                 </Col>
             </Row>
 
-            <Tabs defaultActiveKey="overview" className="mb-3">
+            <Tabs defaultActiveKey="overview" className="mb-3" justify>
                 <Tab eventKey="overview" title="Doanh thu">
                     <Row className="mt-3">
                         <div style={{ height: '400px' }}>
