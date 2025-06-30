@@ -7,6 +7,7 @@ export const ROUTES = {
     CHANGE_PASSWORD: '/change-password',
     EDIT_PROFILE: '/edit-profile',
     HOME: '/',
+    FORGOT_PASSWORD: '/forgot-password',
 
     // Admin
     DASHBOARD: '/admin/dashboard',
