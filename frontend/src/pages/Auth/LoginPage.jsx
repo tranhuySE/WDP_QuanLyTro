@@ -23,7 +23,8 @@ const LoginPage = () => {
                 // Lưu thông tin vào localStorage
                 localStorage.setItem("token", token);
                 localStorage.setItem("role", user.role);
-                localStorage.setItem("fullname", user.fullname); 
+                localStorage.setItem("fullname", user.fullname);
+                localStorage.setItem("id", user.id);
 
                 // Điều hướng dựa vào role
                 if (user.role === "admin") navigate("/admin/homepage");
