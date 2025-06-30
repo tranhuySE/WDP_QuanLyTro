@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/Auth/LoginPage.jsx"; // Giả sử bạn có một trang đăng nhập
+import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage.jsx";
 import AdminRoutes from "./routes/AdminRoutes";
 import StaffRoutes from "./routes/StaffRoutes.jsx";
 import TenantRoutes from "./routes/TenantRoutes.jsx";
@@ -24,6 +25,7 @@ function App() {
                 {/* Các route public có thể thêm ở đây */}
                 {/* ... */}
                 <Route path="/" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
                 {/* Route admin */}
                 {role === "admin" && (
