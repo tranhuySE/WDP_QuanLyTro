@@ -88,6 +88,9 @@ const LoginPage = () => {
                                 </Form>
                             </Card.Body>
                         </Card>
+                        <p className="text-center mt-2">
+                            <a href="/forgot-password">Quên mật khẩu?</a>
+                        </p>
                         <p className="text-center text-muted mt-3">
                             &copy; 2025 Boarding House Management System
                         </p>
