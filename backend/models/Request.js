@@ -56,27 +56,15 @@ const requestsSchema = new Schema(
       ref: "User",
     },
     room: {
-      roomId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Room",
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Room",
     },
     approval: {
-      action: {
-        type: String,
-        enum: ["APPROVED", "REJECTED"],
-        default: null, // null = chưa xét duyệt
-      },
-      note: {
-        type: String,
-        trim: true, // Lý do từ chối hoặc phản hồi nếu có
-      },
-      approvedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      approvedByName: String,
-      approvedAt: Date,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    reasonReject: {
+      type: String
     },
     completion: {
       completedAt: Date,
@@ -129,7 +117,6 @@ const requestsSchema = new Schema(
           ref: "User",
           required: true,
         },
-        changedByName: String,
         note: String,
         changedAt: {
           type: Date,

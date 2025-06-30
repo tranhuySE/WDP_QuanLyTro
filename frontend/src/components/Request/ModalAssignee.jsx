@@ -1,7 +1,7 @@
 import { Button, message, Modal, Select, Space } from "antd";
 import { useEffect, useState } from "react";
-import UserAPI from "../../../../api/userAPI";
-import RequestAPI from "../../../../api/requestAPI";
+import UserAPI from "../../api/userAPI";
+import RequestAPI from "../../api/requestAPI";
 
 const ModalAssignee = ({ open, onCancel, onOk }) => {
 
@@ -28,9 +28,12 @@ const ModalAssignee = ({ open, onCancel, onOk }) => {
       if (!staffSelected) return message.error("Hãy chọn staff!")
       const res = await RequestAPI.assigneeRequest({
         requestId: open?._id,
-        user: {
-          _id: staffSelected?.data?._id,
-          username: staffSelected?.data?.username
+        assignedTo: staffSelected?.data?._id,
+        approval: localStorage.getItem("id"),
+        statusHistory: {
+          oldStatus: open?.status,
+          newStatus: "ASSIGNED",
+          changedBy: localStorage.getItem("id")
         }
       })
       onOk()

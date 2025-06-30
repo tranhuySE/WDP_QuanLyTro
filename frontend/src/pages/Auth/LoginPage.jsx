@@ -37,6 +37,7 @@ const LoginPage = () => {
                 localStorage.setItem("token", token);
                 localStorage.setItem("role", user.role);
                 localStorage.setItem("fullname", user.fullname);
+                localStorage.setItem("id", user.id);
 
                 // Navigate based on role
                 if (user.role === "admin") navigate("/admin/homepage");
