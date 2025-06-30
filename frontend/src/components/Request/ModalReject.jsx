@@ -1,5 +1,5 @@
 import { Button, Form, Input, message, Modal, Space } from "antd"
-import RequestAPI from "../../../../api/requestAPI"
+import RequestAPI from "../../api/requestAPI"
 
 const ModalReject = ({ open, onCancel, onOk }) => {
 
@@ -10,7 +10,13 @@ const ModalReject = ({ open, onCancel, onOk }) => {
       const values = await form.validateFields()
       const res = await RequestAPI.rejectRequest({
         requestId: open?._id,
-        note: values?.note
+        reasonReject: values?.reasonReject,
+        approval: localStorage.getItem("id"),
+        statusHistory: {
+          oldStatus: open?.status,
+          newStatus: "REJECTED",
+          changedBy: localStorage.getItem("id")
+        }
       })
       onOk()
       message.success("Huỷ yêu cầu thành công")
@@ -45,7 +51,7 @@ const ModalReject = ({ open, onCancel, onOk }) => {
     >
       <Form form={form}>
         <Form.Item
-          name='note'
+          name='reasonReject'
           rules={[
             { required: true, message: "Thông tin không được để trống" },
           ]}
