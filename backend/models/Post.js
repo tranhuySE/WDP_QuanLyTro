@@ -8,9 +8,21 @@ const postSchema = new Schema(
     },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },
-    content: { type: String },
+    content: { type: String, required: true },
+    title: { type: String, required: true },
     tag: {
       type: String,
+      enum: [
+        "Thông báo",
+        "Tin tức",
+        "Cảnh báo",
+        "Nhắc nhở",
+        "Quy định",
+      ],
+    },
+    pinned: {
+      type: Boolean,
+      default: false,
     },
   },
   {
