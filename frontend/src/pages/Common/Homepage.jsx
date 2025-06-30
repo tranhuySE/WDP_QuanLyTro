@@ -1,18 +1,15 @@
 import {
     AlertTriangle,
-    Bell,
     CheckCircle,
     ClipboardList,
     Edit,
     Info,
     MoreVertical,
     Pin,
-    Plus,
-    Trash2,
-    X
+    Trash2
 } from 'lucide-react';
 import { useState } from 'react';
-import { Button, Card, Container, Dropdown, Form, ListGroup, Modal } from 'react-bootstrap';
+import { Card, Container, Dropdown, ListGroup } from 'react-bootstrap';
 
 const Homepage = () => {
     // State for announcements
@@ -119,19 +116,6 @@ const Homepage = () => {
         setCurrentAnnouncement(null);
     };
 
-    // Handle delete confirmation
-    const handleDeleteClick = (announcement) => {
-        setCurrentAnnouncement(announcement);
-        setShowDeleteModal(true);
-    };
-
-    // Handle confirm delete
-    const handleConfirmDelete = () => {
-        setAnnouncements(announcements.filter(a => a.id !== currentAnnouncement.id));
-        setShowDeleteModal(false);
-        setCurrentAnnouncement(null);
-    };
-
     // Handle pin/unpin announcement
     const togglePin = (id) => {
         setAnnouncements(announcements.map(a =>
@@ -176,10 +160,6 @@ const Homepage = () => {
                     <ClipboardList size={28} className="me-2 text-primary" />
                     Thông Báo Chung Cư
                 </h2>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
-                    <Plus size={18} className="me-1" />
-                    Thêm Thông Báo
-                </Button>
             </div>
 
             {/* Announcements List */}
@@ -249,148 +229,6 @@ const Homepage = () => {
                 ))}
             </ListGroup>
 
-            {/* Add Announcement Modal */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <Bell className="me-2" />
-                        Thêm Thông Báo Mới
-                    </Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handleSubmit}>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tiêu đề</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="title"
-                                value={newAnnouncement.title}
-                                onChange={handleInputChange}
-                                placeholder="Nhập tiêu đề thông báo"
-                                required
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nội dung</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={4}
-                                name="content"
-                                value={newAnnouncement.content}
-                                onChange={handleInputChange}
-                                placeholder="Nhập nội dung thông báo"
-                                required
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Loại thông báo</Form.Label>
-                            <Form.Select
-                                name="type"
-                                value={newAnnouncement.type}
-                                onChange={handleInputChange}
-                            >
-                                <option value="info">Thông tin thường</option>
-                                <option value="warning">Cảnh báo quan trọng</option>
-                                <option value="success">Thông báo hoàn thành</option>
-                            </Form.Select>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowModal(false)}>
-                            <X className="me-1" />
-                            Hủy
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Đăng Thông Báo
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-
-            {/* Edit Announcement Modal */}
-            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <Edit className="me-2" />
-                        Chỉnh Sửa Thông Báo
-                    </Modal.Title>
-                </Modal.Header>
-                {currentAnnouncement && (
-                    <Form onSubmit={handleSaveEdit}>
-                        <Modal.Body>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Tiêu đề</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="title"
-                                    value={currentAnnouncement.title}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Nội dung</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={4}
-                                    name="content"
-                                    value={currentAnnouncement.content}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Loại thông báo</Form.Label>
-                                <Form.Select
-                                    name="type"
-                                    value={currentAnnouncement.type}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="info">Thông tin thường</option>
-                                    <option value="warning">Cảnh báo quan trọng</option>
-                                    <option value="success">Thông báo hoàn thành</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-                                <X className="me-1" />
-                                Hủy
-                            </Button>
-                            <Button variant="primary" type="submit">
-                                Lưu Thay Đổi
-                            </Button>
-                        </Modal.Footer>
-                    </Form>
-                )}
-            </Modal>
-
-            {/* Delete Confirmation Modal */}
-            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <Trash2 className="me-2 text-danger" />
-                        Xác Nhận Xóa
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Bạn có chắc chắn muốn xóa thông báo "{currentAnnouncement?.title}" không?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-                        <X className="me-1" />
-                        Hủy
-                    </Button>
-                    <Button variant="danger" onClick={handleConfirmDelete}>
-                        <Trash2 className="me-1" />
-                        Xóa
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </Container>
     );
 };
