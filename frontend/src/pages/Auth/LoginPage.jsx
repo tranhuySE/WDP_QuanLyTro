@@ -42,7 +42,7 @@ const LoginPage = () => {
                 // Navigate based on role
                 if (user.role === "admin") navigate("/admin/homepage");
                 else if (user.role === "staff") navigate("/staff/homepage");
-                else navigate("/tenant/homepage");
+                else if (user.role === "user") navigate("/tenant/homepage");
             }
         } catch (err) {
             console.error("Login error:", err);

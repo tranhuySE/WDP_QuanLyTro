@@ -1,33 +1,14 @@
 import {
-    BarChart3,
-    Building2,
     ChevronLeft,
-    ChevronRight,
-    FileCheck,
-    FileText,
-    Home,
-    LifeBuoy,
-    Users,
-    Wrench
+    ChevronRight
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../styles/SideBar/Sidebar.css'; // Assuming you have a CSS file for styles
 
-const Sidebar = ({ isCollapsed, onToggle }) => {
+const Sidebar = ({ isCollapsed, onToggle, navItems }) => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
-
-    const navItems = [
-        { path: '/admin/homepage', label: 'Trang chủ', icon: Home },
-        { path: '/admin/dashboard', label: 'Phân tích dữ liệu', icon: BarChart3 },
-        { path: '/admin/rooms', label: 'Quản lý phòng', icon: Building2 },
-        { path: '/admin/users', label: 'Quản lý tài khoản', icon: Users },
-        { path: '/admin/bills', label: 'Quản lý hóa đơn', icon: FileText },
-        { path: '/admin/contracts', label: 'Quản lý hợp đồng', icon: FileCheck },
-        { path: '/admin/services', label: 'Quản lý dịch vụ', icon: Wrench },
-        { path: '/admin/requests', label: 'Yêu cầu hỗ trợ', icon: LifeBuoy },
-    ];
 
     const handleItemClick = (path) => {
         setActiveItem(path);
