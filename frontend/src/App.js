@@ -44,7 +44,7 @@ function App() {
                 )}
 
                 {/* Route user */}
-                {role === "tenant" && (
+                {role === "user" && (
                     <Route path={TenantRoutes.path} element={TenantRoutes.element}>
                         {TenantRoutes.children.map((route, index) => (
                             <Route key={index} path={route.path} element={route.element} />
