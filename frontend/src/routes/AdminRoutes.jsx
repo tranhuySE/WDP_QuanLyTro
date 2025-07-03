@@ -22,6 +22,12 @@ const AdminRoutes = {
         { path: 'requests', element: <RequestManagement /> },
         // // Có thể thêm route mặc định hoặc catch-all ở đây nếu cần
         // { path: '', element: <HomePage /> }, // Mặc định khi vào /admin
+          // // Có thể thêm route mặc định hoặc catch-all ở đây nếu cần
+        // { path: '', element: <HomePage /> }, // Mặc định khi vào /admin
+          // // Có thể thêm route mặc định hoặc catch-all ở đây nếu cần
+        // { path: '', element: <HomePage /> }, // Mặc định khi vào /admin
+          // // Có thể thêm route mặc định hoặc catch-all ở đây nếu cần
+        // { path: '', element: <HomePage /> }, // Mặc định khi vào /admin
     ]
 };
 
