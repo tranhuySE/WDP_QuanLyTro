@@ -1003,8 +1003,10 @@ const UserManagement = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            
         </div>
     );
 };
+
 
 export default UserManagement;
