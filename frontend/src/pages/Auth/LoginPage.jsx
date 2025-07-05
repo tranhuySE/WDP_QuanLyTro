@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import authAPI from "../../api/authAPI";
 import "../../styles/Auth/LoginPage.css";
 
@@ -141,8 +141,11 @@ const LoginPage = () => {
                                 </Form>
                             </Card.Body>
                         </Card>
-                        <p className="text-center text-muted mt-3 copyright">
-                            &copy; {new Date().getFullYear()} Boarding House Management System
+                        <p className="text-center mt-2">
+                            <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+                        </p>
+                        <p className="text-center text-muted mt-3">
+                            &copy; 2025 Boarding House Management System
                         </p>
                     </Col>
                 </Row>
