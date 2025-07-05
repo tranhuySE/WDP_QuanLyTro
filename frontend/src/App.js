@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoginPage from "./pages/Auth/LoginPage.jsx"; // Giả sử bạn có một trang đăng nhập
 import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage.jsx";
+import LoginPage from "./pages/Auth/LoginPage.jsx"; // Giả sử bạn có một trang đăng nhập
 import ResetPasswordPage from "./pages/Auth/ResetPasswordPage.jsx";
 import AdminRoutes from "./routes/AdminRoutes";
 import StaffRoutes from "./routes/StaffRoutes.jsx";
@@ -51,7 +51,7 @@ function App() {
                     )}
 
                     {/* Route user */}
-                    {role === "tenant" && (
+                    {role === "user" && ( //giữ user cấm đổi tenant
                         <Route path={TenantRoutes.path} element={TenantRoutes.element}>
                             {TenantRoutes.children.map((route, index) => (
                                 <Route key={index} path={route.path} element={route.element} />
