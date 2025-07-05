@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import forgotPasswordAPI từ api nếu có, hoặc để TODO
-// import { forgotPasswordAPI } from "../../api/userAPI";
+import authAPI from "../../api/authAPI";
+import { toast } from "react-toastify";
+import "../../styles/Auth/ForgotPasswordPage.css";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -13,20 +14,22 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    
     try {
-      // await forgotPasswordAPI(email); // Bỏ comment nếu đã có API
-      setTimeout(() => { // Xóa dòng này khi có API thật
-        setMessage("Vui lòng kiểm tra email để đặt lại mật khẩu.");
-        setLoading(false);
-      }, 1000); // Xóa khi có API thật
+      const response = await authAPI.forgotPassword(email);
+      setMessage(response.data.message || "Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn.");
+      toast.success("Email đã được gửi thành công!");
     } catch (error) {
-      setMessage("Có lỗi xảy ra. Vui lòng thử lại.");
+      const errorMessage = error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại.";
+      setMessage(errorMessage);
+      toast.error(errorMessage);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="forgot-password-container" style={{maxWidth: 400, margin: '40px auto', padding: 24, border: '1px solid #eee', borderRadius: 8}}>
+    <div className="forgot-password-container">
       <h2 className="text-center mb-4">Quên mật khẩu</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -41,8 +44,12 @@ const ForgotPasswordPage = () => {
           {loading ? "Đang gửi..." : "Gửi yêu cầu"}
         </button>
       </form>
-      {message && <div className="alert alert-info mt-3">{message}</div>}
-      <button className="btn btn-link mt-2" onClick={() => navigate("/login")}>Quay lại đăng nhập</button>
+      {message && (
+        <div className={`alert ${message.includes('thành công') ? 'alert-success' : 'alert-info'} mt-3`}>
+          {message}
+        </div>
+      )}
+      <button className="btn btn-link mt-2" onClick={() => navigate("/")}>Quay lại đăng nhập</button>
     </div>
   );
 };

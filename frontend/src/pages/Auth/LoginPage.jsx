@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import authAPI from "../../api/authAPI";
 import "../../styles/Auth/LoginPage.css";
 
@@ -89,7 +89,7 @@ const LoginPage = () => {
                             </Card.Body>
                         </Card>
                         <p className="text-center mt-2">
-                            <a href="/forgot-password">Quên mật khẩu?</a>
+                            <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
                         </p>
                         <p className="text-center text-muted mt-3">
                             &copy; 2025 Boarding House Management System
