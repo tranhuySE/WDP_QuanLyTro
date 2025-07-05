@@ -18,4 +18,16 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error),
 );
 
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response.status === 401) {
+            // Token hết hạn => Đăng xuất hoặc refresh token
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default axiosInstance;

@@ -11,7 +11,10 @@ const createRequest = async (req, res) => {
 
 const getListRequest = async (req, res) => {
   try {
-    const requests = await Request.find()
+    const requests = await Request
+      .find()
+      .populate("createdBy", ["_id", "fullname"])
+      .populate("room", ["_id", "fullname"])
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,21 +23,15 @@ const getListRequest = async (req, res) => {
 
 const assigneeRequest = async (req, res) => {
   try {
-    const { user, requestId } = req.body
+    const { assignedTo, approval, requestId, statusHistory } = req.body
     const request = await Request.findOneAndUpdate(
       { _id: requestId },
       {
-        assignedTo: {
-          userId: user._id,
-          userType: "STAFF",
-          userName: user.username,
-          assignedAtL: Date.now()
-        },
-        approval: {
-          action: "APPROVED",
-          approvedBy: "6857be773214e3862ae61d8b",
-          approvedByName: "admin_master",
-          approvedAt: Date.now()
+        status: "ASSIGNED",
+        assignedTo: assignedTo,
+        approval: approval,
+        $push: {
+          statusHistory
         }
       },
       {
@@ -49,16 +46,15 @@ const assigneeRequest = async (req, res) => {
 
 const rejectRequest = async (req, res) => {
   try {
-    const { requestId, note } = req.body
+    const { requestId, approval, reasonReject, statusHistory } = req.body
     const request = await Request.findOneAndUpdate(
       { _id: requestId },
       {
-        approval: {
-          action: "REJECTED",
-          note: note,
-          approvedBy: "6857be773214e3862ae61d8b",
-          approvedByName: "admin_master",
-          approvedAt: Date.now()
+        status: "REJECTED",
+        approval: approval,
+        reasonReject,
+        $push: {
+          statusHistory
         }
       },
       {
