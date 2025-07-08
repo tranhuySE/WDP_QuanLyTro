@@ -118,6 +118,51 @@ const getDashboardStats = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+const getInvoiceHistory = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      roomId,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const filter = {};
+    if (status) filter.payment_status = status;
+    if (roomId) filter.for_room_id = roomId;
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Set to end of day
+        filter.createdAt.$lte = end;
+      }
+    }
+
+    const invoices = await Invoice.find(filter)
+      .populate("for_room_id", "roomNumber floor")
+      .populate("create_by", "fullname email")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    const totalInvoices = await Invoice.countDocuments(filter);
+
+    res.json({
+      invoices,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalInvoices / limit),
+      totalItems: totalInvoices,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 module.exports = {
     getDashboardStats,
 };
