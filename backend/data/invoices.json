@@ -16,12 +16,14 @@
             {
                 "name": "Room rent",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 5000000,
                 "subTotal": 5000000
             },
             {
                 "name": "Electricity",
                 "unit": "kWh",
+                "quantity": 1,
                 "price_unit": 3500,
                 "subTotal": 175000
             }
@@ -58,12 +60,14 @@
             {
                 "name": "Room rent",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 4500000,
                 "subTotal": 4500000
             },
             {
                 "name": "Internet",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 200000,
                 "subTotal": 200000
             }
@@ -100,12 +104,14 @@
             {
                 "name": "Room rent",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 5500000,
                 "subTotal": 5500000
             },
             {
                 "name": "Parking",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 100000,
                 "subTotal": 100000
             }
@@ -138,6 +144,7 @@
             {
                 "name": "Cleaning Service",
                 "unit": "session",
+                "quantity": 1,
                 "price_unit": 150000,
                 "subTotal": 150000
             }
@@ -174,12 +181,14 @@
             {
                 "name": "Room rent",
                 "unit": "month",
+                "quantity": 1,
                 "price_unit": 4700000,
                 "subTotal": 4700000
             },
             {
                 "name": "Water",
                 "unit": "m3",
+                "quantity": 1,
                 "price_unit": 20000,
                 "subTotal": 100000
             }

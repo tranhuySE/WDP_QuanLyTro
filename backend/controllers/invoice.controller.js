@@ -1,6 +1,14 @@
 const Invoice = require('../models/Invoice');
 const Room = require('../models/Room');
 const now = new Date();
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const getDashboardStats = async (req, res) => {
     try {
@@ -118,6 +126,93 @@ const getDashboardStats = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+const getInvoices = async (req, res) => {
+    try {
+        const invoices = await Invoice.find()
+            .populate('for_room_id', 'roomNumber -_id')
+            .populate('create_by', 'fullname -_id');
+        res.json(invoices);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+const extractPublicId = (url) => {
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    const [publicId] = filename.split('.');
+    return `invoices/${publicId}`;
+};
+
+const createInvoice = async (req, res) => {
+    try {
+        const { invoiceData } = req.body;
+        const parsedData = typeof invoiceData === 'string' ? JSON.parse(invoiceData) : invoiceData;
+
+        const uploadedImages = [];
+        for (const file of req.files || []) {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'invoices',
+            });
+            uploadedImages.push({ url: result.secure_url, public_id: result.public_id });
+            fs.unlinkSync(file.path);
+        }
+
+        parsedData.note = parsedData.note || {};
+        parsedData.note.img = uploadedImages;
+
+        const newInvoice = new Invoice(parsedData);
+        await newInvoice.save();
+
+        res.status(201).json({ message: 'Tạo hóa đơn thành công', invoice: newInvoice });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi tạo hóa đơn', error: err.message });
+    }
+};
+
+const updateInvoice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { invoiceData, oldImages = '[]', deletedImages = '[]' } = req.body;
+
+        const parsedData = typeof invoiceData === 'string' ? JSON.parse(invoiceData) : invoiceData;
+        const parsedOldImages = JSON.parse(oldImages);
+        const parsedDeletedImages = JSON.parse(deletedImages);
+
+        const newUploadedImages = [];
+        for (const file of req.files || []) {
+            const result = await cloudinary.uploader.upload(file.path, {
+                folder: 'invoices',
+            });
+            newUploadedImages.push({ url: result.secure_url, public_id: result.public_id });
+            fs.unlinkSync(file.path);
+        }
+
+        for (const url of parsedDeletedImages) {
+            const publicId = extractPublicId(url);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId);
+            }
+        }
+
+        parsedData.note = parsedData.note || {};
+        parsedData.note.img = [...parsedOldImages, ...newUploadedImages];
+
+        const updatedInvoice = await Invoice.findByIdAndUpdate(id, parsedData, { new: true });
+
+        res.status(200).json({ message: 'Cập nhật hóa đơn thành công', invoice: updatedInvoice });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi cập nhật hóa đơn', error: err.message });
+    }
+};
+
 module.exports = {
     getDashboardStats,
+    getInvoices,
+    createInvoice,
+    updateInvoice,
 };
