@@ -1,28 +1,20 @@
-import {
-    AlertCircle,
-    Eye,
-    EyeOff,
-    Home,
-    Key,
-    LogIn,
-    User
-} from "lucide-react";
-import { useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { useNavigate, Link } from "react-router-dom";
-import authAPI from "../../api/authAPI";
-import "../../styles/Auth/LoginPage.css";
+import { AlertCircle, Eye, EyeOff, Home, Key, LogIn, User } from 'lucide-react';
+import { useState } from 'react';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
+import authAPI from '../../api/authAPI';
+import '../../styles/Auth/LoginPage.css';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const [form, setForm] = useState({ username: "", password: "" });
-    const [error, setError] = useState("");
+    const [form, setForm] = useState({ username: '', password: '' });
+    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        if (error) setError("");
+        if (error) setError('');
     };
 
     const handleLogin = async () => {
@@ -33,20 +25,19 @@ const LoginPage = () => {
             if (res.status === 200) {
                 const { token, user } = res.data;
 
-                // Save to localStorage
-                localStorage.setItem("token", token);
-                localStorage.setItem("role", user.role);
-                localStorage.setItem("fullname", user.fullname);
-                localStorage.setItem("id", user.id);
+                localStorage.setItem('token', token);
+                localStorage.setItem('role', user.role);
+                localStorage.setItem('fullname', user.fullname);
+                localStorage.setItem('id', user._id);
 
                 // Navigate based on role
-                if (user.role === "admin") navigate("/admin/homepage");
-                else if (user.role === "staff") navigate("/staff/homepage");
-                else if (user.role === "user") navigate("/tenant/homepage");
+                if (user.role === 'admin') navigate('/admin/homepage');
+                else if (user.role === 'staff') navigate('/staff/homepage');
+                else if (user.role === 'user') navigate('/tenant/homepage');
             }
         } catch (err) {
-            console.error("Login error:", err);
-            setError("Tài khoản hoặc mật khẩu không đúng.");
+            console.error('Login error:', err);
+            setError('Tài khoản hoặc mật khẩu không đúng.');
         } finally {
             setIsLoading(false);
         }
@@ -66,9 +57,7 @@ const LoginPage = () => {
                             <Card.Body className="p-4">
                                 <div className="text-center mb-4">
                                     <Home size={48} className="text-primary mb-3" />
-                                    <h3 className="login-title">
-                                        Boarding House Management
-                                    </h3>
+                                    <h3 className="login-title">Boarding House Management</h3>
                                     <p className="text-muted">Please sign in to continue</p>
                                 </div>
 
@@ -99,7 +88,7 @@ const LoginPage = () => {
                                         </Form.Label>
                                         <div className="input-with-icon">
                                             <Form.Control
-                                                type={showPassword ? "text" : "password"}
+                                                type={showPassword ? 'text' : 'password'}
                                                 name="password"
                                                 value={form.password}
                                                 onChange={handleChange}
@@ -113,7 +102,11 @@ const LoginPage = () => {
                                                 className="password-toggle"
                                                 onClick={() => setShowPassword(!showPassword)}
                                             >
-                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                {showPassword ? (
+                                                    <EyeOff size={18} />
+                                                ) : (
+                                                    <Eye size={18} />
+                                                )}
                                             </button>
                                         </div>
                                     </Form.Group>
@@ -132,7 +125,11 @@ const LoginPage = () => {
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
-                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            <span
+                                                className="spinner-border spinner-border-sm me-2"
+                                                role="status"
+                                                aria-hidden="true"
+                                            ></span>
                                         ) : (
                                             <LogIn size={18} className="me-2" />
                                         )}
@@ -142,7 +139,9 @@ const LoginPage = () => {
                             </Card.Body>
                         </Card>
                         <p className="text-center mt-2">
-                            <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+                            <Link to="/forgot-password" className="text-decoration-none">
+                                Quên mật khẩu?
+                            </Link>
                         </p>
                         <p className="text-center text-muted mt-3">
                             &copy; 2025 Boarding House Management System
