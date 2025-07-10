@@ -10,6 +10,35 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
+// Quy tắc validation cho Forgot Password
+const validateForgotPassword = [
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Invalid email format.")
+    .normalizeEmail(),
+];
+
+// Quy tắc validation cho Reset Password
+const validateResetPassword = [
+  body("token")
+    .notEmpty()
+    .withMessage("Reset token is required.")
+    .isString()
+    .withMessage("Token must be a string.")
+    .isLength({ min: 32, max: 64 })
+    .withMessage("Token must be between 32 and 64 characters."),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required.")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long.")
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage("Password must contain at least one lowercase letter, one uppercase letter, and one number."),
+];
+
 // Quy tắc validation cho Room
 const validateRoom = [
   body("roomNumber")
@@ -123,5 +152,7 @@ const validateId = [param("id").isMongoId().withMessage("Invalid ID format.")];
 module.exports = {
   validateRoom,
   validateId,
+  validateForgotPassword,
+  validateResetPassword,
   handleValidationErrors,
 };

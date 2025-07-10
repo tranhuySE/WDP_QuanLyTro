@@ -21,6 +21,7 @@ import {
     X
 } from 'lucide-react';
 import { MaterialReactTable } from 'material-react-table';
+//import moment from 'moment';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -1002,8 +1003,10 @@ const UserManagement = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            
         </div>
     );
 };
+
 
 export default UserManagement;
