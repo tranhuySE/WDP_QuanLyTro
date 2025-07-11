@@ -45,6 +45,11 @@ const getListStaff = async (req, res) => {
     }
 }
 
+const editUserById = async (req, res) => {
+    
+
+}
+
 module.exports = {
     getAllUsers,
     getUserById,

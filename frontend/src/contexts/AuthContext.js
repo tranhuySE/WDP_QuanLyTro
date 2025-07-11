@@ -7,21 +7,25 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: false,
         role: null,
         user: null,
+        initialized: false // Thêm flag để track trạng thái khởi tạo
     });
 
-    // Kiểm tra localStorage khi khởi động app
     useEffect(() => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
+
         if (token && role) {
             setAuth({
                 isAuthenticated: true,
                 role,
                 user: {
                     fullname: localStorage.getItem('fullname'),
-                    id: localStorage.getItem('id'),
+                    id: localStorage.getItem('id')
                 },
+                initialized: true
             });
+        } else {
+            setAuth(prev => ({ ...prev, initialized: true }));
         }
     }, []);
 
@@ -33,13 +37,19 @@ export const AuthProvider = ({ children }) => {
         setAuth({
             isAuthenticated: true,
             role: user.role,
-            user
+            user,
+            initialized: true
         });
     };
 
     const logout = () => {
         localStorage.clear();
-        setAuth({ isAuthenticated: false, role: null, user: null });
+        setAuth({
+            isAuthenticated: false,
+            role: null,
+            user: null,
+            initialized: true
+        });
     };
 
     return (
