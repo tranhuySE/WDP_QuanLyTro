@@ -1,68 +1,86 @@
 // src/App.js
-import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage.jsx";
-import LoginPage from "./pages/Auth/LoginPage.jsx"; // Giả sử bạn có một trang đăng nhập
-import ResetPasswordPage from "./pages/Auth/ResetPasswordPage.jsx";
+import { AuthProvider } from "./contexts/AuthContext";
+import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage";
+import LoginPage from "./pages/Auth/LoginPage";
+import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
 import AdminRoutes from "./routes/AdminRoutes";
-import StaffRoutes from "./routes/StaffRoutes.jsx";
-import TenantRoutes from "./routes/TenantRoutes.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import StaffRoutes from "./routes/StaffRoutes";
+import TenantRoutes from "./routes/TenantRoutes";
 
 function App() {
-    const [role, setRole] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const storedRole = localStorage.getItem("role");
-        setRole(storedRole);
-        setIsLoading(false);
-    }, []);
-
-    if (isLoading) return <div>Loading...</div>;
-
     return (
-        <>
+        <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    {/* Các route public có thể thêm ở đây */}
-                    {/* ... */}
+                    {/* Public routes */}
                     <Route path="/" element={<LoginPage />} />
+                    <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-                    {/* Route admin */}
-                    {role === "admin" && (
-                        <Route path={AdminRoutes.path} element={AdminRoutes.element}>
-                            {AdminRoutes.children.map((route, index) => (
-                                <Route key={index} path={route.path} element={route.element} />
-                            ))}
-                        </Route>
-                    )}
+                    {/* Admin routes */}
+                    <Route
+                        path={AdminRoutes.path}
+                        element={
+                            <ProtectedRoute allowedRoles={['admin']}>
+                                {AdminRoutes.element}
+                            </ProtectedRoute>
+                        }
+                    >
+                        {AdminRoutes.children.map((route, index) => (
+                            <Route
+                                key={`admin-${index}`}
+                                path={route.path}
+                                element={route.element}
+                            />
+                        ))}
+                    </Route>
 
-                    {/* Route staff */}
-                    {role === "staff" && (
-                        <Route path={StaffRoutes.path} element={StaffRoutes.element}>
-                            {StaffRoutes.children.map((route, index) => (
-                                <Route key={index} path={route.path} element={route.element} />
-                            ))}
-                        </Route>
-                    )}
+                    {/* Staff routes */}
+                    <Route
+                        path={StaffRoutes.path}
+                        element={
+                            <ProtectedRoute allowedRoles={['staff']}>
+                                {StaffRoutes.element}
+                            </ProtectedRoute>
+                        }
+                    >
+                        {StaffRoutes.children.map((route, index) => (
+                            <Route
+                                key={`staff-${index}`}
+                                path={route.path}
+                                element={route.element}
+                            />
+                        ))}
+                    </Route>
 
-                    {/* Route user */}
-                    {role === "user" && ( //giữ user cấm đổi tenant
-                        <Route path={TenantRoutes.path} element={TenantRoutes.element}>
-                            {TenantRoutes.children.map((route, index) => (
-                                <Route key={index} path={route.path} element={route.element} />
-                            ))}
-                        </Route>
-                    )}
+                    {/* Tenant routes */}
+                    <Route
+                        path={TenantRoutes.path}
+                        element={
+                            <ProtectedRoute allowedRoles={['user']}>
+                                {TenantRoutes.element}
+                            </ProtectedRoute>
+                        }
+                    >
+                        {TenantRoutes.children.map((route, index) => (
+                            <Route
+                                key={`tenant-${index}`}
+                                path={route.path}
+                                element={route.element}
+                            />
+                        ))}
+                    </Route>
 
+                    {/* Fallback route */}
                     <Route path="*" element={<LoginPage />} />
                 </Routes>
             </BrowserRouter>
-            
+
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
@@ -75,7 +93,7 @@ function App() {
                 pauseOnHover
                 theme="light"
             />
-        </>
+        </AuthProvider>
     );
 }
 

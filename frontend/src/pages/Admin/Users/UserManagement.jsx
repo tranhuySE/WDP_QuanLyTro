@@ -1,8 +1,8 @@
 import { useFormik } from 'formik';
-import { Plus, Search, User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+import { Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 // Components
@@ -234,7 +234,7 @@ const UserManagement = () => {
                                 />
                             </InputGroup>
                         </Col>
-                        <Col md={6} className="text-end">
+                        {/* <Col md={6} className="text-end">
                             <Button
                                 variant="primary"
                                 onClick={() => {
@@ -246,7 +246,7 @@ const UserManagement = () => {
                                 <Plus size={18} className="me-1" />
                                 Thêm người dùng
                             </Button>
-                        </Col>
+                        </Col> */}
                     </Row>
                 </Card.Body>
             </Card>
@@ -256,7 +256,7 @@ const UserManagement = () => {
                     <Spinner animation="border" variant="primary" />
                 </div>
             ) : (
-                <UserTable 
+                <UserTable
                     users={filteredUsers} 
                     loading={loading}
                     onViewDetail={handleViewDetail}
