@@ -25,7 +25,7 @@ const LoginPage = () => {
             const res = await authAPI.login(form);
             if (res.status === 200) {
                 const { token, user } = res.data;
-                login(token, user); // Thay thế localStorage bằng hàm login từ context
+                login(token, user);
                 // Chuyển hướng
                 if (user.role === 'admin') navigate('/admin/homepage');
                 else if (user.role === 'staff') navigate('/staff/homepage');
