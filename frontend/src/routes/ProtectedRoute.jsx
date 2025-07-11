@@ -1,11 +1,11 @@
-import { Navigate } from "react-router-dom";
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const { auth } = useAuth();
 
-  if (!token || !allowedRoles.includes(role)) {
-    return <Navigate to="/login" />;
+  if (!auth.isAuthenticated || !allowedRoles.includes(auth.role)) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;

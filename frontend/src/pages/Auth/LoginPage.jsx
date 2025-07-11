@@ -1,11 +1,13 @@
 import { AlertCircle, Eye, EyeOff, Home, Key, LogIn, User } from 'lucide-react';
 import { useState } from 'react';
 import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import authAPI from '../../api/authAPI';
+import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/Auth/LoginPage.css';
 
 const LoginPage = () => {
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
@@ -21,16 +23,10 @@ const LoginPage = () => {
         setIsLoading(true);
         try {
             const res = await authAPI.login(form);
-
             if (res.status === 200) {
                 const { token, user } = res.data;
-
-                localStorage.setItem('token', token);
-                localStorage.setItem('role', user.role);
-                localStorage.setItem('fullname', user.fullname);
-                localStorage.setItem('id', user._id);
-
-                // Navigate based on role
+                login(token, user); // Thay thế localStorage bằng hàm login từ context
+                // Chuyển hướng
                 if (user.role === 'admin') navigate('/admin/homepage');
                 else if (user.role === 'staff') navigate('/staff/homepage');
                 else if (user.role === 'user') navigate('/tenant/homepage');
