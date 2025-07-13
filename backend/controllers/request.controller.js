@@ -14,22 +14,22 @@ const getListRequest = async (req, res) => {
     const requests = await Request
       .find()
       .populate("createdBy", ["_id", "fullname"])
-      .populate("room", ["_id", "fullname"])
+      .populate("room", ["_id", "roomNumber"])
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
 
-const assigneeRequest = async (req, res) => {
+const changeRequestStatus = async (req, res) => {
   try {
-    const { assignedTo, approval, requestId, statusHistory } = req.body
+    const { assignedTo, approval, requestId, statusHistory, status } = req.body
     const request = await Request.findOneAndUpdate(
       { _id: requestId },
       {
-        status: "ASSIGNED",
-        assignedTo: assignedTo,
+        status,
         approval: approval,
+        assignedTo,
         $push: {
           statusHistory
         }
@@ -44,24 +44,30 @@ const assigneeRequest = async (req, res) => {
   }
 }
 
-const rejectRequest = async (req, res) => {
+const getListRequestByStaff = async (req, res) => {
   try {
-    const { requestId, approval, reasonReject, statusHistory } = req.body
-    const request = await Request.findOneAndUpdate(
-      { _id: requestId },
-      {
-        status: "REJECTED",
-        approval: approval,
-        reasonReject,
-        $push: {
-          statusHistory
-        }
-      },
-      {
-        new: true
-      }
-    )
-    return res.status(200).json(request)
+    const userId = req.userID
+    const requests = await Request
+      .find({
+        assignedTo: userId
+      })
+      .populate("createdBy", ["_id", "fullname"])
+      .populate("room", ["_id", "roomNumber"])
+    res.status(200).json(requests)
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+const getListRequestByUser = async (req, res) => {
+  try {
+    const userId = req.userID
+    const requests = await Request
+      .find({
+        createdBy: userId
+      })
+      .populate("room", ["_id", "roomNumber"])
+    res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -70,6 +76,7 @@ const rejectRequest = async (req, res) => {
 module.exports = {
   createRequest,
   getListRequest,
-  assigneeRequest,
-  rejectRequest
+  changeRequestStatus,
+  getListRequestByStaff,
+  getListRequestByUser
 }
