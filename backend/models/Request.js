@@ -63,9 +63,6 @@ const requestsSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    reasonReject: {
-      type: String
-    },
     completion: {
       completedAt: Date,
       note: String,
