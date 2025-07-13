@@ -16,12 +16,19 @@ const Payment_History = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
-  const [globalFilter, setGlobalFilter] = useState({});
+  const [globalFilter, setGlobalFilter] = useState({ status: "paid" });
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
 
   const fetchData = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Bạn chưa đăng nhập hoặc phiên đã hết hạn!");
+      setIsLoading(false);
+      return;
+    }
+
     if (!data.length) setIsLoading(true);
     else setIsRefetching(true);
 
@@ -32,13 +39,25 @@ const Payment_History = () => {
     };
 
     try {
-      const response = await axios.get(API_URL, { params });
+      const response = await axios.get(API_URL, {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setData(response.data.invoices);
       setRowCount(response.data.totalItems);
       setIsError(false);
     } catch (error) {
       setIsError(true);
-      toast.error("Lỗi khi tải dữ liệu hoá đơn!");
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+      } else {
+        toast.error("Lỗi khi tải dữ liệu hoá đơn!");
+      }
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -72,21 +91,18 @@ const Payment_History = () => {
       {
         accessorKey: "payment_status",
         header: "Trạng thái",
-        Cell: ({ cell }) => (
+        Cell: () => (
           <Box
             component="span"
             sx={(theme) => ({
-              backgroundColor:
-                cell.getValue() === "paid"
-                  ? theme.palette.success.dark
-                  : theme.palette.warning.dark,
+              backgroundColor: theme.palette.success.dark,
               borderRadius: "0.25rem",
               color: "#fff",
               maxWidth: "9ch",
               p: "0.25rem",
             })}
           >
-            {cell.getValue() === "paid" ? "Đã trả" : "Chưa trả"}
+            Đã trả
           </Box>
         ),
       },
@@ -94,8 +110,53 @@ const Payment_History = () => {
     []
   );
 
-  const handleDownloadPDF = (invoiceId) =>
-    window.open(`${API_URL}/${invoiceId}/download`, "_blank");
+  const handleDownloadPDF = (invoiceId) => {
+    const token = localStorage.getItem("token");
+
+    // --- BƯỚC KIỂM TRA QUAN TRỌNG ---
+    if (!token) {
+      toast.error("Không tìm thấy token. Vui lòng đăng nhập lại!");
+      return; // Dừng hàm nếu không có token
+    }
+    // ---------------------------------
+
+    axios
+      .get(`${API_URL}/${invoiceId}/download`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        const contentDisposition = response.headers["content-disposition"];
+        let filename = `hoa-don-${invoiceId}.pdf`;
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch && filenameMatch.length > 1) {
+            filename = filenameMatch[1];
+          }
+        }
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url); // Dọn dẹp
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải PDF: ", error);
+        if (error.response && error.response.status === 401) {
+          toast.error("Lỗi xác thực hoặc phiên hết hạn.");
+        } else if (error.response && error.response.status === 404) {
+          toast.error("Không tìm thấy hóa đơn hoặc dữ liệu liên quan.");
+        } else {
+          toast.error("Không thể tải file PDF!");
+        }
+      });
+  };
+
   const handleViewDetails = (invoiceId) => {
     setSelectedInvoiceId(invoiceId);
     setIsModalOpen(true);
@@ -117,20 +178,22 @@ const Payment_History = () => {
                 <Visibility />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Tải PDF">
+            {/* <Tooltip title="Tải PDF">
               <IconButton
                 color="error"
                 onClick={() => handleDownloadPDF(row.original._id)}
               >
                 <PictureAsPdf />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
           <Formik
-            initialValues={{ status: "", startDate: "", endDate: "" }}
-            onSubmit={(values) => setGlobalFilter(values)}
+            initialValues={{ startDate: "", endDate: "" }}
+            onSubmit={(values) =>
+              setGlobalFilter({ ...values, status: "paid" })
+            }
           >
             {({ handleSubmit }) => (
               <Form onSubmit={handleSubmit}>
@@ -143,11 +206,6 @@ const Payment_History = () => {
                   }}
                 >
                   <Typography variant="subtitle1">Bộ lọc:</Typography>
-                  <Field as="select" name="status" className="filter-select">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="paid">Đã thanh toán</option>
-                    <option value="pending">Chưa thanh toán</option>
-                  </Field>
                   <Field
                     type="date"
                     name="startDate"

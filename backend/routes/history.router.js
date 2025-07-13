@@ -1,3 +1,4 @@
+// routes/history.router.js
 const express = require("express");
 const {
   getInvoiceHistory,
@@ -5,16 +6,15 @@ const {
   downloadInvoice,
 } = require("../controllers/history.controller");
 
+const { verifyToken } = require("../middlewares/authMiddleware");
+
 const historyRouter = express.Router();
 
-// GET / -> Tra cứu danh sách hoá đơn
-// Ví dụ: /history?status=paid&page=1
-historyRouter.get("/", getInvoiceHistory);
+// === CÁCH ÁP DỤNG MIDDLEWARE MỚI ===
+// Áp dụng verifyToken riêng lẻ cho từng route để tránh xung đột
 
-// GET /:id -> Lấy chi tiết một hoá đơn bằng ID
-historyRouter.get("/:id", getSingleInvoice);
-
-// GET /:id/download -> Tải file PDF của hoá đơn
-historyRouter.get("/:id/download", downloadInvoice);
+historyRouter.get("/", verifyToken, getInvoiceHistory);
+historyRouter.get("/:id", verifyToken, getSingleInvoice);
+historyRouter.get("/:id/download", verifyToken, downloadInvoice);
 
 module.exports = historyRouter;
