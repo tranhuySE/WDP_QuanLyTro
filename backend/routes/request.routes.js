@@ -2,16 +2,19 @@ const express = require('express');
 const {
   createRequest,
   getListRequest,
-  assigneeRequest,
-  rejectRequest
+  changeRequestStatus,
+  getListRequestByStaff,
+  getListRequestByUser
 } = require('../controllers/request.controller');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
 
 const requestRouter = express.Router()
 
-requestRouter.post('/createRequest', createRequest)
-requestRouter.get('/getListRequest', getListRequest)
-requestRouter.post('/assigneeRequest', assigneeRequest)
-requestRouter.post('/rejectRequest', rejectRequest)
+requestRouter.post('/createRequest', verifyToken, createRequest)
+requestRouter.get('/getListRequest', verifyToken, getListRequest)
+requestRouter.put('/changeRequestStatus', verifyToken, changeRequestStatus)
+requestRouter.get('/getListRequestByStaff', verifyToken, getListRequestByStaff)
+requestRouter.get('/getListRequestByUser', verifyToken, getListRequestByUser)
 
 module.exports = requestRouter

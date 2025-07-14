@@ -1,12 +1,12 @@
-import { message, Space } from "antd";
+import { message, Select } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import RequestAPI from "../../../api/requestAPI";
-import { Button, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import dayjs from "dayjs"
 import ModalReject from "../../../components/Request/ModalReject";
 import ModalAssignee from "../../../components/Request/ModalAssignee";
 import { MaterialReactTable } from "material-react-table";
-import { Ban, ClipboardCheck } from "lucide-react";
+
 
 const RequestManagement = () => {
 
@@ -14,16 +14,90 @@ const RequestManagement = () => {
   const [openModalAssignee, setOpenModalAssignee] = useState(false)
   const [openModalReject, setOpenModalReject] = useState(false)
   const [loading, setLoading] = useState(false)
+  const role = localStorage.getItem('role')
+
+  const REQUEST_STATUS = [
+    {
+      value: "PENDING",
+      isView: true,
+      isDisabled: true,
+    },
+    {
+      value: "APPROVED",
+      isView: true,
+      isDisabled: false,
+    },
+    {
+      value: "ASSIGNED",
+      isView: role === 'admin',
+      isDisabled: false,
+    },
+    {
+      value: "IN_PROGRESS",
+      isView: true,
+      isDisabled: false,
+    },
+    {
+      value: "COMPLETED",
+      isView: true,
+      isDisabled: false,
+    },
+    {
+      value: "REJECTED",
+      isView: true,
+      isDisabled: false,
+    },
+    {
+      value: "CANCELLED",
+      isView: true,
+      isDisabled: false,
+    }
+  ]
 
   const getListRequest = async () => {
     try {
       setLoading(true)
-      const res = await RequestAPI.getListRequest()
+      const res = role === 'admin'
+        ? await RequestAPI.getListRequest()
+        : await RequestAPI.getListRequestByStaff()
       setRequests(res?.data)
     } catch (error) {
       message.error(error.toString())
     } finally {
       setLoading(false)
+    }
+  }
+
+  const changeRequestStatus = async (status, original) => {
+    try {
+      const res = await RequestAPI.changeRequestStatus({
+        requestId: original?._id,
+        status: status,
+        approval: localStorage.getItem("id"),
+        statusHistory: {
+          oldStatus: original?.status,
+          newStatus: status,
+          changedBy: localStorage.getItem("id"),
+        }
+      })
+      message.success("Cập nhật trạng thái thành công")
+    } catch (error) {
+      message.error(error.toString())
+    }
+  }
+
+  const handChangeStatus = (status, original) => {
+    switch (status) {
+      case "ASSIGNED":
+        setOpenModalAssignee(original)
+        return
+      case "REJECTED":
+      case "CANCELLED":
+        setOpenModalReject(original)
+        return
+      default:
+        changeRequestStatus(status, original)
+        return
     }
   }
 
@@ -47,19 +121,27 @@ const RequestManagement = () => {
         ),
       },
       {
+        accessorKey: "room",
+        header: "Số phòng",
+        size: 40,
+        Cell: ({ cell }) => (
+          <div>{cell.getValue()?.roomNumber}</div>
+        ),
+      },
+      {
         accessorKey: "type",
         header: "Loại yêu cầu",
-        size: 80
+        size: 50
       },
       {
         accessorKey: "priority",
         header: "Mức độ ưu tiên",
-        size: 50
+        size: 40
       },
       {
         accessorKey: "createdAt",
         header: "Ngày tạo",
-        size: 50,
+        size: 40,
         Cell: ({ cell }) => (
           <div>
             {dayjs(cell.getValue()).format("DD/MM/YYYY")}
@@ -69,36 +151,22 @@ const RequestManagement = () => {
       {
         accessorKey: "status",
         header: "Trạng thái xử lý",
-        size: 50,
+        size: 40,
+        Cell: ({ cell, row }) => (
+          <Select
+            defaultValue={cell.getValue()}
+            onChange={e => handChangeStatus(e, row.original)}
+          >
+            {
+              REQUEST_STATUS.map(i =>
+                i.isView &&
+                <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.value}</Select.Option>
+              )
+            }
+          </Select>
+        ),
       },
     ],
-    []
-  );
-
-  // Cột thao tác (Action column)
-  const actionColumn = useMemo(
-    () => ({
-      header: "Thao tác",
-      size: 70,
-      Cell: ({ row }) => (
-        <Space Space size="small" >
-          <Button
-            variant="warning"
-            size="sm"
-            onClick={() => setOpenModalAssignee(row.original)}
-          >
-            <ClipboardCheck size={16} />
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => setOpenModalReject(row.original)}
-          >
-            <Ban size={16} />
-          </Button>
-        </Space>
-      ),
-    }),
     []
   );
 
@@ -109,7 +177,7 @@ const RequestManagement = () => {
           <h3 className="title">Danh sách yêu cầu</h3>
         </div>
         <MaterialReactTable
-          columns={[...columns, actionColumn]}
+          columns={columns}
           data={requests}
           enableColumnActions={false}
           enableColumnFilters={false}

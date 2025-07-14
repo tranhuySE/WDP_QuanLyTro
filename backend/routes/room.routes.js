@@ -5,14 +5,19 @@ const {
   addRoom,
   updateRoomById,
   deleteRoomById,
+  getMyRoomInfo,
 } = require("../controllers/room.controller");
 const {
   validateRoom,
   validateId,
   handleValidationErrors,
 } = require("../middlewares/validation.middleware");
+const { verifyToken } = require("../middlewares/authMiddleware");
 
 const roomRouter = express.Router();
+
+// Route lấy phòng cá nhân (đặt trước route động)
+roomRouter.get("/me/room", verifyToken, getMyRoomInfo);
 
 // GET / - Lấy tất cả các phòng
 roomRouter.get("/", getAllRooms);
