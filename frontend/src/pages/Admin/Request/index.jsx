@@ -24,7 +24,7 @@ const RequestManagement = () => {
     },
     {
       value: "APPROVED",
-      isView: true,
+      isView: role === 'staff',
       isDisabled: false,
     },
     {
@@ -34,21 +34,16 @@ const RequestManagement = () => {
     },
     {
       value: "IN_PROGRESS",
-      isView: true,
+      isView: role === 'staff',
       isDisabled: false,
     },
     {
       value: "COMPLETED",
-      isView: true,
+      isView: role === 'staff',
       isDisabled: false,
     },
     {
       value: "REJECTED",
-      isView: true,
-      isDisabled: false,
-    },
-    {
-      value: "CANCELLED",
       isView: true,
       isDisabled: false,
     }
