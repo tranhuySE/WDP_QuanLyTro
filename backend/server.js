@@ -3,6 +3,8 @@ const cors = require("cors");
 const app = express();
 const connectDB = require("./config/db.js");
 const router = require("./routes/index.js");
+// Thêm dòng này để import history router
+const historyRouter = require("./routes/history.router.js");
 
 // Thêm dòng này để import upload router
 const uploadRouter = require("./routes/upload.router.js");
@@ -36,6 +38,8 @@ app.use("/", router);
 
 // Thêm dòng này để sử dụng upload router với tiền tố /api/upload
 app.use("/api/upload", uploadRouter);
+// Thêm dòng này để sử dụng history router với tiền tố /api/history
+app.use("/api/history", historyRouter);
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, async () => {
