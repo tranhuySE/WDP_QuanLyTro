@@ -1,27 +1,40 @@
+// middlewares/auth.middleware.js
 const jwt = require("jsonwebtoken");
-//middleware to check if the user is authorized
+const User = require("../models/User");
 
 const verifyToken = async (req, res, next) => {
-    try {
-        let token = req.headers.authorization;
-        if (!token)
-            return res
-                .status(401)
-                .json({ message: "No token . Authorization Denied!" });
-        token = token.split(" ")[1];
-        const jwtSecret = process.env.JWT_SECRET;
-        jwt.verify(token, jwtSecret, (error, decoded) => {
-            if (error) {
-                return res
-                    .status(401)
-                    .json({ message: "Token is not valid not verify" });
-            }
-            req.userID = decoded.id;
-            next();
-        });
-    } catch (err) {
-        return res.status(500).json({ message: err.toString() });
+  try {
+    let token;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
     }
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Không có token, không thể xác thực!" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Người dùng với token này không còn tồn tại." });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Token không hợp lệ hoặc đã hết hạn." });
+  }
 };
 
 module.exports = { verifyToken };
