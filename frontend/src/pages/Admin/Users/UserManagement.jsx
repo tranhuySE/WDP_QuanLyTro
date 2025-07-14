@@ -15,7 +15,7 @@ import VerifyUserModal from '../../../components/User/VerifyUserModal';
 import { userSchema, verifySchema } from '../../../validation/userSchema';
 
 // API
-import { getAllUsers } from '../../../api/userAPI';
+import { getAllUsers, updateUserById } from '../../../api/userAPI';
 
 const UserManagement = () => {
     // State
@@ -179,32 +179,45 @@ const UserManagement = () => {
     };
 
     // Handle edit user
-    const handleEdit = (user) => {
-        setSelectedUser(user);
-        formik.setValues({
-            username: user.username || '',
-            room: user.room || '',
-            email: user.email,
-            password: '',
-            fullname: user.fullname,
-            citizen_id: user.citizen_id,
-            phoneNumber: user.phoneNumber,
-            avatar: user.avatar,
-            role: user.role,
-            address: user.address,
-            dateOfBirth: moment(user.dateOfBirth).format('YYYY-MM-DD'),
-            status: user.status,
-            contactEmergency: user.contactEmergency || {
-                name: '',
-                relationship: '',
-                phoneNumber: ''
-            },
-            isVerifiedByAdmin: user.isVerifiedByAdmin
-        });
-        setIsEditing(true);
-        setShowModal(true);
-    };
+    const handleEdit = async (user) => {
+        try {
+            setLoading(true);
+            const response = await updateUserById(user._id, user);
 
+            if (response) {
+                setSelectedUser(user);
+                formik.setValues({
+                    username: user.username || '',
+                    room: user.room || '',
+                    email: user.email,
+                    password: '',
+                    fullname: user.fullname,
+                    citizen_id: user.citizen_id,
+                    phoneNumber: user.phoneNumber,
+                    avatar: user.avatar,
+                    role: user.role,
+                    address: user.address,
+                    dateOfBirth: moment(user.dateOfBirth).format('YYYY-MM-DD'),
+                    status: user.status,
+                    contactEmergency: user.contactEmergency || {
+                        name: '',
+                        relationship: '',
+                        phoneNumber: ''
+                    },
+                    isVerifiedByAdmin: user.isVerifiedByAdmin
+                });
+                setIsEditing(true);
+                setShowModal(true);
+            } else {
+                toast.error('Cập nhật người dùng thất bại, vui lòng thử lại.');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            toast.error('Cập nhật người dùng thất bại, vui lòng thử lại.');
+        } finally {
+            setLoading(false);
+        }
+    };
     // Handle verify user
     const handleVerify = (user) => {
         setSelectedUser(user);
@@ -257,7 +270,7 @@ const UserManagement = () => {
                 </div>
             ) : (
                 <UserTable
-                    users={filteredUsers} 
+                    users={filteredUsers}
                     loading={loading}
                     onViewDetail={handleViewDetail}
                     onEdit={handleEdit}
@@ -275,6 +288,13 @@ const UserManagement = () => {
                 formik={formik}
                 isEditing={isEditing}
                 loading={loading}
+                onUpdateSuccess={(updatedUser) => {
+                    // Cập nhật state users với dữ liệu mới
+                    const updatedUsers = users.map(user =>
+                        user._id === updatedUser._id ? updatedUser : user
+                    );
+                    setUsers(updatedUsers);
+                }}
             />
 
             <VerifyUserModal

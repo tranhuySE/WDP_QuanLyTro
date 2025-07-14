@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUserById, deleteUserById, getListStaff } = require('../controllers/user.controller.js');
+const { getAllUsers, getUserById, deleteUserById, getListStaff, editUserById } = require('../controllers/user.controller.js');
 
 const userRouter = express.Router();
 
@@ -11,6 +11,8 @@ userRouter.get('/getListStaff', getListStaff)
 userRouter.get('/:id', getUserById)
 // Define the route to delete a user by ID
 userRouter.delete('/:id', deleteUserById);
+// Define the route to edit a user by ID
+userRouter.put('/:id', editUserById);
 
 
 // Export the userRouter

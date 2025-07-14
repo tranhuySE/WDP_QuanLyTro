@@ -23,8 +23,10 @@ const UserFormModal = ({
     formik,
     isEditing,
     loading,
-    handleStatusChange
+    handleStatusChange,
+    onUpdateSuccess
 }) => {
+    // Remove internal formik and handleSubmit logic; use the formik prop passed in.
     return (
         <Modal show={show} onHide={onHide} size="lg">
             <Modal.Header closeButton>
