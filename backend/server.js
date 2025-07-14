@@ -29,7 +29,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Sử dụng các router chính
 app.use("/", router);

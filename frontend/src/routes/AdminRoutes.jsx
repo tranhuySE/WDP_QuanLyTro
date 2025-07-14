@@ -6,6 +6,7 @@ import Analyst from "../pages/Admin/Dasboard/Analyst";
 import RequestManagement from "../pages/Admin/Request";
 import ManageRoomPage from "../pages/Admin/Rooms/ManageRoomPage";
 import UserManagement from "../pages/Admin/Users/UserManagement";
+import ChangePasswordPage from "../pages/Common/ChangePasswordPage";
 
 // Tạo component wrapper riêng
 const AdminLayoutWrapper = () => <AdminLayout />;
@@ -20,6 +21,7 @@ const AdminRoutes = {
     { path: 'rooms', element: <ManageRoomPage /> },
     { path: 'contracts', element: <ContractPage /> },
     { path: 'requests', element: <RequestManagement /> },
+    { path : 'change-password', element : <ChangePasswordPage/>},
     { path: '', element: <AdminHomePage /> }, // Route mặc định
   ]
 };

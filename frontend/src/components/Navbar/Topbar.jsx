@@ -2,7 +2,7 @@ import { Bell, LogOut, Menu, Settings, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SideBar/Topbar.css"; // Adjust the path as necessary
-
+import { FiLock } from "react-icons/fi";
 const Topbar = ({ sidebarWidth = 250 }) => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -147,6 +147,13 @@ const Topbar = ({ sidebarWidth = 250 }) => {
                       >
                         <User size={16} className="profile-dropdown-icon" />
                         <span>Hồ sơ cá nhân</span>
+                      </button>
+                      <button
+                        className="profile-dropdown-item"
+                        onClick={() => window.location.href = './change-password'}
+                      >
+                        <FiLock size={16} className="profile-dropdown-icon" />
+                        <span>Đổi mật khẩu</span>
                       </button>
                       <button
                         className="profile-dropdown-item logout"
