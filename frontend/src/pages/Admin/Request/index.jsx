@@ -19,31 +19,37 @@ const RequestManagement = () => {
   const REQUEST_STATUS = [
     {
       value: "PENDING",
+      label: "Chưa giải quyết",
       isView: true,
       isDisabled: true,
     },
     {
       value: "APPROVED",
+      label: "Tán thành",
       isView: role === 'staff',
       isDisabled: false,
     },
     {
       value: "ASSIGNED",
+      label: "Được giao",
       isView: role === 'admin',
       isDisabled: false,
     },
     {
       value: "IN_PROGRESS",
+      label: "Đang tiến hành",
       isView: role === 'staff',
       isDisabled: false,
     },
     {
       value: "COMPLETED",
+      label: "Hoàn thành",
       isView: role === 'staff',
       isDisabled: false,
     },
     {
       value: "REJECTED",
+      label: "Từ chối",
       isView: true,
       isDisabled: false,
     }
@@ -155,7 +161,7 @@ const RequestManagement = () => {
             {
               REQUEST_STATUS.map(i =>
                 i.isView &&
-                <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.value}</Select.Option>
+                <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
               )
             }
           </Select>
