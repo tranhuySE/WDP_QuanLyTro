@@ -102,7 +102,7 @@ const Payment_History = () => {
               p: "0.25rem",
             })}
           >
-            Đã trả
+            Đã thanh toán 
           </Box>
         ),
       },
