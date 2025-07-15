@@ -1,37 +1,26 @@
 const Invoice = require("../models/Invoice");
+const Room = require("../models/Room");
 const PDFDocument = require("pdfkit");
 const path = require("path");
-const Room = require("../models/Room"); // Thêm dòng này
 
+// Các hàm getInvoiceHistory và getSingleInvoice không thay đổi
 const getInvoiceHistory = async (req, res) => {
   try {
     if (!req.user) {
-      return res
-        .status(401)
-        .json({ message: "Người dùng không được xác thực." });
+      return res.status(401).json({ message: "User is not authenticated." });
     }
     const {
       page = 1,
       limit = 10,
       status,
-      roomId, // admin có thể dùng filter này
+      roomId,
       startDate,
       endDate,
     } = req.query;
-
     const filter = {};
-
-    // ===================================================================
-    // === LOGIC LỌC HÓA ĐƠN THEO PHÒNG CỦA NGƯỜI DÙNG ĐĂNG NHẬP ========
-    // ===================================================================
     if (req.user.role !== "admin") {
-      // 1. Tìm tất cả các phòng mà người dùng này đang là người thuê.
       const userRooms = await Room.find({ tenant: req.user._id }).select("_id");
-
-      // 2. Lấy danh sách ID của các phòng đó.
       const userRoomIds = userRooms.map((room) => room._id);
-
-      // 3. Nếu người dùng không thuê phòng nào, trả về mảng rỗng.
       if (userRoomIds.length === 0) {
         return res.json({
           invoices: [],
@@ -40,15 +29,10 @@ const getInvoiceHistory = async (req, res) => {
           totalItems: 0,
         });
       }
-
-      // 4. Thêm điều kiện lọc: hóa đơn phải thuộc một trong các phòng của người dùng.
       filter.for_room_id = { $in: userRoomIds };
     }
-    // ===================================================================
-
-    // Các bộ lọc khác vẫn được áp dụng bình thường
     if (status) filter.payment_status = status;
-    if (roomId && req.user.role === "admin") filter.for_room_id = roomId; // Chỉ admin mới được lọc theo roomId bất kỳ
+    if (roomId && req.user.role === "admin") filter.for_room_id = roomId;
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
@@ -58,16 +42,13 @@ const getInvoiceHistory = async (req, res) => {
         filter.createdAt.$lte = end;
       }
     }
-
     const invoices = await Invoice.find(filter)
       .populate("for_room_id", "roomNumber floor")
       .populate("create_by", "fullname email")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
-
     const totalInvoices = await Invoice.countDocuments(filter);
-
     res.json({
       invoices,
       currentPage: parseInt(page),
@@ -79,25 +60,17 @@ const getInvoiceHistory = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
-
-
 const getSingleInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id)
-      // THAY ĐỔI LOGIC POPULATE Ở ĐÂY
       .populate({
-        path: "for_room_id", // Lấy thông tin phòng
-        select: "roomNumber floor tenant", // Chọn các trường cần thiết từ phòng
-        populate: {
-          path: "tenant", // Lấy thông tin người thuê từ trong phòng
-          select: "fullname email phoneNumber", // Chọn các trường của người thuê
-        },
+        path: "for_room_id",
+        select: "roomNumber floor tenant",
+        populate: { path: "tenant", select: "fullname email phoneNumber" },
       })
-      .populate("create_by", "fullname email"); // Vẫn giữ lại thông tin người tạo hóa đơn
-
+      .populate("create_by", "fullname email");
     if (!invoice) {
-      return res.status(404).json({ message: "Không tìm thấy hoá đơn" });
+      return res.status(404).json({ message: "Invoice not found" });
     }
     res.json(invoice);
   } catch (err) {
@@ -106,25 +79,30 @@ const getSingleInvoice = async (req, res) => {
   }
 };
 
+// ===================================================================
+// === TOÀN BỘ LOGIC TẠO PDF ĐƯỢC THIẾT KẾ LẠI ========================
+// ===================================================================
+
 const downloadInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id)
-      .populate("for_room_id", "roomNumber floor")
-      .populate("create_by", "fullname email phoneNumber");
+      .populate({
+        path: "for_room_id",
+        select: "roomNumber tenant address", // Thêm address của phòng nếu có
+        populate: {
+          path: "tenant",
+          select: "fullname email address phoneNumber",
+        },
+      })
+      .populate("create_by", "fullname");
 
-    // --- KIỂM TRA DỮ LIỆU AN TOÀN ---
     if (!invoice) {
-      return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
-    }
-    if (!invoice.create_by || !invoice.for_room_id) {
-      return res.status(404).json({
-        message:
-          "Dữ liệu liên quan đến hóa đơn (phòng hoặc người tạo) không còn tồn tại.",
-      });
+      return res.status(404).json({ message: "Invoice not found." });
     }
 
-    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const doc = new PDFDocument({ size: "A4", margin: 40 });
 
+    // Đăng ký font
     const regularFontPath = path.join(
       __dirname,
       "..",
@@ -138,136 +116,200 @@ const downloadInvoice = async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=hoa-don-${
-        invoice.for_room_id?.roomNumber || "DELETED-ROOM"
+      `attachment; filename=invoice-${
+        invoice.for_room_id?.roomNumber || "NA"
       }-${invoice._id.toString().slice(-6)}.pdf`
     );
 
     doc.pipe(res);
 
-    generateHeader(doc);
+    // Bắt đầu vẽ nội dung
+    generateHeader(doc, invoice);
     generateCustomerInformation(doc, invoice);
     generateInvoiceTable(doc, invoice);
     generateFooter(doc);
 
     doc.end();
   } catch (err) {
-    console.error("Lỗi khi tạo PDF:", err);
+    console.error("Error creating PDF:", err);
     res.status(500).send("Server Error: Could not generate PDF.");
   }
 };
 
-function generateHeader(doc) {
+const brandColor = "#0D6EFD"; // Màu nhấn chính
+const lightGrey = "#F0F0F0";
+const darkGrey = "#555555";
+const textGrey = "#777777";
+
+function generateHeader(doc, invoice) {
+  // Vẽ nền header
+  doc.rect(0, 0, 595.28, 120).fill(brandColor);
+
+  // Logo (nếu có)
   const logoPath = path.join(__dirname, "..", "assets", "logo.png");
   const fs = require("fs");
   if (fs.existsSync(logoPath)) {
-    doc.image(logoPath, 50, 45, { width: 50 });
+    doc.image(logoPath, 40, 30, { width: 60 });
   }
+
+  // Tiêu đề
   doc
-    .fillColor("#444444")
     .font("Roboto-Bold")
-    .fontSize(20)
-    .text("HOÁ ĐƠN DỊCH VỤ", 110, 57)
-    .fontSize(10)
+    .fillColor("#FFFFFF")
+    .fontSize(28)
+    .text("INVOICE", 40, 45, { align: "right" });
+  doc
     .font("Roboto")
-    .text("Công ty TNHH Quản lý Nhà trọ ABC", 200, 65, { align: "right" })
-    .text("123 Đường XYZ, Quận 1, TP. HCM", 200, 80, { align: "right" })
-    .moveDown();
+    .fontSize(10)
+    .text(`Invoice ID: ${invoice._id.toString()}`, { align: "right" });
+  doc.text(
+    `Issue Date: ${new Date(invoice.createdAt).toLocaleDateString("en-US")}`,
+    { align: "right" }
+  );
+
+  doc.moveDown(4);
 }
 
 function generateCustomerInformation(doc, invoice) {
-  doc.fillColor("#444444").fontSize(20).text("Thông tin", 50, 160);
-  generateHr(doc, 185);
-  const customerInformationTop = 200;
-  doc
-    .fontSize(10)
-    .font("Roboto-Bold")
-    .text("Mã hóa đơn:", 50, customerInformationTop)
-    .font("Roboto")
-    .text(invoice._id.toString(), 150, customerInformationTop)
-    .font("Roboto-Bold")
-    .text("Ngày tạo:", 50, customerInformationTop + 15)
-    .font("Roboto")
-    .text(
-      new Date(invoice.createdAt).toLocaleDateString("vi-VN"),
-      150,
-      customerInformationTop + 15
-    )
-    .font("Roboto-Bold")
-    .text("Người thuê:", 300, customerInformationTop)
-    .font("Roboto")
-    .text(invoice.create_by?.fullname || "N/A", 400, customerInformationTop)
-    .font("Roboto-Bold")
-    .text("Phòng:", 300, customerInformationTop + 15)
-    .font("Roboto")
-    .text(
-      invoice.for_room_id?.roomNumber || "N/A",
-      400,
-      customerInformationTop + 15
-    )
-    .moveDown();
-  generateHr(doc, 252);
+  doc.fillColor(darkGrey).font("Roboto-Bold").fontSize(12);
+  doc.text("Billed From:", 40, 150);
+  generateHr(doc, 170);
+  doc.font("Roboto").fontSize(10);
+  doc.text("ABC Boarding House Management", 40, 175);
+  doc.text("123 XYZ Street, District 1, HCMC", 40, 190);
+  doc.text("contact@abcboardinghouse.com", 40, 205);
+
+  doc.font("Roboto-Bold").fontSize(12);
+  doc.text("Billed To:", 320, 150);
+  generateHr(doc, 170, 320);
+  doc.font("Roboto").fontSize(10);
+
+  const tenantNames = invoice.for_room_id.tenant
+    .map((t) => t.fullname)
+    .join(", ");
+  const tenantAddress = invoice.for_room_id.tenant[0]?.address || "N/A";
+  const tenantEmail = invoice.for_room_id.tenant[0]?.email || "N/A";
+
+  doc.text(tenantNames, 320, 175);
+  doc.text(tenantAddress, 320, 190);
+  doc.text(tenantEmail, 320, 205);
+
+  doc.moveDown(5);
 }
 
 function generateInvoiceTable(doc, invoice) {
-  const invoiceTableTop = 330;
+  const tableTop = 270;
   doc.font("Roboto-Bold");
-  generateTableRow(doc, invoiceTableTop, "Hạng mục", "Đơn giá", "Thành tiền");
-  generateHr(doc, invoiceTableTop + 20);
-  doc.font("Roboto");
 
-  let position = invoiceTableTop + 30;
-  for (const item of invoice.items) {
+  // Header của bảng
+  generateTableRow(
+    doc,
+    tableTop,
+    "Item",
+    "Unit Price",
+    "Quantity",
+    "Total",
+    true
+  );
+
+  doc.font("Roboto");
+  let position = tableTop + 25; // Vị trí dòng đầu tiên
+
+  invoice.items.forEach((item, index) => {
+    const isEven = index % 2 === 0;
     generateTableRow(
       doc,
       position,
       item.name,
       formatCurrency(item.price_unit),
-      formatCurrency(item.subTotal)
+      item.quantity || 1,
+      formatCurrency(item.subTotal),
+      isEven
     );
-    generateHr(doc, position + 20);
-    position += 30;
+    position += 25;
+  });
+
+  // Phần tổng cộng
+  const subtotal = invoice.total_amount;
+  const paid = invoice.payment_status === "paid" ? invoice.total_amount : 0;
+  const due = subtotal - paid;
+
+  const totalsTop = position + 20;
+  doc.font("Roboto").fontSize(10);
+  doc.text("Subtotal:", 350, totalsTop, { align: "right", width: 100 });
+  doc.text(formatCurrency(subtotal), 460, totalsTop, { align: "right" });
+
+  doc.text("Amount Paid:", 350, totalsTop + 20, { align: "right", width: 100 });
+  doc.text(formatCurrency(paid), 460, totalsTop + 20, { align: "right" });
+
+  generateHr(doc, totalsTop + 45, 350);
+
+  doc.font("Roboto-Bold").fillColor(brandColor);
+  doc.text("Amount Due:", 350, totalsTop + 55, { align: "right", width: 100 });
+  doc.text(formatCurrency(due), 460, totalsTop + 55, { align: "right" });
+  doc.fillColor(darkGrey); // Reset màu
+}
+
+function generateTableRow(
+  doc,
+  y,
+  item,
+  unitCost,
+  quantity,
+  lineTotal,
+  isHeader = false
+) {
+  if (isHeader) {
+    doc.rect(40, y - 5, 515, 20).fill(lightGrey);
+    doc.fillColor(darkGrey);
+  } else {
+    doc.fillColor(darkGrey);
   }
 
-  const subtotalPosition = position;
-  doc.font("Roboto-Bold");
-  generateTableRow(
-    doc,
-    subtotalPosition,
-    "",
-    "Tổng cộng",
-    formatCurrency(invoice.total_amount)
-  );
-  doc.font("Roboto");
+  doc
+    .fontSize(10)
+    .font(isHeader ? "Roboto-Bold" : "Roboto")
+    .text(item, 50, y)
+    .text(String(unitCost), 250, y, { width: 100, align: "right" })
+    .text(String(quantity), 350, y, { width: 100, align: "right" })
+    .text(String(lineTotal), 450, y, { width: 100, align: "right" });
+
+  if (isHeader) {
+    doc.fillColor(darkGrey); // Reset fill color
+  }
 }
 
 function generateFooter(doc) {
+  generateHr(doc, 750);
   doc
-    .fontSize(10)
+    .fontSize(9)
     .font("Roboto")
+    .fillColor(textGrey)
+    .text("Notes & Terms", 40, 760)
+    .fontSize(8)
     .text(
-      "Cảm ơn quý khách đã sử dụng dịch vụ. Vui lòng thanh toán đúng hạn.",
-      50,
-      780,
-      { align: "center", width: 500 }
-    );
+      "Payment is due within 15 days. Thank you for your business.",
+      40,
+      775
+    )
+    .text("www.abcboardinghouse.com", 40, 790, {
+      link: "http://www.abcboardinghouse.com",
+      underline: true,
+    });
 }
 
-function generateHr(doc, y) {
-  doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, y).lineTo(550, y).stroke();
-}
-
-function formatCurrency(cents) {
-  if (typeof cents !== "number") return "N/A";
-  return cents.toLocaleString("vi-VN") + " VNĐ";
-}
-
-function generateTableRow(doc, y, item, unitCost, lineTotal) {
+function generateHr(doc, y, startX = 40, endX = 555) {
   doc
-    .fontSize(10)
-    .text(item, 50, y)
-    .text(unitCost, 280, y, { width: 90, align: "right" })
-    .text(lineTotal, 0, y, { align: "right" });
+    .strokeColor("#E0E0E0")
+    .lineWidth(0.5)
+    .moveTo(startX, y)
+    .lineTo(endX, y)
+    .stroke();
+}
+
+function formatCurrency(amount) {
+  if (typeof amount !== "number") return "0 VND";
+  return new Intl.NumberFormat("en-US").format(amount) + " VND";
 }
 
 module.exports = {
