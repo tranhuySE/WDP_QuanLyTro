@@ -1,7 +1,7 @@
 // src/pages/Tenant/Payment_History.jsx
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { MaterialReactTable } from "material-react-table";
-import { Box, IconButton, Tooltip, Button, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, Button, Typography, Chip } from "@mui/material";
 import { Visibility, PictureAsPdf } from "@mui/icons-material";
 import axios from "axios";
 import { Formik, Form, Field } from "formik";
@@ -74,36 +74,42 @@ const Payment_History = () => {
       {
         accessorKey: "_id",
         header: "ID",
+        size: 100,
         Cell: ({ cell }) => <span>{cell.getValue().slice(-8)}</span>,
       },
-      { accessorKey: "for_room_id.roomNumber", header: "Phòng" },
+      { accessorKey: "for_room_id.roomNumber", header: "Phòng", size: 100 },
       {
         accessorKey: "total_amount",
         header: "Tổng tiền",
+        size: 150,
         Cell: ({ cell }) => `${cell.getValue().toLocaleString("vi-VN")} VNĐ`,
       },
       {
         accessorKey: "createdAt",
         header: "Ngày tạo",
+        size: 120,
         Cell: ({ cell }) =>
           new Date(cell.getValue()).toLocaleDateString("vi-VN"),
       },
+    
+      {
+        accessorKey: "paid_date",
+        header: "Ngày thanh toán",
+        size: 150,
+        Cell: ({ cell }) => {
+          const paidDate = cell.getValue();
+          return paidDate
+            ? new Date(paidDate).toLocaleDateString("vi-VN")
+            : "Chưa có";
+        },
+      },
+      
       {
         accessorKey: "payment_status",
         header: "Trạng thái",
+        size: 120,
         Cell: () => (
-          <Box
-            component="span"
-            sx={(theme) => ({
-              backgroundColor: theme.palette.success.dark,
-              borderRadius: "0.25rem",
-              color: "#fff",
-              maxWidth: "9ch",
-              p: "0.25rem",
-            })}
-          >
-            Đã thanh toán 
-          </Box>
+          <Chip label="Đã trả" color="success" variant="filled" size="small" />
         ),
       },
     ],
@@ -112,13 +118,10 @@ const Payment_History = () => {
 
   const handleDownloadPDF = (invoiceId) => {
     const token = localStorage.getItem("token");
-
-    // --- BƯỚC KIỂM TRA QUAN TRỌNG ---
     if (!token) {
       toast.error("Không tìm thấy token. Vui lòng đăng nhập lại!");
-      return; // Dừng hàm nếu không có token
+      return;
     }
-    // ---------------------------------
 
     axios
       .get(`${API_URL}/${invoiceId}/download`, {
@@ -143,17 +146,11 @@ const Payment_History = () => {
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
-        window.URL.revokeObjectURL(url); // Dọn dẹp
+        window.URL.revokeObjectURL(url);
       })
       .catch((error) => {
         console.error("Lỗi khi tải PDF: ", error);
-        if (error.response && error.response.status === 401) {
-          toast.error("Lỗi xác thực hoặc phiên hết hạn.");
-        } else if (error.response && error.response.status === 404) {
-          toast.error("Không tìm thấy hóa đơn hoặc dữ liệu liên quan.");
-        } else {
-          toast.error("Không thể tải file PDF!");
-        }
+        toast.error("Không thể tải file PDF!");
       });
   };
 
@@ -172,20 +169,20 @@ const Payment_History = () => {
         data={data}
         enableRowActions
         renderRowActions={({ row }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }}>
+          <Box sx={{ display: "flex", gap: "0.5rem" }}>
             <Tooltip title="Xem chi tiết">
               <IconButton onClick={() => handleViewDetails(row.original._id)}>
                 <Visibility />
               </IconButton>
             </Tooltip>
-            {/* <Tooltip title="Tải PDF">
+            <Tooltip title="Tải PDF">
               <IconButton
                 color="error"
                 onClick={() => handleDownloadPDF(row.original._id)}
               >
                 <PictureAsPdf />
               </IconButton>
-            </Tooltip> */}
+            </Tooltip>
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
@@ -195,7 +192,7 @@ const Payment_History = () => {
               setGlobalFilter({ ...values, status: "paid" })
             }
           >
-            {({ handleSubmit }) => (
+            {({ handleSubmit, handleReset }) => (
               <Form onSubmit={handleSubmit}>
                 <Box
                   sx={{
@@ -205,12 +202,13 @@ const Payment_History = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography variant="subtitle1">Bộ lọc:</Typography>
+                  <Typography variant="subtitle1">Lọc theo ngày:</Typography>
                   <Field
                     type="date"
                     name="startDate"
                     className="filter-input"
                   />
+                  <Typography>đến</Typography>
                   <Field type="date" name="endDate" className="filter-input" />
                   <Button type="submit" variant="contained" size="small">
                     Lọc

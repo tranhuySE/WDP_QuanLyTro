@@ -14,6 +14,33 @@ const RequestPage = () => {
   const [loading, setLoading] = useState(false)
   const [openModalCreateRequest, setOpenModalCreateRequest] = useState(false)
 
+  const REQUEST_STATUS = [
+    {
+      value: "PENDING",
+      label: "Chưa giải quyết",
+    },
+    {
+      value: "APPROVED",
+      label: "Tán thành",
+    },
+    {
+      value: "ASSIGNED",
+      label: "Được giao",
+    },
+    {
+      value: "IN_PROGRESS",
+      label: "Đang tiến hành",
+    },
+    {
+      value: "COMPLETED",
+      label: "Hoàn thành",
+    },
+    {
+      value: "REJECTED",
+      label: "Từ chối",
+    }
+  ]
+
   const getListRequest = async () => {
     try {
       setLoading(true)
@@ -64,6 +91,13 @@ const RequestPage = () => {
         accessorKey: "status",
         header: "Trạng thái xử lý",
         size: 50,
+        Cell: ({ cell }) => (
+          <div>
+            {
+              REQUEST_STATUS.find(i => i.value === cell.getValue()).label
+            }
+          </div>
+        ),
       },
     ],
     []
