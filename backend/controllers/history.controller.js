@@ -1,6 +1,7 @@
 const Invoice = require("../models/Invoice");
 const PDFDocument = require("pdfkit");
 const path = require("path");
+const Room = require("../models/Room"); // Thêm dòng này
 
 const getInvoiceHistory = async (req, res) => {
   try {
@@ -13,17 +14,41 @@ const getInvoiceHistory = async (req, res) => {
       page = 1,
       limit = 10,
       status,
-      roomId,
+      roomId, // admin có thể dùng filter này
       startDate,
       endDate,
     } = req.query;
 
     const filter = {};
+
+    // ===================================================================
+    // === LOGIC LỌC HÓA ĐƠN THEO PHÒNG CỦA NGƯỜI DÙNG ĐĂNG NHẬP ========
+    // ===================================================================
     if (req.user.role !== "admin") {
-      filter.create_by = req.user._id;
+      // 1. Tìm tất cả các phòng mà người dùng này đang là người thuê.
+      const userRooms = await Room.find({ tenant: req.user._id }).select("_id");
+
+      // 2. Lấy danh sách ID của các phòng đó.
+      const userRoomIds = userRooms.map((room) => room._id);
+
+      // 3. Nếu người dùng không thuê phòng nào, trả về mảng rỗng.
+      if (userRoomIds.length === 0) {
+        return res.json({
+          invoices: [],
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+        });
+      }
+
+      // 4. Thêm điều kiện lọc: hóa đơn phải thuộc một trong các phòng của người dùng.
+      filter.for_room_id = { $in: userRoomIds };
     }
+    // ===================================================================
+
+    // Các bộ lọc khác vẫn được áp dụng bình thường
     if (status) filter.payment_status = status;
-    if (roomId) filter.for_room_id = roomId;
+    if (roomId && req.user.role === "admin") filter.for_room_id = roomId; // Chỉ admin mới được lọc theo roomId bất kỳ
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
@@ -33,13 +58,16 @@ const getInvoiceHistory = async (req, res) => {
         filter.createdAt.$lte = end;
       }
     }
+
     const invoices = await Invoice.find(filter)
       .populate("for_room_id", "roomNumber floor")
       .populate("create_by", "fullname email")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
+
     const totalInvoices = await Invoice.countDocuments(filter);
+
     res.json({
       invoices,
       currentPage: parseInt(page),
@@ -52,11 +80,22 @@ const getInvoiceHistory = async (req, res) => {
   }
 };
 
+
+
 const getSingleInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id)
-      .populate("for_room_id", "roomNumber floor")
-      .populate("create_by", "fullname email phoneNumber address");
+      // THAY ĐỔI LOGIC POPULATE Ở ĐÂY
+      .populate({
+        path: "for_room_id", // Lấy thông tin phòng
+        select: "roomNumber floor tenant", // Chọn các trường cần thiết từ phòng
+        populate: {
+          path: "tenant", // Lấy thông tin người thuê từ trong phòng
+          select: "fullname email phoneNumber", // Chọn các trường của người thuê
+        },
+      })
+      .populate("create_by", "fullname email"); // Vẫn giữ lại thông tin người tạo hóa đơn
+
     if (!invoice) {
       return res.status(404).json({ message: "Không tìm thấy hoá đơn" });
     }
