@@ -1,23 +1,23 @@
 import { useFormik } from 'formik';
-import { Search, User } from 'lucide-react';
+import { Plus, Search, User } from 'lucide-react';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
-import { Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+import { Button, Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 // Components
-import UserDetailModal from '../../../components/User/UserDetailModal';
-import UserFormModal from '../../../components/User/UserFormModal';
-import UserTable from '../../../components/User/UserTable';
-import VerifyUserModal from '../../../components/User/VerifyUserModal';
+import UserDetailModal from '../../components/User/UserDetailModal';
+import UserFormModal from '../../components/User/UserFormModal';
+import UserTable from '../../components/User/UserTable';
+import VerifyUserModal from '../../components/User/VerifyUserModal';
 
 // Schemas
-import { userSchema, verifySchema } from '../../../validation/userSchema';
+import { userSchema, verifySchema } from '../../validation/userSchema';
 
 // API
-import { getAllUsers, updateUserById } from '../../../api/userAPI';
+import { getAllUsers, updateUserById } from '../../api/userAPI';
 
-const UserManagement = () => {
+const UserInfor = () => {
     // State
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -321,4 +321,4 @@ const UserManagement = () => {
     );
 };
 
-export default UserManagement;
+export default UserInfor;
