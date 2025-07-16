@@ -28,6 +28,23 @@ const UserDetailModal = ({
 }) => {
     if (!selectedUser) return null;
 
+    // chuyển status sang tiếng Việt available", "occupied", "under_maintenance
+    const statusMap = {
+        available: 'Trống',
+        occupied: 'Đang sử dụng',
+        under_maintenance: 'Đang sửa chữa'
+    };
+    // Chuyển trạng thái phòng sang tiếng Việt
+    const getRoomStatus = (status) => statusMap[status] || status;
+
+    if (selectedUser.rooms && Array.isArray(selectedUser.rooms)) {
+        selectedUser.rooms = selectedUser.rooms.map(room => ({
+            ...room,
+            status: getRoomStatus(room.status)
+        }));
+    }
+
+
     return (
         <Modal show={show} onHide={onHide} size="lg">
             <Modal.Header closeButton>
@@ -83,11 +100,22 @@ const UserDetailModal = ({
                                     </div>
                                 </>
                             )}
+
                             <div className="d-flex align-items-center mb-3">
-                                <Phone size={18} className="me-2 text-muted" />
+                                <Home size={18} className="me-2 text-muted" />
                                 <div>
                                     <small className="text-muted">Số phòng</small>
-                                    <div>{selectedUser.room && selectedUser.room.roomNumber ? selectedUser.room.roomNumber : 'Chưa có'}</div>
+                                    <div>
+                                        {selectedUser.rooms && Array.isArray(selectedUser.rooms) && selectedUser.rooms.length > 0 ? (
+                                            selectedUser.rooms.map((room, index) => (
+                                                <div key={room._id || room.id || `room-${index}`}>
+                                                    Phòng {room.roomNumber} (Tầng {room.floor}, Trạng thái: {room.status})
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div>Không có phòng nào được gán</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="d-flex align-items-center mb-3">

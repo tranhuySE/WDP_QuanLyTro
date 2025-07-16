@@ -1,4 +1,5 @@
 const User = require('../models/User.js');
+const Room = require('../models/Room.js');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -11,15 +12,21 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        const user = await User.findById(req.params.id)
+            .populate({
+                path: 'rooms',
+                select: 'roomNumber floor status', // Chọn các trường cần hiển thị
+                model: 'Room' // Ràng buộc với Model Room
+            });
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        console.log('Dữ liệu sau populate:', JSON.stringify(user.rooms, null, 2));
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 const deleteUserById = async (req, res) => {
     try {

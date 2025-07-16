@@ -1,12 +1,18 @@
-import { useFormik } from 'formik';
-import { Plus, Search, User } from 'lucide-react';
+import {
+    User
+} from 'lucide-react';
 import moment from 'moment';
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+import {
+    Button
+} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+import { useFormik } from 'formik';
+import { Plus, Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+
 // Components
-import UserDetailModal from '../../../components/User/UserDetailModal';
 import UserFormModal from '../../../components/User/UserFormModal';
 import UserTable from '../../../components/User/UserTable';
 import VerifyUserModal from '../../../components/User/VerifyUserModal';
@@ -15,7 +21,8 @@ import VerifyUserModal from '../../../components/User/VerifyUserModal';
 import { userSchema, verifySchema } from '../../../validation/userSchema';
 
 // API
-import { getAllUsers, updateUserById } from '../../../api/userAPI';
+import { getAllUsers, getUserById, updateUserById } from '../../../api/userAPI';
+import UserDetailModal from '../../../components/User/UserDetailModal';
 
 const UserManagement = () => {
     // State
@@ -46,15 +53,15 @@ const UserManagement = () => {
         fetchUsers();
     }, []);
 
-    // Sync selectedUser with users data
-    useEffect(() => {
-        if (selectedUser && showDetailModal) {
-            const updatedUser = users.find(user => user._id === selectedUser._id);
-            if (updatedUser) {
-                setSelectedUser(updatedUser);
-            }
-        }
-    }, [users, selectedUser, showDetailModal]);
+    // // Sync selectedUser with users data
+    // useEffect(() => {
+    //     if (selectedUser && showDetailModal) {
+    //         const updatedUser = users.find(user => user._id === selectedUser._id);
+    //         if (updatedUser) {
+    //             setSelectedUser(updatedUser);
+    //         }
+    //     }
+    // }, [users, selectedUser, showDetailModal]);
 
     // Filter users based on search term
     const filteredUsers = useMemo(() => {
@@ -173,10 +180,24 @@ const UserManagement = () => {
     };
 
     // Handle view detail
-    const handleViewDetail = (user) => {
-        setSelectedUser(user);
-        setShowDetailModal(true);
+    const handleViewDetail = async (user) => {
+        try {
+            setLoading(true);
+            const response = await getUserById(user._id);
+            console.log('Response from getUserById:', response.data);
+            setSelectedUser({
+                ...response.data,
+                rooms: response.data.rooms // Đảm bảo giữ nguyên mảng rooms từ response
+            });
+            setShowDetailModal(true);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            toast.error('Không thể tải thông tin chi tiết');
+        } finally {
+            setLoading(false);
+        }
     };
+
 
     // Handle edit user
     const handleEdit = async (user) => {
@@ -312,10 +333,8 @@ const UserManagement = () => {
                 show={showDetailModal}
                 onHide={() => setShowDetailModal(false)}
                 user={selectedUser}
-                onVerify={() => {
-                    setShowDetailModal(false);
-                    handleVerify(selectedUser);
-                }}
+                onVerify={handleVerify}
+                loading={loading}
             />
         </div>
     );

@@ -3,15 +3,13 @@
         "_id": {
             "$oid": "507f191e810c19729de860ea"
         },
-        "room_id": {
-            "$oid": "507f191e810c19729de860e1"
-        },
         "username": "nqminh21123",
         "email": "nqminh02112003@gmail.com",
         "password": "hashedpassword1",
         "fullname": "Nguyen Quang Minh",
         "citizen_id": "111222333444",
         "phoneNumber": "0901112222",
+        "rooms": [],
         "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
         "role": "admin",
         "address": "456 Tran Hung Dao, District 5, HCMC",
@@ -36,6 +34,7 @@
         "fullname": "Tran Staff",
         "citizen_id": "222333444555",
         "phoneNumber": "0902223333",
+        "rooms": [],
         "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
         "role": "staff",
         "address": "789 Nguyen Trai, District 5, HCMC",
@@ -60,6 +59,14 @@
         "fullname": "Le Tenant",
         "citizen_id": "333444555666",
         "phoneNumber": "0903334444",
+        "rooms": [
+            {
+                "$oid": "507f191e810c19729de860e1"
+            },
+            {
+                "$oid": "507f191e810c19729de860e5"
+            }
+        ],
         "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
         "role": "user",
         "address": "101 Vo Van Tan, District 3, HCMC",
@@ -84,6 +91,11 @@
         "fullname": "Pham Tenant",
         "citizen_id": "444555666777",
         "phoneNumber": "0904445555",
+        "rooms": [
+            {
+                "$oid": "507f191e810c19729de860e2"
+            }
+        ],
         "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
         "role": "user",
         "address": "202 Ly Tu Trong, District 1, HCMC",
@@ -108,6 +120,7 @@
         "fullname": "Hoang Staff",
         "citizen_id": "555666777888",
         "phoneNumber": "0905556666",
+        "rooms": [],
         "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
         "role": "staff",
         "address": "303 Nguyen Van Cu, District 5, HCMC",
