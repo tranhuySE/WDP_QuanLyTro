@@ -1,11 +1,12 @@
-import { message, Select } from "antd";
+import { Col, Input, message, Row, Select, Space } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import RequestAPI from "../../../api/requestAPI";
-import { Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import dayjs from "dayjs"
 import ModalReject from "../../../components/Request/ModalReject";
 import ModalAssignee from "../../../components/Request/ModalAssignee";
 import { MaterialReactTable } from "material-react-table";
+import { Ban, ClipboardCheck } from "lucide-react";
 
 
 const RequestManagement = () => {
@@ -15,6 +16,11 @@ const RequestManagement = () => {
   const [openModalReject, setOpenModalReject] = useState(false)
   const [loading, setLoading] = useState(false)
   const role = localStorage.getItem('role')
+  const [filter, setFilter] = useState({
+    fullname: '',
+    roomNumber: '',
+    status: ''
+  })
 
   const REQUEST_STATUS = [
     {
@@ -58,9 +64,7 @@ const RequestManagement = () => {
   const getListRequest = async () => {
     try {
       setLoading(true)
-      const res = role === 'admin'
-        ? await RequestAPI.getListRequest()
-        : await RequestAPI.getListRequestByStaff()
+      const res = await RequestAPI.getListRequest(filter)
       setRequests(res?.data)
     } catch (error) {
       message.error(error.toString())
@@ -93,7 +97,6 @@ const RequestManagement = () => {
         setOpenModalAssignee(original)
         return
       case "REJECTED":
-      case "CANCELLED":
         setOpenModalReject(original)
         return
       default:
@@ -104,7 +107,7 @@ const RequestManagement = () => {
 
   useEffect(() => {
     getListRequest()
-  }, [])
+  }, [filter])
 
   const columns = useMemo(
     () => [
@@ -154,20 +157,55 @@ const RequestManagement = () => {
         header: "Trạng thái xử lý",
         size: 40,
         Cell: ({ cell, row }) => (
-          <Select
-            defaultValue={cell.getValue()}
-            onChange={e => handChangeStatus(e, row.original)}
-          >
-            {
-              REQUEST_STATUS.map(i =>
-                i.isView &&
-                <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
-              )
-            }
-          </Select>
+          role === 'admin'
+            ? <div>
+              {
+                REQUEST_STATUS.find(i => i.value === cell.getValue()).label
+              }
+            </div>
+            :
+            <Select
+              defaultValue={cell.getValue()}
+              onChange={e => handChangeStatus(e, row.original)}
+            >
+              {
+                REQUEST_STATUS.map(i =>
+                  i.isView &&
+                  <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
+                )
+              }
+            </Select>
         ),
       },
     ],
+    []
+  );
+
+  const actionColumn = useMemo(
+    () => ({
+      header: "Thao tác",
+      size: 70,
+      Cell: ({ row }) => (
+        <Space Space size="small" >
+          <Button
+            variant="warning"
+            size="sm"
+            disabled={row.original.status !== 'PENDING'}
+            onClick={() => setOpenModalAssignee(row.original)}
+          >
+            <ClipboardCheck size={16} />
+          </Button>
+          <Button
+            variant="danger"
+            disabled={row.original.status !== 'PENDING'}
+            size="sm"
+            onClick={() => setOpenModalReject(row.original)}
+          >
+            <Ban size={16} />
+          </Button>
+        </Space>
+      ),
+    }),
     []
   );
 
@@ -177,8 +215,42 @@ const RequestManagement = () => {
         <div className="header mb-3">
           <h3 className="title">Danh sách yêu cầu</h3>
         </div>
+        <Row gutter={[12]} className="mb-3">
+          <Col span={8}>
+            <Input.Search
+              placeholder="Tìm kiếm theo tên người thuê"
+              allowClear
+              onSearch={e => setFilter(pre => ({ ...pre, fullname: e }))}
+            />
+          </Col>
+          <Col span={8}>
+            <Input.Search
+              placeholder="Tìm kiếm theo số phòng"
+              allowClear
+              onSearch={e => setFilter(pre => ({ ...pre, roomNumber: e }))}
+            />
+          </Col>
+          <Col span={8}>
+            <Select
+              placeholder="Tìm kiếm theo trạng thái yêu cầu"
+              style={{ width: '100%' }}
+              allowClear
+              onChange={e => {
+                setFilter(pre => ({ ...pre, status: e || '' }))
+              }}
+            >
+              {
+                REQUEST_STATUS.map(i =>
+                  <Select.Option key={i.value} value={i.value}>{i.label}</Select.Option>
+                )
+              }
+            </Select>
+          </Col>
+        </Row>
         <MaterialReactTable
-          columns={columns}
+          columns={
+            role === 'admin' ? [...columns, actionColumn] : columns
+          }
           data={requests}
           enableColumnActions={false}
           enableColumnFilters={false}
