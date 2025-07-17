@@ -13,15 +13,17 @@ export const getUserById = (id) => {
 export const deleteUserById = (id) => {
     return axiosInstance.delete(`/users/${id}`);
 };
+const editUserById = (id, data) => axiosInstance.put(`/users/${id}`, data);
 
 export const updateUserById = (id, userData) => {
     return axiosInstance.put(`/users/${id}`, userData);
 }
 
+const changePassword = (data) => axiosInstance.put(`/users/change-password`, data);
 const getListStaff = () => axios.get("http://localhost:9999/users/getListStaff")
 
 const UserAPI = {
-    getListStaff
+    getListStaff,editUserById,changePassword
 }
 
 export default UserAPI
