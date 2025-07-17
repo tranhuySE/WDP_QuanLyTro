@@ -105,46 +105,56 @@ const deleteRoomById = async (req, res) => {
 
 const getMyRoomInfo = async (req, res) => {
   try {
-    // Lấy tất cả hợp đồng active của user
     const contracts = await Contract.find({
-      tenant: req.userID,
+      tenant: req.user._id,
       status: "active",
     });
+
     if (!contracts || contracts.length === 0) {
       return res
         .status(404)
         .json({ message: "Bạn chưa có phòng nào đang thuê." });
     }
-    // Lấy tất cả roomId từ các hợp đồng
+
+    // 2. Lấy tất cả roomId từ các hợp đồng
     const roomIds = contracts.map((c) => c.roomId);
-    // Lấy thông tin các phòng
+
+    // 3. Lấy thông tin các phòng
     const rooms = await Room.find({ _id: { $in: roomIds } })
       .populate("room_service")
       .lean();
-    // Lấy dịch vụ nhà cho từng hợp đồng
-    const result = await Promise.all(
-      contracts.map(async (contract) => {
-        const room = rooms.find(
-          (r) => r._id.toString() === contract.roomId.toString()
-        );
-        let services = [];
-        if (contract.house_service && contract.house_service.length > 0) {
-          services = await HouseService.find({
-            _id: { $in: contract.house_service },
-          });
-        }
-        return {
-          ...room,
-          price: contract.price || room?.price,
-          status: contract.status == "active" ? room.status : "pending",
-          services: services.map((s) => s.name),
-          contractId: contract._id,
-          contractStart: contract.startDate,
-          contractEnd: contract.endDate,
-          contractTerms: contract.terms,
-        };
-      })
-    );
+
+    // 4. Tạo mảng kết quả
+    const result = [];
+
+    for (const contract of contracts) {
+      const room = rooms.find(
+        (r) => r._id.toString() === contract.roomId.toString()
+      );
+
+      if (!room) continue; // bỏ luôn nếu không tìm thấy phòng
+      if (room.status !== "occupied") continue; // bỏ luôn nếu không occupied
+
+      // Lấy dịch vụ trong hợp đồng
+      let services = [];
+      if (contract.house_service?.length) {
+        services = await HouseService.find({
+          _id: { $in: contract.house_service },
+        });
+      }
+
+      result.push({
+        ...room,
+        price: contract.price || room?.price,
+        status: contract.status === "active" ? room.status : "pending",
+        services: services.map((s) => s.name),
+        contractId: contract._id,
+        contractStart: contract.startDate,
+        contractEnd: contract.endDate,
+        contractTerms: contract.terms,
+      });
+    }
+
     res.json(result);
   } catch (err) {
     res.status(500).json({ message: "Lỗi server", error: err.message });
