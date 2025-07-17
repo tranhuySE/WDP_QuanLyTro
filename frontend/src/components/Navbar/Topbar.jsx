@@ -51,7 +51,10 @@ const Topbar = ({ sidebarWidth = 250 }) => {
     setShowProfileMenu(false);
     navigate("./profile");
   };
-
+  const handleChangePasswordClick = ()=>{
+    setShowProfileMenu(false);
+    navigate("./change-password");
+  }
   return (
     <>
       {/* Overlay for closing dropdowns */}
@@ -170,7 +173,7 @@ const Topbar = ({ sidebarWidth = 250 }) => {
                       </button>
                       <button
                         className="profile-dropdown-item"
-                        onClick={() => window.location.href = './change-password'}
+                        onClick={handleChangePasswordClick}
                       >
                         <FiLock size={16} className="profile-dropdown-icon" />
                         <span>Đổi mật khẩu</span>

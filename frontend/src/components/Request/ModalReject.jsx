@@ -8,14 +8,15 @@ const ModalReject = ({ open, onCancel, onOk }) => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields()
-      const res = await RequestAPI.rejectRequest({
+      const res = await RequestAPI.changeRequestStatus({
         requestId: open?._id,
-        reasonReject: values?.reasonReject,
+        status: "REJECTED",
         approval: localStorage.getItem("id"),
         statusHistory: {
           oldStatus: open?.status,
           newStatus: "REJECTED",
-          changedBy: localStorage.getItem("id")
+          changedBy: localStorage.getItem("id"),
+          note: values?.reasonReject,
         }
       })
       onOk()

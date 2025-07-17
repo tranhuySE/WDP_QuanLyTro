@@ -106,7 +106,7 @@ const deleteRoomById = async (req, res) => {
 const getMyRoomInfo = async (req, res) => {
   try {
     const contracts = await Contract.find({
-      tenant: req.userID,
+      tenant: req.user._id,
       status: "active",
     });
 

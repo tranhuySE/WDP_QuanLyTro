@@ -1,4 +1,4 @@
-import { message, Space } from "antd";
+import { Col, Input, message, Row, Select, Space } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import RequestAPI from "../../../api/requestAPI";
 import { Button, Container } from "react-bootstrap";
@@ -8,17 +8,63 @@ import ModalAssignee from "../../../components/Request/ModalAssignee";
 import { MaterialReactTable } from "material-react-table";
 import { Ban, ClipboardCheck } from "lucide-react";
 
+
 const RequestManagement = () => {
 
   const [requests, setRequests] = useState([])
   const [openModalAssignee, setOpenModalAssignee] = useState(false)
   const [openModalReject, setOpenModalReject] = useState(false)
   const [loading, setLoading] = useState(false)
+  const role = localStorage.getItem('role')
+  const [filter, setFilter] = useState({
+    fullname: '',
+    roomNumber: '',
+    status: ''
+  })
+
+  const REQUEST_STATUS = [
+    {
+      value: "PENDING",
+      label: "Chưa giải quyết",
+      isView: true,
+      isDisabled: true,
+    },
+    {
+      value: "APPROVED",
+      label: "Tán thành",
+      isView: role === 'staff',
+      isDisabled: false,
+    },
+    {
+      value: "ASSIGNED",
+      label: "Được giao",
+      isView: role === 'admin',
+      isDisabled: false,
+    },
+    {
+      value: "IN_PROGRESS",
+      label: "Đang tiến hành",
+      isView: role === 'staff',
+      isDisabled: false,
+    },
+    {
+      value: "COMPLETED",
+      label: "Hoàn thành",
+      isView: role === 'staff',
+      isDisabled: false,
+    },
+    {
+      value: "REJECTED",
+      label: "Từ chối",
+      isView: true,
+      isDisabled: false,
+    }
+  ]
 
   const getListRequest = async () => {
     try {
       setLoading(true)
-      const res = await RequestAPI.getListRequest()
+      const res = await RequestAPI.getListRequest(filter)
       setRequests(res?.data)
     } catch (error) {
       message.error(error.toString())
@@ -27,9 +73,41 @@ const RequestManagement = () => {
     }
   }
 
+  const changeRequestStatus = async (status, original) => {
+    try {
+      const res = await RequestAPI.changeRequestStatus({
+        requestId: original?._id,
+        status: status,
+        approval: localStorage.getItem("id"),
+        statusHistory: {
+          oldStatus: original?.status,
+          newStatus: status,
+          changedBy: localStorage.getItem("id"),
+        }
+      })
+      message.success("Cập nhật trạng thái thành công")
+    } catch (error) {
+      message.error(error.toString())
+    }
+  }
+
+  const handChangeStatus = (status, original) => {
+    switch (status) {
+      case "ASSIGNED":
+        setOpenModalAssignee(original)
+        return
+      case "REJECTED":
+        setOpenModalReject(original)
+        return
+      default:
+        changeRequestStatus(status, original)
+        return
+    }
+  }
+
   useEffect(() => {
     getListRequest()
-  }, [])
+  }, [filter])
 
   const columns = useMemo(
     () => [
@@ -47,19 +125,27 @@ const RequestManagement = () => {
         ),
       },
       {
+        accessorKey: "room",
+        header: "Số phòng",
+        size: 40,
+        Cell: ({ cell }) => (
+          <div>{cell.getValue()?.roomNumber}</div>
+        ),
+      },
+      {
         accessorKey: "type",
         header: "Loại yêu cầu",
-        size: 80
+        size: 50
       },
       {
         accessorKey: "priority",
         header: "Mức độ ưu tiên",
-        size: 50
+        size: 40
       },
       {
         accessorKey: "createdAt",
         header: "Ngày tạo",
-        size: 50,
+        size: 40,
         Cell: ({ cell }) => (
           <div>
             {dayjs(cell.getValue()).format("DD/MM/YYYY")}
@@ -69,13 +155,32 @@ const RequestManagement = () => {
       {
         accessorKey: "status",
         header: "Trạng thái xử lý",
-        size: 50,
+        size: 40,
+        Cell: ({ cell, row }) => (
+          role === 'admin'
+            ? <div>
+              {
+                REQUEST_STATUS.find(i => i.value === cell.getValue()).label
+              }
+            </div>
+            :
+            <Select
+              defaultValue={cell.getValue()}
+              onChange={e => handChangeStatus(e, row.original)}
+            >
+              {
+                REQUEST_STATUS.map(i =>
+                  i.isView &&
+                  <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
+                )
+              }
+            </Select>
+        ),
       },
     ],
     []
   );
 
-  // Cột thao tác (Action column)
   const actionColumn = useMemo(
     () => ({
       header: "Thao tác",
@@ -85,12 +190,14 @@ const RequestManagement = () => {
           <Button
             variant="warning"
             size="sm"
+            disabled={row.original.status !== 'PENDING'}
             onClick={() => setOpenModalAssignee(row.original)}
           >
             <ClipboardCheck size={16} />
           </Button>
           <Button
             variant="danger"
+            disabled={row.original.status !== 'PENDING'}
             size="sm"
             onClick={() => setOpenModalReject(row.original)}
           >
@@ -108,8 +215,42 @@ const RequestManagement = () => {
         <div className="header mb-3">
           <h3 className="title">Danh sách yêu cầu</h3>
         </div>
+        <Row gutter={[12]} className="mb-3">
+          <Col span={8}>
+            <Input.Search
+              placeholder="Tìm kiếm theo tên người thuê"
+              allowClear
+              onSearch={e => setFilter(pre => ({ ...pre, fullname: e }))}
+            />
+          </Col>
+          <Col span={8}>
+            <Input.Search
+              placeholder="Tìm kiếm theo số phòng"
+              allowClear
+              onSearch={e => setFilter(pre => ({ ...pre, roomNumber: e }))}
+            />
+          </Col>
+          <Col span={8}>
+            <Select
+              placeholder="Tìm kiếm theo trạng thái yêu cầu"
+              style={{ width: '100%' }}
+              allowClear
+              onChange={e => {
+                setFilter(pre => ({ ...pre, status: e || '' }))
+              }}
+            >
+              {
+                REQUEST_STATUS.map(i =>
+                  <Select.Option key={i.value} value={i.value}>{i.label}</Select.Option>
+                )
+              }
+            </Select>
+          </Col>
+        </Row>
         <MaterialReactTable
-          columns={[...columns, actionColumn]}
+          columns={
+            role === 'admin' ? [...columns, actionColumn] : columns
+          }
           data={requests}
           enableColumnActions={false}
           enableColumnFilters={false}

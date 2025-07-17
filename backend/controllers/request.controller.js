@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Request = require("../models/Request");
 
 const createRequest = async (req, res) => {
@@ -11,25 +12,80 @@ const createRequest = async (req, res) => {
 
 const getListRequest = async (req, res) => {
   try {
-    const requests = await Request
-      .find()
-      .populate("createdBy", ["_id", "fullname"])
-      .populate("room", ["_id", "fullname"])
+    const { _id, role } = req.user
+    const { fullname, roomNumber, status } = req.query
+    let query = role === 'admin'
+      ? {}
+      : { assignedTo: new mongoose.Types.ObjectId(`${_id}`) }
+    let joinQuery = {}
+    if (!!status) {
+      query.status = status
+    }
+    console.log("query", query);
+
+    if (!!fullname) {
+      joinQuery['createdBy.fullname'] = { $regex: fullname, $options: 'i' }
+    }
+    if (!!roomNumber) {
+      joinQuery['room.roomNumber'] = roomNumber
+    }
+    const requests = await Request.aggregate([
+      {
+        $match: query
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'createdBy',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                fullname: 1
+              }
+            }
+          ]
+        }
+      },
+      { $unwind: '$createdBy' },
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'room',
+          foreignField: '_id',
+          as: 'room',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                roomNumber: 1
+              }
+            }
+          ]
+        }
+      },
+      { $unwind: '$room' },
+      {
+        $match: joinQuery
+      },
+    ])
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
 
-const assigneeRequest = async (req, res) => {
+const changeRequestStatus = async (req, res) => {
   try {
-    const { assignedTo, approval, requestId, statusHistory } = req.body
+    const { assignedTo, approval, requestId, statusHistory, status } = req.body
     const request = await Request.findOneAndUpdate(
       { _id: requestId },
       {
-        status: "ASSIGNED",
-        assignedTo: assignedTo,
+        status,
         approval: approval,
+        assignedTo,
         $push: {
           statusHistory
         }
@@ -44,24 +100,15 @@ const assigneeRequest = async (req, res) => {
   }
 }
 
-const rejectRequest = async (req, res) => {
+const getListRequestByUser = async (req, res) => {
   try {
-    const { requestId, approval, reasonReject, statusHistory } = req.body
-    const request = await Request.findOneAndUpdate(
-      { _id: requestId },
-      {
-        status: "REJECTED",
-        approval: approval,
-        reasonReject,
-        $push: {
-          statusHistory
-        }
-      },
-      {
-        new: true
-      }
-    )
-    return res.status(200).json(request)
+    const userId = req.userID
+    const requests = await Request
+      .find({
+        createdBy: userId
+      })
+      .populate("room", ["_id", "roomNumber"])
+    res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -70,6 +117,6 @@ const rejectRequest = async (req, res) => {
 module.exports = {
   createRequest,
   getListRequest,
-  assigneeRequest,
-  rejectRequest
+  changeRequestStatus,
+  getListRequestByUser
 }

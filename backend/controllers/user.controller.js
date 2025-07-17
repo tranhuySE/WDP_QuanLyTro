@@ -75,18 +75,21 @@ const changePassword = async (req, res) => {
     console.log("🚀 ~ changePassword ~ req:", req.body)
     // Only update the password field
     try {
-        const user = await User.findById(req.userID);
+        const user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
+        }
+          if (user.password !== req.body.oldPassword) {
+            return res.status(400).json({ message: "Mật khẩu hiện tại không đúng." });
         }
         // Check if new password is the same as current password
         if (user.password === req.body.password) {
             return res.status(400).json({ message: 'Mật khẩu mới không được trùng với mật khẩu cũ.' });
         }
         const updatedUser = await User.findByIdAndUpdate(
-            req.userID,
+            req.user._id,
             { password: req.body.password },
-            { new: true }
+            { new: true }   
         );
         res.status(200).json({ message: 'Mật khẩu đã được cập nhật thành công' });
     } catch (error) {

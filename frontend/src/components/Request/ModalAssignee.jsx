@@ -26,8 +26,9 @@ const ModalAssignee = ({ open, onCancel, onOk }) => {
   const handleSubmit = async () => {
     try {
       if (!staffSelected) return message.error("Hãy chọn staff!")
-      const res = await RequestAPI.assigneeRequest({
+      const res = await RequestAPI.changeRequestStatus({
         requestId: open?._id,
+        status: "ASSIGNED",
         assignedTo: staffSelected?.data?._id,
         approval: localStorage.getItem("id"),
         statusHistory: {

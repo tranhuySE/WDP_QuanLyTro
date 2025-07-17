@@ -7,12 +7,14 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ChangePasswordPage = () => {
   const [form, setForm] = useState({
+    oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -25,7 +27,7 @@ const ChangePasswordPage = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    if (!form.newPassword || !form.confirmPassword) {
+    if (!form.oldPassword || !form.newPassword || !form.confirmPassword) {
       toast.error("Vui lòng nhập đầy đủ thông tin.");
       return;
     }
@@ -39,9 +41,9 @@ const ChangePasswordPage = () => {
     }
     setLoading(true);
     try {
-      const res = await UserAPI.changePassword({ password: form.newPassword });
+      const res = await UserAPI.changePassword({ oldPassword: form.oldPassword, password: form.newPassword });
       toast.success(res.data.message || "Đổi mật khẩu thành công!");
-      setForm({ newPassword: "", confirmPassword: "" });
+      setForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
       toast.error(
         err?.response?.data?.message || "Đổi mật khẩu thất bại. Vui lòng thử lại."
@@ -57,6 +59,27 @@ const ChangePasswordPage = () => {
         <Card.Body>
           <h3 className="mb-4 text-center">Đổi mật khẩu</h3>
           <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Mật khẩu hiện tại</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showOldPassword ? "text" : "password"}
+                  name="oldPassword"
+                  value={form.oldPassword}
+                  onChange={handleChange}
+                  placeholder="Nhập mật khẩu hiện tại"
+                  required
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setShowOldPassword((v) => !v)}
+                  tabIndex={-1}
+                  style={{ borderLeft: 0 }}
+                >
+                  {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              </InputGroup>
+            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Mật khẩu mới</Form.Label>
               <InputGroup>

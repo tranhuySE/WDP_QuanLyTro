@@ -1,13 +1,18 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance"
 
-const getListRequest = () => axios.get('http://localhost:9999/requests/getListRequest')
-const rejectRequest = body => axios.post('http://localhost:9999/requests/rejectRequest', body)
-const assigneeRequest = body => axios.post('http://localhost:9999/requests/assigneeRequest', body)
+const createRequest = body => axiosInstance.post('http://localhost:9999/requests/createRequest', body)
+const getListRequest = (params) => {
+  const queryString = new URLSearchParams(params).toString();
+  return axiosInstance.get(`http://localhost:9999/requests/getListRequest?${queryString}`)
+}
+const changeRequestStatus = body => axiosInstance.put('http://localhost:9999/requests/changeRequestStatus', body)
+const getListRequestByUser = () => axiosInstance.get("http://localhost:9999/requests/getListRequestByUser")
 
 const RequestAPI = {
+  createRequest,
   getListRequest,
-  rejectRequest,
-  assigneeRequest
+  changeRequestStatus,
+  getListRequestByUser
 }
 
 export default RequestAPI
