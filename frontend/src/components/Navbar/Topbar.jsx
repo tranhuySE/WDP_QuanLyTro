@@ -49,7 +49,7 @@ const Topbar = ({ sidebarWidth = 250 }) => {
 
   const handleProfileClick = () => {
     setShowProfileMenu(false);
-    navigate("/profile");
+    navigate("./profile");
   };
 
   return (
@@ -126,8 +126,28 @@ const Topbar = ({ sidebarWidth = 250 }) => {
                     className="user-profile-button"
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                   >
-                    <div className="user-avatar">
-                      <User size={16} />
+ <div className="user-avatar">
+                      {(() => {
+                        const userDataStr = localStorage.getItem('userData');
+                        let avatar = null;
+                        if (userDataStr) {
+                          try {
+                            const userData = JSON.parse(userDataStr);
+                            avatar = userData.avatar;
+                          } catch (e) {
+                            avatar = null;
+                          }
+                        }
+                        return avatar ? (
+                          <img
+                            src={avatar}
+                            alt="avatar"
+                            style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '1px solid #ccc' }}
+                          />
+                        ) : (
+                          <User size={16} />
+                        );
+                      })()}
                     </div>
                     <div className="user-info">
                       <div className="user-name">

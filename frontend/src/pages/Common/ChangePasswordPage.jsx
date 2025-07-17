@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Container, Card, Form, Button, Alert, Spinner, Toast, InputGroup } from "react-bootstrap";
 import UserAPI from "../../api/userAPI";
