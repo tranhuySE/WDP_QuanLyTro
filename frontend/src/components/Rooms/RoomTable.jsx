@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios"; // BƯỚC 1: THÊM IMPORT AXIOS
-import {
-  MaterialReactTable,
-  useMaterialReactTable,
-} from "material-react-table";
+import axios from "axios";
 import {
   Box,
   IconButton,
@@ -34,6 +30,8 @@ import {
   AccordionSummary,
   AccordionDetails,
   Stack,
+  CardContent,
+  Menu, // Thêm Menu
 } from "@mui/material";
 import {
   Edit,
@@ -59,6 +57,8 @@ import {
   ExpandMore,
   Category,
   Wallet,
+  MeetingRoom,
+  MoreVert, // Thêm icon 3 chấm dọc
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -71,7 +71,8 @@ import {
 } from "../../api/roomAPI";
 import { getAllUsers } from "../../api/userAPI";
 
-// Ánh xạ trạng thái từ tiếng Anh sang tiếng Việt và màu sắc tương ứng
+// ----- CÁC COMPONENT CON (TabPanel, RoomDetails, RoomForm) GIỮ NGUYÊN -----
+// ... (Dán code các component con của bạn vào đây)
 const statusMapping = {
   available: { text: "Còn trống", color: "success" },
   occupied: { text: "Đã thuê", color: "warning" },
@@ -279,6 +280,7 @@ const FormikTextField = ({ name, label, ...props }) => (
   </Field>
 );
 
+// Component Form tạo/sửa phòng
 const RoomForm = ({
   initialValues,
   onSubmit,
@@ -288,37 +290,24 @@ const RoomForm = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
 
-  // BƯỚC 2: THAY THẾ HOÀN TOÀN HÀM NÀY
   const handleImageUpload = async (files, push) => {
     setIsUploading(true);
     try {
-      // Tạo một mảng các promise cho mỗi lần tải ảnh
       const uploadPromises = Array.from(files).map(async (file) => {
         const formData = new FormData();
-        // "image" phải khớp với tên trong upload.single("image") ở backend
         formData.append("image", file);
-
-        // Gọi API backend của bạn
         const response = await axios.post(
           "http://localhost:9999/api/upload",
           formData,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
           }
         );
-
-        // Trả về URL của ảnh từ response
         return response.data.imageUrl;
       });
 
-      // Chờ tất cả các ảnh được tải lên
       const imageUrls = await Promise.all(uploadPromises);
-
-      // Đẩy tất cả các URL mới vào Formik state
       imageUrls.forEach((url) => push(url));
-
       toast.success(`Đã tải lên ${imageUrls.length} ảnh thành công!`);
     } catch (error) {
       console.error("Lỗi khi tải ảnh:", error);
@@ -703,6 +692,7 @@ const RoomForm = ({
   );
 };
 
+// Component chính hiển thị Sơ đồ phòng
 const RoomTable = () => {
   const [rooms, setRooms] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -715,6 +705,20 @@ const RoomTable = () => {
   const [editingRoom, setEditingRoom] = useState(null);
   const [viewingRoom, setViewingRoom] = useState(null);
   const [deletingRoomId, setDeletingRoomId] = useState(null);
+
+  // State cho menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRoomForMenu, setSelectedRoomForMenu] = useState(null);
+
+  const handleMenuOpen = (event, room) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRoomForMenu(room);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRoomForMenu(null);
+  };
 
   const fetchAllData = async () => {
     setIsLoading(true);
@@ -741,6 +745,20 @@ const RoomTable = () => {
   useEffect(() => {
     fetchAllData();
   }, []);
+
+  const roomsByFloor = useMemo(() => {
+    const sortedRooms = [...rooms].sort((a, b) =>
+      a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true })
+    );
+    return sortedRooms.reduce((acc, room) => {
+      const floor = room.floor || "N/A";
+      if (!acc[floor]) {
+        acc[floor] = [];
+      }
+      acc[floor].push(room);
+      return acc;
+    }, {});
+  }, [rooms]);
 
   const preparePayload = (values) => {
     const payload = { ...values };
@@ -847,92 +865,11 @@ const RoomTable = () => {
     setViewingRoom(room);
     setIsViewModalOpen(true);
   };
+
   const openDeleteConfirmModal = (id) => {
     setDeletingRoomId(id);
     setIsDeleteConfirmOpen(true);
   };
-
-  const columns = useMemo(
-    () => [
-      { accessorKey: "roomNumber", header: "Số phòng" },
-      {
-        accessorKey: "price",
-        header: "Giá (VND)",
-        Cell: ({ cell }) => cell.getValue().toLocaleString("vi-VN"),
-      },
-      {
-        accessorKey: "status",
-        header: "Trạng thái",
-        Cell: ({ cell }) => {
-          const status = cell.getValue();
-          const statusInfo = statusMapping[status] || {
-            text: status,
-            color: "default",
-          };
-          return (
-            <Chip
-              label={statusInfo.text}
-              color={statusInfo.color}
-              size="small"
-            />
-          );
-        },
-      },
-      {
-        accessorKey: "tenant",
-        header: "Người thuê",
-        Cell: ({ cell }) =>
-          cell
-            .getValue()
-            ?.filter(Boolean)
-            .map((t) => t.fullname)
-            .join(", ") || "Trống",
-      },
-    ],
-    [allUsers]
-  );
-
-  const table = useMaterialReactTable({
-    columns,
-    data: rooms,
-    state: { isLoading },
-    enableRowActions: true,
-    positionActionsColumn: "last",
-    renderRowActions: ({ row }) => (
-      <Box sx={{ display: "flex", gap: "0.5rem" }}>
-        <Tooltip title="Xem chi tiết">
-          <IconButton color="info" onClick={() => openViewModal(row.original)}>
-            <Visibility />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Chỉnh sửa">
-          <IconButton
-            color="primary"
-            onClick={() => openEditModal(row.original)}
-          >
-            <Edit />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Xóa">
-          <IconButton
-            color="error"
-            onClick={() => openDeleteConfirmModal(row.original._id)}
-          >
-            <Delete />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    ),
-    renderTopToolbarCustomActions: () => (
-      <Button
-        variant="contained"
-        startIcon={<Add />}
-        onClick={() => setIsCreateModalOpen(true)}
-      >
-        Thêm phòng mới
-      </Button>
-    ),
-  });
 
   const createFormInitialValues = {
     roomNumber: "",
@@ -954,10 +891,247 @@ const RoomTable = () => {
   };
   const closeCreateModal = () => setIsCreateModalOpen(false);
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
-      <MaterialReactTable table={table} />
+      <Box sx={{ p: 3 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 4 }}
+        >
+          <Typography variant="h4" fontWeight="bold">
+            Sơ đồ phòng
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setIsCreateModalOpen(true)}
+            sx={{
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              borderRadius: "8px",
+            }}
+          >
+            Thêm phòng mới
+          </Button>
+        </Stack>
 
+        {Object.keys(roomsByFloor).length === 0 && (
+          <Box textAlign="center" mt={5}>
+            <MeetingRoom sx={{ fontSize: 60, color: "text.secondary" }} />
+            <Typography variant="h6" color="text.secondary" mt={2}>
+              Chưa có phòng nào được tạo.
+            </Typography>
+            <Typography color="text.secondary">
+              Hãy bắt đầu bằng cách nhấn nút "Thêm phòng mới".
+            </Typography>
+          </Box>
+        )}
+
+        {Object.keys(roomsByFloor)
+          .sort((a, b) => a - b)
+          .map((floor) => (
+            <Box key={floor} sx={{ mb: 5 }}>
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{
+                  mb: 3,
+                  borderBottom: "2px solid",
+                  borderColor: "primary.main",
+                  pb: 1,
+                }}
+              >
+                Tầng {floor}
+              </Typography>
+              <Grid container spacing={3}>
+                {roomsByFloor[floor].map((room) => {
+                  const statusInfo = statusMapping[room.status] || {
+                    text: room.status,
+                    color: "default",
+                  };
+                  const tenantNames =
+                    room.tenant
+                      ?.filter(Boolean)
+                      .map((t) => t.fullname)
+                      .join(", ") || "Trống";
+
+                  const roomImage = room.images?.[0];
+
+                  return (
+                    <Grid item key={room._id}>
+                      <Card
+                        sx={{
+                          position: "relative", // Cần thiết để định vị icon menu
+                          width: 280,
+                          height: 360,
+                          display: "flex",
+                          flexDirection: "column",
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          transition: "box-shadow 0.2s ease-in-out",
+                          "&:hover": {
+                            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+                          },
+                        }}
+                      >
+                        <IconButton
+                          aria-label="settings"
+                          size="small"
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            backgroundColor: "rgba(255, 255, 255, 0.7)",
+                            "&:hover": {
+                              backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            },
+                          }}
+                          onClick={(event) => handleMenuOpen(event, room)}
+                        >
+                          <MoreVert />
+                        </IconButton>
+
+                        {roomImage ? (
+                          <CardMedia
+                            component="img"
+                            sx={{ height: 160 }}
+                            image={roomImage}
+                            alt={`Hình ảnh phòng ${room.roomNumber}`}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              height: 160,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: "#f5f5f5",
+                              color: "text.secondary",
+                            }}
+                          >
+                            <ImageNotSupported sx={{ fontSize: 40 }} />
+                          </Box>
+                        )}
+
+                        <CardContent
+                          sx={{ flexGrow: 1, p: 2, overflow: "hidden" }}
+                        >
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-start"
+                          >
+                            <Typography variant="h6" fontWeight="700" noWrap>
+                              P.{room.roomNumber}
+                            </Typography>
+                            <Chip
+                              label={statusInfo.text}
+                              color={statusInfo.color}
+                              size="small"
+                              sx={{ fontWeight: "bold", flexShrink: 0, ml: 1 }}
+                            />
+                          </Stack>
+                          <Tooltip
+                            title={`Giá thuê: ${room.price.toLocaleString(
+                              "vi-VN"
+                            )} VND/tháng`}
+                            arrow
+                          >
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                mt: 1,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                              }}
+                            >
+                              <AttachMoneyOutlined sx={{ fontSize: "1rem" }} />
+                              {room.price.toLocaleString("vi-VN")}
+                            </Typography>
+                          </Tooltip>
+                          <Tooltip title={`Người thuê: ${tenantNames}`} arrow>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              noWrap
+                              sx={{
+                                mt: 0.5,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                              }}
+                            >
+                              <GroupOutlined sx={{ fontSize: "1rem" }} />
+                              {tenantNames}
+                            </Typography>
+                          </Tooltip>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Box>
+          ))}
+      </Box>
+
+      {/* Menu cho các hành động */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem
+          onClick={() => {
+            openViewModal(selectedRoomForMenu);
+            handleMenuClose();
+          }}
+        >
+          <Visibility sx={{ mr: 1.5, fontSize: "1.25rem" }} />
+          Xem chi tiết
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            openEditModal(selectedRoomForMenu);
+            handleMenuClose();
+          }}
+        >
+          <Edit sx={{ mr: 1.5, fontSize: "1.25rem" }} />
+          Chỉnh sửa
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            openDeleteConfirmModal(selectedRoomForMenu._id);
+            handleMenuClose();
+          }}
+          sx={{ color: "error.main" }}
+        >
+          <Delete sx={{ mr: 1.5, fontSize: "1.25rem" }} />
+          Xóa phòng
+        </MenuItem>
+      </Menu>
+
+      {/* --- MODALS --- (Giữ nguyên) */}
       <Dialog
         open={isCreateModalOpen || isEditModalOpen}
         onClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
