@@ -86,7 +86,7 @@ const changePassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-          if (user.password !== req.body.oldPassword) {
+        if (user.password !== req.body.oldPassword) {
             return res.status(400).json({ message: "Mật khẩu hiện tại không đúng." });
         }
         // Check if new password is the same as current password
@@ -96,7 +96,7 @@ const changePassword = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,
             { password: req.body.password },
-            { new: true }   
+            { new: true }
         );
         res.status(200).json({ message: 'Mật khẩu đã được cập nhật thành công' });
     } catch (error) {
@@ -113,11 +113,25 @@ const changePassword = async (req, res) => {
     }
 }
 
+const editUserInfo = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
 module.exports = {
     getAllUsers,
     getUserById,
     deleteUserById,
     getListStaff,
     editUserById,
-    changePassword
+    changePassword,
+    editUserInfo
 };

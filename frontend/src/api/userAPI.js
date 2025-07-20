@@ -19,6 +19,8 @@ export const updateUserById = (id, userData) => {
     return axiosInstance.put(`/users/${id}`, userData);
 }
 
+export const editUserInfo = (id, data) => axiosInstance.put(`/users/edit/${id}`, data);
+
 const changePassword = (data) => axiosInstance.put(`/users/change-password`, data);
 const getListStaff = () => axios.get("http://localhost:9999/users/getListStaff")
 
