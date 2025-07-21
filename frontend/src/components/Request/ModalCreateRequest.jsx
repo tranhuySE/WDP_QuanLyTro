@@ -3,20 +3,42 @@ import { useEffect, useState } from "react"
 import { getMyRoomInfo } from "../../api/roomAPI"
 import RequestAPI from "../../api/requestAPI"
 
+export const REQUEST_TYPE = [
+  {
+    value: "MAINTENANCE",
+    label: "Bảo trì"
+  },
+  {
+    value: "CLEANING",
+    label: "Vệ sinh"
+  },
+  {
+    value: "COMPLAINT",
+    label: "Phàn nàn"
+  },
+  {
+    value: "TASK_ASSIGNMENT",
+    label: "Nhiệm vụ"
+  },
+  {
+    value: "ROOM_ISSUE",
+    label: "Vấn đề về phòng"
+  },
+  {
+    value: "PAYMENT_ISSUE",
+    label: "Vấn đề thanh toán"
+  },
+  {
+    value: "OTHER",
+    label: "Khác"
+  },
+]
+
 const ModalCreateRequest = ({ open, onCancel, onOk }) => {
 
   const [form] = Form.useForm()
   const [rooms, setRooms] = useState([])
 
-  const REQUEST_TYPE = [
-    "MAINTENANCE",
-    "CLEANING",
-    "COMPLAINT",
-    "TASK_ASSIGNMENT",
-    "ROOM_ISSUE",
-    "PAYMENT_ISSUE",
-    "OTHER",
-  ]
 
   const getRooms = async () => {
     try {
@@ -95,7 +117,7 @@ const ModalCreateRequest = ({ open, onCancel, onOk }) => {
               <Select placeholder="Loại yêu cầu">
                 {
                   REQUEST_TYPE.map(i =>
-                    <Select.Option key={i} value={i}>{i}</Select.Option>
+                    <Select.Option key={i.value} value={i.value}>{i.label}</Select.Option>
                   )
                 }
               </Select>

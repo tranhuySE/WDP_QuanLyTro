@@ -6,7 +6,9 @@ import dayjs from "dayjs"
 import ModalReject from "../../../components/Request/ModalReject";
 import ModalAssignee from "../../../components/Request/ModalAssignee";
 import { MaterialReactTable } from "material-react-table";
-import { Ban, ClipboardCheck } from "lucide-react";
+import { Ban, ClipboardCheck, Eye } from "lucide-react";
+import ModalViewReson from "../../../components/Request/ModalViewReson";
+import { REQUEST_TYPE } from "../../../components/Request/ModalCreateRequest";
 
 
 const RequestManagement = () => {
@@ -14,6 +16,7 @@ const RequestManagement = () => {
   const [requests, setRequests] = useState([])
   const [openModalAssignee, setOpenModalAssignee] = useState(false)
   const [openModalReject, setOpenModalReject] = useState(false)
+  const [openModalViewReson, setOpenModalViewReson] = useState(false)
   const [loading, setLoading] = useState(false)
   const role = localStorage.getItem('role')
   const [filter, setFilter] = useState({
@@ -130,7 +133,14 @@ const RequestManagement = () => {
       {
         accessorKey: "type",
         header: "Loại yêu cầu",
-        size: 50
+        size: 50,
+        Cell: ({ cell }) => (
+          <div>
+            {
+              REQUEST_TYPE.find(i => i.value === cell.getValue()).label
+            }
+          </div>
+        ),
       },
       {
         accessorKey: "priority",
@@ -181,7 +191,17 @@ const RequestManagement = () => {
       header: "Thao tác",
       size: 70,
       Cell: ({ row }) => (
-        <Space Space size="small" >
+        <Space Space size="small">
+          <Button
+            variant="primary"
+            disabled={row.original.status !== 'REJECTED'}
+            size="sm"
+            onClick={() => {
+              setOpenModalViewReson(row?.original?.statusHistory?.find(i => i?.newStatus === "REJECTED"))
+            }}
+          >
+            <Eye size={16} />
+          </Button>
           <Button
             variant="warning"
             size="sm"
@@ -282,6 +302,14 @@ const RequestManagement = () => {
           open={openModalAssignee}
           onCancel={() => setOpenModalAssignee(false)}
           onOk={getListRequest}
+        />
+      }
+
+      {
+        !!openModalViewReson &&
+        <ModalViewReson
+          open={openModalViewReson}
+          onCancel={() => setOpenModalViewReson(false)}
         />
       }
 
