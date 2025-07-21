@@ -55,7 +55,7 @@ const ModalCreateRequest = ({ open, onCancel, onOk }) => {
     <Modal
       open={open}
       onCancel={onCancel}
-      title="Yêu cầu"
+      title="Lý do không duyệt"
       width="60vw"
       footer={
         <Space className="d-flex-end">
