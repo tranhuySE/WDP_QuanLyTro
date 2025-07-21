@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUserById, deleteUserById, getListStaff, changePassword, editUserById, editUserInfo } = require('../controllers/user.controller.js');
+const { getAllUsers, getUserById, deleteUserById, getListStaff, changePassword, editUserById, editUserInfo, verifyTenant, createUserByAdmin } = require('../controllers/user.controller.js');
 const { verifyToken } = require('../middlewares/authMiddleware.js');
 
 const userRouter = express.Router();
@@ -18,6 +18,10 @@ userRouter.put('/change-password', verifyToken, changePassword);
 userRouter.put('/:id', editUserById);
 // Define the route to edit user info
 userRouter.put('/edit/:id', editUserInfo);
+// Define the route to verify tenant
+userRouter.put('/verify-tenant/:id', verifyToken, verifyTenant);
+// Define the route to create a user by admin
+userRouter.post('/admin', verifyToken, createUserByAdmin);
 
 // Export the userRouter
 module.exports = userRouter;

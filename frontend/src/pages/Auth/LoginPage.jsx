@@ -33,7 +33,28 @@ const LoginPage = () => {
             }
         } catch (err) {
             console.error('Login error:', err);
-            setError('Tài khoản hoặc mật khẩu không đúng.');
+
+            // Xử lý thông báo lỗi từ backend
+            if (err.response) {
+                switch (err.response.status) {
+                    case 403:
+                        // Lỗi trạng thái tài khoản (inactive/banned)
+                        setError(err.response.data.message);
+                        break;
+                    case 404:
+                        // User không tồn tại
+                        setError('Tài khoản không tồn tại');
+                        break;
+                    case 401:
+                        // Sai mật khẩu
+                        setError('Mật khẩu không đúng');
+                        break;
+                    default:
+                        setError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                }
+            } else {
+                setError('Không thể kết nối đến server');
+            }
         } finally {
             setIsLoading(false);
         }

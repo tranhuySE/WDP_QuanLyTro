@@ -1,6 +1,9 @@
 const User = require('../models/User.js');
 const cloudinary = require('cloudinary').v2;
 const Room = require('../models/Room.js');
+const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+const EmailService = require('../services/emailService.js');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -115,16 +118,234 @@ const changePassword = async (req, res) => {
 
 const editUserInfo = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { email, username, phoneNumber, citizen_id } = req.body;
+        const userId = req.params.id;
+
+        // 1. Kiểm tra email đã tồn tại chưa (trừ user hiện tại)
+        if (email) {
+            const emailExists = await User.findOne({
+                email,
+                _id: { $ne: userId }
+            });
+            if (emailExists) {
+                return res.status(400).json({ message: 'Email đã được sử dụng' });
+            }
+        }
+
+        // 2. Kiểm tra username đã tồn tại chưa (trừ user hiện tại)
+        if (username) {
+            const usernameExists = await User.findOne({
+                username,
+                _id: { $ne: userId }
+            });
+            if (usernameExists) {
+                return res.status(400).json({ message: 'Username đã được sử dụng' });
+            }
+        }
+
+        // 3. Kiểm tra số điện thoại đã tồn tại chưa (trừ user hiện tại)
+        if (phoneNumber) {
+            const phoneExists = await User.findOne({
+                phoneNumber,
+                _id: { $ne: userId }
+            });
+            if (phoneExists) {
+                return res.status(400).json({ message: 'Số điện thoại đã được sử dụng' });
+            }
+        }
+
+        // 4. Kiểm tra số CCCD đã tồn tại chưa (trừ user hiện tại)
+        if (citizen_id) {
+            const citizenIdExists = await User.findOne({
+                citizen_id,
+                _id: { $ne: userId }
+            });
+            if (citizenIdExists) {
+                return res.status(400).json({ message: 'Số CCCD đã được sử dụng' });
+            }
+        }
+
+        // 5. Nếu tất cả validation pass -> cập nhật user
+        const user = await User.findByIdAndUpdate(userId, req.body, {
+            new: true,
+            runValidators: true
+        });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
+const verifyTenant = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { username, password } = req.body;
+
+        // validate
+        if (!username || !password) {
+            return res.status(400).json({ message: "Vui lòng nhập đầy đủ username và password" });
+        }
+
+        // check id
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "ID không hợp lệ",
+                receivedId: id
+            });
+        }
+
+        // Tìm tenant
+        const tenant = await User.findById(id);
+        if (!tenant) {
+            return res.status(404).json({ message: "Không tìm thấy tenant" });
+        }
+        if (tenant.isVerifiedByAdmin) {
+            return res.status(400).json({ message: "Tenant đã được xác thực" });
+        }
+
+        const existingUser = await User.findOne({ username });
+        if (existingUser && existingUser._id.toString() !== id) {
+            return res.status(400).json({ message: "Username đã được sử dụng" });
+        }
+
+        // Cập nhật info
+        tenant.username = username;
+        tenant.password = await bcrypt.hash(password, 10);
+        tenant.isVerifiedByAdmin = true;
+        tenant.status = "active";
+        await tenant.save();
+
+        const emailResult = await EmailService.sendTenantAccountEmail(
+            tenant,
+            username,
+            password
+        );
+
+        res.status(200).json({
+            message: "Xác thực thành công và đã gửi thông tin đăng nhập",
+            tenant: {
+                _id: tenant._id,
+                email: tenant.email,
+                fullname: tenant.fullname,
+                username: tenant.username
+            },
+            emailStatus: {
+                sentTo: emailResult.emailSent,
+                messageId: emailResult.messageId
+            }
+        });
+
+    } catch (error) {
+        console.error('Verify tenant error:', error);
+        res.status(500).json({
+            message: error.message,
+            errorDetails: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+};
+
+const createUserByAdmin = async (req, res) => {
+    try {
+        const {
+            email,
+            fullname,
+            citizen_id,
+            phoneNumber,
+            dateOfBirth,
+            address,
+            role = 'user',
+            roomId,
+            contactEmergency,
+            status = 'active',
+            username,
+            password,
+            isVerifiedByAdmin
+        } = req.body;
+
+        // Validate role
+        if (!['user', 'staff', 'admin'].includes(role)) {
+            return res.status(400).json({ message: 'Role không hợp lệ' });
+        }
+
+        // Check existing email
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email đã tồn tại' });
+        }
+
+        // Generate password if not provided
+        let generatedPassword = '';
+        let hashedPassword;
+        if (!password) {
+            generatedPassword = Math.random().toString(36).slice(-8);
+            hashedPassword = await bcrypt.hash(generatedPassword, 10);
+        } else {
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
+        // Create user
+        const userData = {
+            username: username || email.split('@')[0] + Math.floor(Math.random() * 1000),
+            email,
+            fullname,
+            citizen_id,
+            phoneNumber,
+            password: hashedPassword,
+            dateOfBirth: new Date(dateOfBirth),
+            address,
+            role,
+            status,
+            isVerifiedByAdmin: role !== 'user' ? true : isVerifiedByAdmin,
+            contactEmergency
+        };
+
+        const newUser = await User.create(userData);
+
+        // Assign to room if tenant
+        if (role === 'user' && roomId) {
+            await Room.findByIdAndUpdate(roomId, {
+                $push: { tenant: newUser._id },
+                status: 'occupied'
+            });
+
+            newUser.rooms.push(roomId);
+            await newUser.save();
+        }
+
+        // Send email if verified
+        if (newUser.isVerifiedByAdmin && role !== 'admin') {
+            await EmailService.sendTenantAccountEmail(
+                newUser,
+                newUser.username,
+                password || generatedPassword
+            );
+        }
+
+        // Prepare response
+        const userResponse = newUser.toObject();
+        delete userResponse.password;
+        delete userResponse.resetToken;
+        delete userResponse.resetTokenExpire;
+
+        res.status(201).json({
+            message: `Tạo ${role} thành công${role === 'user' && roomId ? ' và đã gán vào phòng' : ''}`,
+            user: userResponse,
+            emailSent: newUser.isVerifiedByAdmin && role !== 'admin'
+        });
+
+    } catch (error) {
+        console.error('Error creating user by admin:', error);
+        res.status(500).json({
+            message: 'Lỗi khi tạo user',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
 
 module.exports = {
     getAllUsers,
@@ -133,5 +354,7 @@ module.exports = {
     getListStaff,
     editUserById,
     changePassword,
-    editUserInfo
+    editUserInfo,
+    verifyTenant,
+    createUserByAdmin
 };

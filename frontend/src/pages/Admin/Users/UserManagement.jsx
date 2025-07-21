@@ -1,28 +1,26 @@
 import {
+    Plus, Search,
     User
 } from 'lucide-react';
 import moment from 'moment';
-import {
-    Button
-} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
-import { Plus, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+import { Button, Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 
 // Components
+import UserDetailModal from '../../../components/User/UserDetailModal';
 import UserFormModal from '../../../components/User/UserFormModal';
 import UserTable from '../../../components/User/UserTable';
 import VerifyUserModal from '../../../components/User/VerifyUserModal';
 
 // Schemas
-import { userSchema, verifySchema } from '../../../validation/userSchema';
+import { editUserSchema, userSchema, verifySchema } from '../../../validation/userSchema';
 
 // API
-import { getAllUsers, getUserById, updateUserById } from '../../../api/userAPI';
-import UserDetailModal from '../../../components/User/UserDetailModal';
+import { getAvailableRooms } from '../../../api/roomAPI';
+import { createUserByAdmin, editUserInfo, getAllUsers, getUserById } from '../../../api/userAPI';
 
 const UserManagement = () => {
     // State
@@ -34,6 +32,8 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [verifyLoading, setVerifyLoading] = useState(false);
+    const [availableRooms, setAvailableRooms] = useState([]);
 
     // Fetch users
     useEffect(() => {
@@ -42,9 +42,13 @@ const UserManagement = () => {
                 setLoading(true);
                 const response = await getAllUsers();
                 setUsers(response.data);
+
+                const roomsResponse = await getAvailableRooms();
+                setAvailableRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
             } catch (error) {
                 console.error('Error fetching users:', error);
                 toast.error('Không thể tải người dùng, vui lòng thử lại sau.');
+                setAvailableRooms([]); // Đặt về mảng rỗng trong trường hợp lỗi
             } finally {
                 setLoading(false);
             }
@@ -52,16 +56,6 @@ const UserManagement = () => {
 
         fetchUsers();
     }, []);
-
-    // // Sync selectedUser with users data
-    // useEffect(() => {
-    //     if (selectedUser && showDetailModal) {
-    //         const updatedUser = users.find(user => user._id === selectedUser._id);
-    //         if (updatedUser) {
-    //             setSelectedUser(updatedUser);
-    //         }
-    //     }
-    // }, [users, selectedUser, showDetailModal]);
 
     // Filter users based on search term
     const filteredUsers = useMemo(() => {
@@ -103,34 +97,79 @@ const UserManagement = () => {
             },
             isVerifiedByAdmin: false
         },
-        validationSchema: userSchema,
-        onSubmit: (values, { resetForm }) => {
-            setLoading(true);
-            setTimeout(() => {
-                if (isEditing && selectedUser) {
-                    // Update existing user
-                    const updatedUsers = users.map(user =>
-                        user._id === selectedUser._id ? { ...user, ...values } : user
-                    );
-                    setUsers(updatedUsers);
-                    toast.success('Cập nhật người dùng thành công (mock)');
+        // Sử dụng schema động dựa trên isEditing
+        validationSchema: isEditing ? editUserSchema : userSchema,
+        enableReinitialize: true, // Cho phép reinitialize khi isEditing thay đổi
+        // onSubmit: async (values, { resetForm }) => {
+        //     try {
+        //         setLoading(true);
+        //         const updateData = { ...values };
+
+        //         // Xóa password nếu không cập nhật
+        //         if (isEditing && (!updateData.password || updateData.password.trim() === '')) {
+        //             delete updateData.password;
+        //         }
+
+        //         const response = await editUserInfo(selectedUser._id, updateData);
+
+        //         // Backend trả về user trực tiếp (không có wrapper object)
+        //         if (response.data) { // Nếu có dữ liệu -> thành công
+        //             const updatedUser = response.data;
+
+        //             // Cập nhật state
+        //             const updatedUsers = users.map(user =>
+        //                 user._id === updatedUser._id ? updatedUser : user
+        //             );
+        //             setUsers(updatedUsers);
+
+        //             toast.success('Cập nhật thành công');
+        //             setShowModal(false);
+        //             resetForm();
+        //         } else {
+        //             // Trường hợp lỗi (response.error hoặc response.message)
+        //             toast.error(response.message || 'Cập nhật thất bại');
+        //         }
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //         toast.error(error.response?.data?.message || 'Lỗi hệ thống');
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // }
+        onSubmit: async (values, { resetForm }) => {
+            try {
+                setLoading(true);
+
+                if (isEditing) {
+                    // Handle edit user
+                    const updateData = { ...values };
+                    if (!updateData.password) delete updateData.password;
+
+                    const response = await editUserInfo(selectedUser._id, updateData);
+                    if (response.data) {
+                        setUsers(users.map(u => u._id === response.data._id ? response.data : u));
+                        toast.success('Cập nhật thành công');
+                        setShowModal(false);
+                    }
                 } else {
-                    // Add new user
-                    const newUser = {
-                        ...values,
-                        _id: Math.random().toString(36).substring(2, 9), // Mock ID
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-                    setUsers([...users, newUser]);
-                    toast.success('Thêm người dùng thành công (mock)');
+                    // Handle create new user
+                    const response = await createUserByAdmin(values);
+                    if (response.data) {
+                        setUsers([...users, response.data.user]);
+                        toast.success(response.data.message);
+                        setShowModal(false);
+
+                        if (response.data.emailSent) {
+                            toast.info(`Đã gửi thông tin đăng nhập đến ${response.data.user.email}`);
+                        }
+                    }
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                toast.error(error.response?.data?.message || 'Lỗi hệ thống');
+            } finally {
                 setLoading(false);
-                setShowModal(false);
-                setIsEditing(false);
-                setSelectedUser(null);
-                resetForm();
-            }, 1000);
+            }
         }
     });
 
@@ -173,7 +212,7 @@ const UserManagement = () => {
             setTimeout(() => {
                 const filteredUsers = users.filter(user => user._id !== id);
                 setUsers(filteredUsers);
-                toast.success('Xóa người dùng thành công (mock)');
+                toast.success('Xóa người dùng thành công');
                 setLoading(false);
             }, 800);
         }
@@ -202,48 +241,51 @@ const UserManagement = () => {
     // Handle edit user
     const handleEdit = async (user) => {
         try {
-            setLoading(true);
-            const response = await updateUserById(user._id, user);
+            setSelectedUser(user);
+            setIsEditing(true); // Set trước khi setValues để schema được cập nhật
 
-            if (response) {
-                setSelectedUser(user);
-                formik.setValues({
-                    username: user.username || '',
-                    room: user.room || '',
-                    email: user.email,
-                    password: '',
-                    fullname: user.fullname,
-                    citizen_id: user.citizen_id,
-                    phoneNumber: user.phoneNumber,
-                    avatar: user.avatar,
-                    role: user.role,
-                    address: user.address,
-                    dateOfBirth: moment(user.dateOfBirth).format('YYYY-MM-DD'),
-                    status: user.status,
-                    contactEmergency: user.contactEmergency || {
-                        name: '',
-                        relationship: '',
-                        phoneNumber: ''
-                    },
-                    isVerifiedByAdmin: user.isVerifiedByAdmin
-                });
-                setIsEditing(true);
-                setShowModal(true);
-            } else {
-                toast.error('Cập nhật người dùng thất bại, vui lòng thử lại.');
-            }
+            formik.setValues({
+                username: user.username || '',
+                email: user.email || '',
+                password: '', // Luôn để trống khi edit
+                fullname: user.fullname || '',
+                citizen_id: user.citizen_id || '',
+                phoneNumber: user.phoneNumber || '',
+                avatar: user.avatar || 'https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png',
+                role: user.role || 'user',
+                address: user.address || '',
+                dateOfBirth: user.dateOfBirth ? moment(user.dateOfBirth).format('YYYY-MM-DD') : '',
+                status: user.status || 'inactive',
+                contactEmergency: user.contactEmergency || {
+                    name: '',
+                    relationship: '',
+                    phoneNumber: ''
+                },
+                isVerifiedByAdmin: user.isVerifiedByAdmin || false
+            });
+
+            setShowModal(true);
         } catch (error) {
-            console.error('Error updating user:', error);
-            toast.error('Cập nhật người dùng thất bại, vui lòng thử lại.');
-        } finally {
-            setLoading(false);
+            console.error('Error preparing edit form:', error);
+            toast.error('Có lỗi xảy ra khi chuẩn bị form chỉnh sửa');
         }
     };
+
     // Handle verify user
     const handleVerify = (user) => {
         setSelectedUser(user);
         verifyFormik.resetForm();
         setShowVerifyModal(true);
+    };
+
+    const handleVerifySuccess = (verifiedUser) => {
+        // Cập nhật danh sách users
+        const updatedUsers = users.map(user =>
+            user._id === verifiedUser._id
+                ? { ...user, ...verifiedUser, isVerifiedByAdmin: true }
+                : user
+        );
+        setUsers(updatedUsers);
     };
 
     return (
@@ -316,6 +358,7 @@ const UserManagement = () => {
                     );
                     setUsers(updatedUsers);
                 }}
+                availableRooms={availableRooms}
             />
 
             <VerifyUserModal
@@ -326,7 +369,9 @@ const UserManagement = () => {
                 }}
                 formik={verifyFormik}
                 user={selectedUser}
-                loading={loading}
+                loading={verifyLoading}
+                setLoading={setVerifyLoading}
+                onVerifySuccess={handleVerifySuccess}
             />
 
             <UserDetailModal
