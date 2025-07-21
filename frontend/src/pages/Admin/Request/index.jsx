@@ -30,16 +30,10 @@ const RequestManagement = () => {
       isDisabled: true,
     },
     {
-      value: "APPROVED",
-      label: "Tán thành",
-      isView: role === 'staff',
-      isDisabled: false,
-    },
-    {
       value: "ASSIGNED",
       label: "Được giao",
-      isView: role === 'admin',
-      isDisabled: false,
+      isView: true,
+      isDisabled: role === 'staff',
     },
     {
       value: "IN_PROGRESS",
@@ -85,6 +79,7 @@ const RequestManagement = () => {
           changedBy: localStorage.getItem("id"),
         }
       })
+      getListRequest()
       message.success("Cập nhật trạng thái thành công")
     } catch (error) {
       message.error(error.toString())
@@ -190,8 +185,14 @@ const RequestManagement = () => {
           <Button
             variant="warning"
             size="sm"
-            disabled={row.original.status !== 'PENDING'}
-            onClick={() => setOpenModalAssignee(row.original)}
+            disabled={(role === 'admin' && row.original.status !== 'PENDING') || (role === 'staff' && row.original.status !== 'ASSIGNED')}
+            onClick={() => {
+              if (role === 'admin') {
+                setOpenModalAssignee(row.original)
+              } else {
+                handChangeStatus("IN_PROGRESS", row.original)
+              }
+            }}
           >
             <ClipboardCheck size={16} />
           </Button>
@@ -203,7 +204,7 @@ const RequestManagement = () => {
           >
             <Ban size={16} />
           </Button>
-        </Space>
+        </Space >
       ),
     }),
     []
@@ -248,9 +249,7 @@ const RequestManagement = () => {
           </Col>
         </Row>
         <MaterialReactTable
-          columns={
-            role === 'admin' ? [...columns, actionColumn] : columns
-          }
+          columns={[...columns, actionColumn]}
           data={requests}
           enableColumnActions={false}
           enableColumnFilters={false}

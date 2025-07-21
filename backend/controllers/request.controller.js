@@ -21,8 +21,6 @@ const getListRequest = async (req, res) => {
     if (!!status) {
       query.status = status
     }
-    console.log("query", query);
-
     if (!!fullname) {
       joinQuery['createdBy.fullname'] = { $regex: fullname, $options: 'i' }
     }
@@ -70,6 +68,9 @@ const getListRequest = async (req, res) => {
       {
         $match: joinQuery
       },
+      {
+        $sort: { 'updatedAt': -1 }
+      }
     ])
     res.status(200).json(requests)
   } catch (error) {
@@ -102,12 +103,13 @@ const changeRequestStatus = async (req, res) => {
 
 const getListRequestByUser = async (req, res) => {
   try {
-    const userId = req.userID
+    const { _id } = req.user
     const requests = await Request
       .find({
-        createdBy: userId
+        createdBy: _id
       })
       .populate("room", ["_id", "roomNumber"])
+      .sort({ 'updatedAt': -1 })
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
