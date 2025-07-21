@@ -42,19 +42,33 @@ const UserManagement = () => {
                 setLoading(true);
                 const response = await getAllUsers();
                 setUsers(response.data);
-
-                const roomsResponse = await getAvailableRooms();
-                setAvailableRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
             } catch (error) {
                 console.error('Error fetching users:', error);
                 toast.error('Không thể tải người dùng, vui lòng thử lại sau.');
-                setAvailableRooms([]); // Đặt về mảng rỗng trong trường hợp lỗi
+                setAvailableRooms([]);
             } finally {
                 setLoading(false);
             }
         };
 
+        const fetchAvailableRooms = async () => {
+            try {
+                const roomsResponse = await getAvailableRooms();
+                if (Array.isArray(roomsResponse.data.data)) {
+                    setAvailableRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
+
+                } else {
+                    console.error('Invalid response format for available rooms:', roomsResponse.data);
+                    toast.error('Không thể tải danh sách phòng, vui lòng thử lại sau.');
+                }
+            } catch (error) {
+                console.error('Error fetching available rooms:', error);
+                toast.error('Không thể tải danh sách phòng, vui lòng thử lại sau.');
+            }
+        };
+
         fetchUsers();
+        fetchAvailableRooms();
     }, []);
 
     // Filter users based on search term
