@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
 const EmailService = require("../services/emailService");
 const crypto = require("crypto");
-
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -21,19 +20,11 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials!" });
 
         const token = generateToken(user._id);
-
+        
         res.status(200).json({
             message: "Login successful!",
             token,
-            user: {
-                _id: user._id.toString(),
-                username: user.username,
-                fullname: user.fullname,
-                role: user.role,
-                email: user.email,
-                avatar: user.avatar,
-                status: user.status,
-            },
+            user: user,
         });
     } catch (err) {
         res.status(500).json({ message: err.toString() });

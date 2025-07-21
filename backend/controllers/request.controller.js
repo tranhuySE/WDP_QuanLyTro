@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Request = require("../models/Request");
 
 const createRequest = async (req, res) => {
@@ -11,10 +12,66 @@ const createRequest = async (req, res) => {
 
 const getListRequest = async (req, res) => {
   try {
-    const requests = await Request
-      .find()
-      .populate("createdBy", ["_id", "fullname"])
-      .populate("room", ["_id", "roomNumber"])
+    const { _id, role } = req.user
+    const { fullname, roomNumber, status } = req.query
+    let query = role === 'admin'
+      ? {}
+      : { assignedTo: new mongoose.Types.ObjectId(`${_id}`) }
+    let joinQuery = {}
+    if (!!status) {
+      query.status = status
+    }
+    if (!!fullname) {
+      joinQuery['createdBy.fullname'] = { $regex: fullname, $options: 'i' }
+    }
+    if (!!roomNumber) {
+      joinQuery['room.roomNumber'] = roomNumber
+    }
+    const requests = await Request.aggregate([
+      {
+        $match: query
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'createdBy',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                fullname: 1
+              }
+            }
+          ]
+        }
+      },
+      { $unwind: '$createdBy' },
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'room',
+          foreignField: '_id',
+          as: 'room',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                roomNumber: 1
+              }
+            }
+          ]
+        }
+      },
+      { $unwind: '$room' },
+      {
+        $match: joinQuery
+      },
+      {
+        $sort: { 'updatedAt': -1 }
+      }
+    ])
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -44,29 +101,15 @@ const changeRequestStatus = async (req, res) => {
   }
 }
 
-const getListRequestByStaff = async (req, res) => {
-  try {
-    const userId = req.userID
-    const requests = await Request
-      .find({
-        assignedTo: userId
-      })
-      .populate("createdBy", ["_id", "fullname"])
-      .populate("room", ["_id", "roomNumber"])
-    res.status(200).json(requests)
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
 const getListRequestByUser = async (req, res) => {
   try {
-    const userId = req.userID
+    const { _id } = req.user
     const requests = await Request
       .find({
-        createdBy: userId
+        createdBy: _id
       })
       .populate("room", ["_id", "roomNumber"])
+      .sort({ 'updatedAt': -1 })
     res.status(200).json(requests)
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -77,6 +120,5 @@ module.exports = {
   createRequest,
   getListRequest,
   changeRequestStatus,
-  getListRequestByStaff,
   getListRequestByUser
 }

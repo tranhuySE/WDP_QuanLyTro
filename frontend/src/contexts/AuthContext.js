@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('role', user.role);
         localStorage.setItem('fullname', user.fullname);
         localStorage.setItem('id', user._id);
+            localStorage.setItem('userData', JSON.stringify(user));
         setAuth({
             isAuthenticated: true,
             role: user.role,

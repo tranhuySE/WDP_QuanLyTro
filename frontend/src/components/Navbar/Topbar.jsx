@@ -2,7 +2,7 @@ import { Bell, LogOut, Menu, Settings, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SideBar/Topbar.css"; // Adjust the path as necessary
-
+import { FiLock } from "react-icons/fi";
 const Topbar = ({ sidebarWidth = 250 }) => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -49,9 +49,12 @@ const Topbar = ({ sidebarWidth = 250 }) => {
 
   const handleProfileClick = () => {
     setShowProfileMenu(false);
-    navigate("/profile");
+    navigate("./profile");
   };
-
+  const handleChangePasswordClick = ()=>{
+    setShowProfileMenu(false);
+    navigate("./change-password");
+  }
   return (
     <>
       {/* Overlay for closing dropdowns */}
@@ -126,8 +129,28 @@ const Topbar = ({ sidebarWidth = 250 }) => {
                     className="user-profile-button"
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                   >
-                    <div className="user-avatar">
-                      <User size={16} />
+ <div className="user-avatar">
+                      {(() => {
+                        const userDataStr = localStorage.getItem('userData');
+                        let avatar = null;
+                        if (userDataStr) {
+                          try {
+                            const userData = JSON.parse(userDataStr);
+                            avatar = userData.avatar;
+                          } catch (e) {
+                            avatar = null;
+                          }
+                        }
+                        return avatar ? (
+                          <img
+                            src={avatar}
+                            alt="avatar"
+                            style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '1px solid #ccc' }}
+                          />
+                        ) : (
+                          <User size={16} />
+                        );
+                      })()}
                     </div>
                     <div className="user-info">
                       <div className="user-name">
@@ -147,6 +170,13 @@ const Topbar = ({ sidebarWidth = 250 }) => {
                       >
                         <User size={16} className="profile-dropdown-icon" />
                         <span>Hồ sơ cá nhân</span>
+                      </button>
+                      <button
+                        className="profile-dropdown-item"
+                        onClick={handleChangePasswordClick}
+                      >
+                        <FiLock size={16} className="profile-dropdown-icon" />
+                        <span>Đổi mật khẩu</span>
                       </button>
                       <button
                         className="profile-dropdown-item logout"
