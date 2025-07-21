@@ -30,12 +30,6 @@ const RequestManagement = () => {
       isDisabled: true,
     },
     {
-      value: "APPROVED",
-      label: "Tán thành",
-      isView: role === 'staff',
-      isDisabled: false,
-    },
-    {
       value: "ASSIGNED",
       label: "Được giao",
       isView: role === 'admin',
