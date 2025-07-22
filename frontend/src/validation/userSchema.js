@@ -17,7 +17,9 @@ export const userSchema = Yup.object().shape({
         return schema.nullable();
     }),
     fullname: Yup.string().required('Họ tên là bắt buộc'),
-    citizen_id: Yup.string().required('CMND/CCCD là bắt buộc'),
+    citizen_id: Yup.string()
+        .matches(/^[0-9]+$/, 'CMND/CCCD phải là số')
+        .required('CMND/CCCD là bắt buộc'),
     phoneNumber: Yup.string()
         .matches(/^[0-9]{10,11}$/, 'Số điện thoại phải có 10-11 số')
         .required('Số điện thoại là bắt buộc'),
@@ -63,6 +65,7 @@ export const editUserSchema = Yup.object().shape({
         return schema.nullable();
     }),
     fullname: Yup.string().required('Họ tên là bắt buộc'),
+
     citizen_id: Yup.string().required('CMND/CCCD là bắt buộc'),
     phoneNumber: Yup.string()
         .matches(/^[0-9]{10,11}$/, 'Số điện thoại phải có 10-11 số')

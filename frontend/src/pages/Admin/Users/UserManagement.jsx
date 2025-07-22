@@ -19,8 +19,7 @@ import VerifyUserModal from '../../../components/User/VerifyUserModal';
 import { editUserSchema, userSchema, verifySchema } from '../../../validation/userSchema';
 
 // API
-import { getAvailableRooms } from '../../../api/roomAPI';
-import { createUserByAdmin, editUserInfo, getAllUsers, getUserById } from '../../../api/userAPI';
+import { createUserByAdmin, deleteUserById, editUserInfo, getAllUsers, getUserById } from '../../../api/userAPI';
 
 const UserManagement = () => {
     // State
@@ -33,10 +32,12 @@ const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
-    const [availableRooms, setAvailableRooms] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // Fetch users
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        setCurrentUser({ role: role || "user" });
+
         const fetchUsers = async () => {
             try {
                 setLoading(true);
@@ -45,33 +46,15 @@ const UserManagement = () => {
             } catch (error) {
                 console.error('Error fetching users:', error);
                 toast.error('Không thể tải người dùng, vui lòng thử lại sau.');
-                setAvailableRooms([]);
             } finally {
                 setLoading(false);
             }
         };
 
-        const fetchAvailableRooms = async () => {
-            try {
-                const roomsResponse = await getAvailableRooms();
-                if (Array.isArray(roomsResponse.data.data)) {
-                    setAvailableRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
-
-                } else {
-                    console.error('Invalid response format for available rooms:', roomsResponse.data);
-                    toast.error('Không thể tải danh sách phòng, vui lòng thử lại sau.');
-                }
-            } catch (error) {
-                console.error('Error fetching available rooms:', error);
-                toast.error('Không thể tải danh sách phòng, vui lòng thử lại sau.');
-            }
-        };
-
         fetchUsers();
-        fetchAvailableRooms();
     }, []);
 
-    // Filter users based on search term
+    // lọc user
     const filteredUsers = useMemo(() => {
         return users.filter(user =>
             Object.values(user).some(
@@ -90,7 +73,7 @@ const UserManagement = () => {
         );
     }, [users, searchTerm]);
 
-    // Formik form for user
+    // formik form cho user
     const formik = useFormik({
         initialValues: {
             username: '',
@@ -111,51 +94,14 @@ const UserManagement = () => {
             },
             isVerifiedByAdmin: false
         },
-        // Sử dụng schema động dựa trên isEditing
         validationSchema: isEditing ? editUserSchema : userSchema,
-        enableReinitialize: true, // Cho phép reinitialize khi isEditing thay đổi
-        // onSubmit: async (values, { resetForm }) => {
-        //     try {
-        //         setLoading(true);
-        //         const updateData = { ...values };
-
-        //         // Xóa password nếu không cập nhật
-        //         if (isEditing && (!updateData.password || updateData.password.trim() === '')) {
-        //             delete updateData.password;
-        //         }
-
-        //         const response = await editUserInfo(selectedUser._id, updateData);
-
-        //         // Backend trả về user trực tiếp (không có wrapper object)
-        //         if (response.data) { // Nếu có dữ liệu -> thành công
-        //             const updatedUser = response.data;
-
-        //             // Cập nhật state
-        //             const updatedUsers = users.map(user =>
-        //                 user._id === updatedUser._id ? updatedUser : user
-        //             );
-        //             setUsers(updatedUsers);
-
-        //             toast.success('Cập nhật thành công');
-        //             setShowModal(false);
-        //             resetForm();
-        //         } else {
-        //             // Trường hợp lỗi (response.error hoặc response.message)
-        //             toast.error(response.message || 'Cập nhật thất bại');
-        //         }
-        //     } catch (error) {
-        //         console.error('Error:', error);
-        //         toast.error(error.response?.data?.message || 'Lỗi hệ thống');
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // }
+        enableReinitialize: true,
         onSubmit: async (values, { resetForm }) => {
             try {
                 setLoading(true);
 
                 if (isEditing) {
-                    // Handle edit user
+                    // sửa info user
                     const updateData = { ...values };
                     if (!updateData.password) delete updateData.password;
 
@@ -166,7 +112,7 @@ const UserManagement = () => {
                         setShowModal(false);
                     }
                 } else {
-                    // Handle create new user
+                    // taạo user mới
                     const response = await createUserByAdmin(values);
                     if (response.data) {
                         setUsers([...users, response.data.user]);
@@ -187,7 +133,7 @@ const UserManagement = () => {
         }
     });
 
-    // Formik form for verification
+    // formik form cho verification
     const verifyFormik = useFormik({
         initialValues: {
             username: '',
@@ -197,7 +143,6 @@ const UserManagement = () => {
         onSubmit: (values, { resetForm }) => {
             setLoading(true);
             setTimeout(() => {
-                // Mock verify user
                 const updatedUsers = users.map(user =>
                     user._id === selectedUser._id
                         ? {
@@ -219,20 +164,27 @@ const UserManagement = () => {
         }
     });
 
-    // Handle delete user (mock)
-    const handleDelete = (id) => {
+    // Hxóa user
+    const handleDelete = async (id) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-            setLoading(true);
-            setTimeout(() => {
+            try {
+                setLoading(true);
+                await deleteUserById(id); // Gọi API xóa
+
+                // Cập nhật state sau khi xóa thành công
                 const filteredUsers = users.filter(user => user._id !== id);
                 setUsers(filteredUsers);
                 toast.success('Xóa người dùng thành công');
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                toast.error(error.response?.data?.message || 'Xóa người dùng thất bại');
+            } finally {
                 setLoading(false);
-            }, 800);
+            }
         }
     };
 
-    // Handle view detail
+    // xem chi tiết user
     const handleViewDetail = async (user) => {
         try {
             setLoading(true);
@@ -252,7 +204,7 @@ const UserManagement = () => {
     };
 
 
-    // Handle edit user
+    // sửa thông tin user
     const handleEdit = async (user) => {
         try {
             setSelectedUser(user);
@@ -261,7 +213,7 @@ const UserManagement = () => {
             formik.setValues({
                 username: user.username || '',
                 email: user.email || '',
-                password: '', // Luôn để trống khi edit
+                password: '',
                 fullname: user.fullname || '',
                 citizen_id: user.citizen_id || '',
                 phoneNumber: user.phoneNumber || '',
@@ -293,7 +245,7 @@ const UserManagement = () => {
     };
 
     const handleVerifySuccess = (verifiedUser) => {
-        // Cập nhật danh sách users
+        // cập nhật danh sách users
         const updatedUsers = users.map(user =>
             user._id === verifiedUser._id
                 ? { ...user, ...verifiedUser, isVerifiedByAdmin: true }
@@ -353,7 +305,9 @@ const UserManagement = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onVerify={handleVerify}
+                    currentUser={currentUser}
                 />
+
             )}
 
             <UserFormModal
@@ -365,14 +319,13 @@ const UserManagement = () => {
                 formik={formik}
                 isEditing={isEditing}
                 loading={loading}
+                currentUser={currentUser}
                 onUpdateSuccess={(updatedUser) => {
-                    // Cập nhật state users với dữ liệu mới
                     const updatedUsers = users.map(user =>
                         user._id === updatedUser._id ? updatedUser : user
                     );
                     setUsers(updatedUsers);
                 }}
-                availableRooms={availableRooms}
             />
 
             <VerifyUserModal

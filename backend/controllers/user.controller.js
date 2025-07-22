@@ -24,8 +24,8 @@ const getUserById = async (req, res) => {
         const user = await User.findById(req.params.id)
             .populate({
                 path: 'rooms',
-                select: 'roomNumber floor status', // Chọn các trường cần hiển thị
-                model: 'Room' // Ràng buộc với Model Room
+                select: 'roomNumber floor status',
+                model: 'Room'
             });
 
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -76,14 +76,12 @@ const editUserById = async (req, res) => {
         const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(user);
     } catch (error) {
-        console.log("🚀 ~ editUserById ~ error:", error)
+        console.log("editUserById error:", error)
         res.status(500).json({ message: error.message });
     }
 }
 
 const changePassword = async (req, res) => {
-    console.log("🚀 ~ changePassword ~ req:", req.body)
-    // Only update the password field
     try {
         const user = await User.findById(req.user._id);
         if (!user) {
@@ -92,7 +90,7 @@ const changePassword = async (req, res) => {
         if (user.password !== req.body.oldPassword) {
             return res.status(400).json({ message: "Mật khẩu hiện tại không đúng." });
         }
-        // Check if new password is the same as current password
+        // kiểm tra password
         if (user.password === req.body.password) {
             return res.status(400).json({ message: 'Mật khẩu mới không được trùng với mật khẩu cũ.' });
         }
@@ -121,7 +119,7 @@ const editUserInfo = async (req, res) => {
         const { email, username, phoneNumber, citizen_id } = req.body;
         const userId = req.params.id;
 
-        // 1. Kiểm tra email đã tồn tại chưa (trừ user hiện tại)
+        // kiểm tra email 
         if (email) {
             const emailExists = await User.findOne({
                 email,
@@ -132,7 +130,7 @@ const editUserInfo = async (req, res) => {
             }
         }
 
-        // 2. Kiểm tra username đã tồn tại chưa (trừ user hiện tại)
+        // kiểm tra username
         if (username) {
             const usernameExists = await User.findOne({
                 username,
@@ -143,7 +141,7 @@ const editUserInfo = async (req, res) => {
             }
         }
 
-        // 3. Kiểm tra số điện thoại đã tồn tại chưa (trừ user hiện tại)
+        // kiểm tra phone
         if (phoneNumber) {
             const phoneExists = await User.findOne({
                 phoneNumber,
@@ -165,7 +163,7 @@ const editUserInfo = async (req, res) => {
             }
         }
 
-        // 5. Nếu tất cả validation pass -> cập nhật user
+        // cập nhật user
         const user = await User.findByIdAndUpdate(userId, req.body, {
             new: true,
             runValidators: true
@@ -267,18 +265,17 @@ const createUserByAdmin = async (req, res) => {
             isVerifiedByAdmin
         } = req.body;
 
-        // Validate role
+        // validate role
         if (!['user', 'staff', 'admin'].includes(role)) {
-            return res.status(400).json({ message: 'Role không hợp lệ' });
+            return res.status(400).json({ message: 'Vai trò không hợp lệ' });
         }
 
-        // Check existing email
+        // check mail tồn tại chưa
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'Email đã tồn tại' });
         }
 
-        // Generate password if not provided
         let generatedPassword = '';
         let hashedPassword;
         if (!password) {
@@ -288,7 +285,7 @@ const createUserByAdmin = async (req, res) => {
             hashedPassword = await bcrypt.hash(password, 10);
         }
 
-        // Create user
+        // tạo data user
         const userData = {
             username: username || email.split('@')[0] + Math.floor(Math.random() * 1000),
             email,
@@ -306,18 +303,7 @@ const createUserByAdmin = async (req, res) => {
 
         const newUser = await User.create(userData);
 
-        // Assign to room if tenant
-        if (role === 'user' && roomId) {
-            await Room.findByIdAndUpdate(roomId, {
-                $push: { tenant: newUser._id },
-                status: 'occupied'
-            });
-
-            newUser.rooms.push(roomId);
-            await newUser.save();
-        }
-
-        // Send email if verified
+        // gửi mail
         if (newUser.isVerifiedByAdmin && role !== 'admin') {
             await EmailService.sendTenantAccountEmail(
                 newUser,
@@ -326,14 +312,13 @@ const createUserByAdmin = async (req, res) => {
             );
         }
 
-        // Prepare response
         const userResponse = newUser.toObject();
         delete userResponse.password;
         delete userResponse.resetToken;
         delete userResponse.resetTokenExpire;
 
         res.status(201).json({
-            message: `Tạo ${role} thành công${role === 'user' && roomId ? ' và đã gán vào phòng' : ''}`,
+            message: `Tạo ${role} thành công`,
             user: userResponse,
             emailSent: newUser.isVerifiedByAdmin && role !== 'admin'
         });

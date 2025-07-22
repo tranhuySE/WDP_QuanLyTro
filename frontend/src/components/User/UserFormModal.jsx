@@ -7,7 +7,7 @@ const UserFormModal = ({
     formik,
     isEditing,
     loading,
-    availableRooms
+    currentUser = {}
 }) => {
     const handleRoleChange = (e) => {
         formik.setFieldValue('role', e.target.value);
@@ -15,7 +15,9 @@ const UserFormModal = ({
             formik.setFieldValue('roomId', '');
         }
     };
-    console.log('Available Rooms:', availableRooms);
+
+    const isStaff = currentUser?.role === 'staff';
+
 
     return (
         <Modal show={show} onHide={onHide} size="lg">
@@ -119,26 +121,6 @@ const UserFormModal = ({
                                     </Form.Group>
                                 </Col>
                             </Row>
-
-                            {/* Room selection for tenants */}
-                            {formik.values.role === 'user' && (
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Phòng</Form.Label>
-                                    <Form.Select
-                                        name="roomId"
-                                        value={formik.values.roomId}
-                                        onChange={formik.handleChange}
-                                        disabled={isEditing}
-                                    >
-                                        <option value="">-- Chọn phòng --</option>
-                                        {availableRooms.map(room => (
-                                            <option key={room._id} value={room._id}>
-                                                {`Phòng ${room.roomNumber} - Tầng ${room.floor}`}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                </Form.Group>
-                            )}
                         </Tab>
 
                         <Tab eventKey="additional" title="Thông tin bổ sung">
@@ -150,7 +132,7 @@ const UserFormModal = ({
                                             name="role"
                                             value={formik.values.role}
                                             onChange={handleRoleChange}
-                                            // disabled={isEditing}
+                                            disabled={isStaff}
                                         >
                                             <option value="admin">Quản trị</option>
                                             <option value="staff">Nhân viên</option>
@@ -165,6 +147,7 @@ const UserFormModal = ({
                                             name="status"
                                             value={formik.values.status}
                                             onChange={formik.handleChange}
+                                            disabled={isStaff}
                                         >
                                             <option value="active">Hoạt động</option>
                                             <option value="inactive">Không hoạt động</option>
@@ -192,17 +175,18 @@ const UserFormModal = ({
                                     {formik.errors.address}
                                 </Form.Control.Feedback>
                             </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Đã xác minh bởi quản trị"
-                                    name="isVerifiedByAdmin"
-                                    checked={formik.values.isVerifiedByAdmin}
-                                    onChange={formik.handleChange}
-                                    disabled={formik.values.role === 'admin'}
-                                />
-                            </Form.Group>
+                            {currentUser?.role !== 'staff' && (
+                                <Form.Group className="mb-3">
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Đã xác minh bởi quản trị"
+                                        name="isVerifiedByAdmin"
+                                        checked={formik.values.isVerifiedByAdmin}
+                                        onChange={formik.handleChange}
+                                        disabled={formik.values.role === 'admin'}
+                                    />
+                                </Form.Group>
+                            )}
 
                             {formik.values.isVerifiedByAdmin && (
                                 <>

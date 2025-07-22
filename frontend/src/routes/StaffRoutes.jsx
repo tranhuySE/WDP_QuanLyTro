@@ -1,10 +1,10 @@
 import StaffLayout from '../layouts/StaffLayout';
+import RequestManagement from '../pages/Admin/Request/index.jsx';
+import UserManagement from '../pages/Admin/Users/UserManagement.jsx';
 import ChangePasswordPage from '../pages/Common/ChangePasswordPage.jsx';
 import EditProfilePage from '../pages/Common/EditProfilePage.jsx';
-import RequestManagement from '../pages/Admin/Request/index.jsx';
 import HomePage from '../pages/Common/Homepage.jsx';
 import InvoicesPage from '../pages/Staff/InvoicesPage.jsx';
-import UserInfor from '../pages/Staff/UserInfor.jsx';
 
 // Tạo component wrapper riêng cho StaffLayout
 const StaffLayoutWrapper = () => <StaffLayout />;
@@ -14,7 +14,7 @@ const StaffRoutes = {
     element: <StaffLayoutWrapper />,
     children: [
         { path: 'homepage', element: <HomePage /> },
-        { path: 'users', element: <UserInfor />},
+        { path: 'users', element: <UserManagement />},
         { path: 'invoices', element: <InvoicesPage /> },
             { path : 'change-password', element : <ChangePasswordPage/>},
                    { path : 'profile', element : <EditProfilePage/>},
