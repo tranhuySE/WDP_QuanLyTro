@@ -31,7 +31,7 @@ import {
   AccordionDetails,
   Stack,
   CardContent,
-  Menu, // Thêm Menu
+  Menu,
 } from "@mui/material";
 import {
   Edit,
@@ -58,7 +58,7 @@ import {
   Category,
   Wallet,
   MeetingRoom,
-  MoreVert, // Thêm icon 3 chấm dọc
+  MoreVert,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -72,14 +72,13 @@ import {
 import { getAllUsers } from "../../api/userAPI";
 
 // ----- CÁC COMPONENT CON (TabPanel, RoomDetails, RoomForm) GIỮ NGUYÊN -----
-// ... (Dán code các component con của bạn vào đây)
+// ... Dán code các component con của bạn vào đây ...
 const statusMapping = {
   available: { text: "Còn trống", color: "success" },
   occupied: { text: "Đã thuê", color: "warning" },
   under_maintenance: { text: "Đang bảo trì", color: "info" },
 };
 
-// Helper component để quản lý nội dung của các tab
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -95,7 +94,6 @@ function TabPanel(props) {
   );
 }
 
-// Component hiển thị chi tiết phòng
 const RoomDetails = ({ room }) => {
   const [tabIndex, setTabIndex] = useState(0);
   if (!room) return null;
@@ -263,7 +261,6 @@ const RoomDetails = ({ room }) => {
     </Box>
   );
 };
-
 const FormikTextField = ({ name, label, ...props }) => (
   <Field name={name}>
     {({ field, meta }) => (
@@ -279,8 +276,6 @@ const FormikTextField = ({ name, label, ...props }) => (
     )}
   </Field>
 );
-
-// Component Form tạo/sửa phòng
 const RoomForm = ({
   initialValues,
   onSubmit,
@@ -289,7 +284,6 @@ const RoomForm = ({
   allUsers = [],
 }) => {
   const [isUploading, setIsUploading] = useState(false);
-
   const handleImageUpload = async (files, push) => {
     setIsUploading(true);
     try {
@@ -305,7 +299,6 @@ const RoomForm = ({
         );
         return response.data.imageUrl;
       });
-
       const imageUrls = await Promise.all(uploadPromises);
       imageUrls.forEach((url) => push(url));
       toast.success(`Đã tải lên ${imageUrls.length} ảnh thành công!`);
@@ -318,7 +311,6 @@ const RoomForm = ({
       setIsUploading(false);
     }
   };
-
   return (
     <Formik
       initialValues={initialValues}
@@ -691,6 +683,7 @@ const RoomForm = ({
     </Formik>
   );
 };
+// ----- END OF CHILD COMPONENTS -----
 
 // Component chính hiển thị Sơ đồ phòng
 const RoomTable = () => {
@@ -710,7 +703,9 @@ const RoomTable = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRoomForMenu, setSelectedRoomForMenu] = useState(null);
 
+  // **MODIFICATION 2: Stop event propagation**
   const handleMenuOpen = (event, room) => {
+    event.stopPropagation(); // Ngăn sự kiện click lan ra Card cha
     setAnchorEl(event.currentTarget);
     setSelectedRoomForMenu(room);
   };
@@ -975,18 +970,23 @@ const RoomTable = () => {
 
                   return (
                     <Grid item key={room._id}>
+                      {/* **MODIFICATION 1: Add onClick and cursor style to Card** */}
                       <Card
+                        onClick={() => openViewModal(room)}
                         sx={{
-                          position: "relative", // Cần thiết để định vị icon menu
+                          position: "relative",
                           width: 280,
                           height: 360,
                           display: "flex",
                           flexDirection: "column",
                           borderRadius: "12px",
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                          transition: "box-shadow 0.2s ease-in-out",
+                          transition:
+                            "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
+                          cursor: "pointer", // Make it obvious it's clickable
                           "&:hover": {
                             boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+                            transform: "translateY(-4px)",
                           },
                         }}
                       >
@@ -997,6 +997,7 @@ const RoomTable = () => {
                             position: "absolute",
                             top: 8,
                             right: 8,
+                            zIndex: 2, // Ensure icon is on top
                             backgroundColor: "rgba(255, 255, 255, 0.7)",
                             "&:hover": {
                               backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -1044,7 +1045,11 @@ const RoomTable = () => {
                               label={statusInfo.text}
                               color={statusInfo.color}
                               size="small"
-                              sx={{ fontWeight: "bold", flexShrink: 0, ml: 1 }}
+                              sx={{
+                                fontWeight: "bold",
+                                flexShrink: 0,
+                                ml: 1,
+                              }}
                             />
                           </Stack>
                           <Tooltip
@@ -1131,7 +1136,7 @@ const RoomTable = () => {
         </MenuItem>
       </Menu>
 
-      {/* --- MODALS --- (Giữ nguyên) */}
+      {/* --- MODALS --- */}
       <Dialog
         open={isCreateModalOpen || isEditModalOpen}
         onClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
