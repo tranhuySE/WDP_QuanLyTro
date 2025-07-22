@@ -1,9 +1,13 @@
-import { useFormik } from 'formik';
-import { Search, User } from 'lucide-react';
+import {
+    Plus, Search,
+    User
+} from 'lucide-react';
 import moment from 'moment';
-import { useEffect, useMemo, useState } from 'react';
-import { Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+
+import { useFormik } from 'formik';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Card, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 
 // Components
 import UserDetailModal from '../../../components/User/UserDetailModal';
@@ -12,10 +16,10 @@ import UserTable from '../../../components/User/UserTable';
 import VerifyUserModal from '../../../components/User/VerifyUserModal';
 
 // Schemas
-import { userSchema, verifySchema } from '../../../validation/userSchema';
+import { editUserSchema, userSchema, verifySchema } from '../../../validation/userSchema';
 
 // API
-import { getAllUsers } from '../../../api/userAPI';
+import { createUserByAdmin, deleteUserById, editUserInfo, getAllUsers, getUserById } from '../../../api/userAPI';
 
 const UserManagement = () => {
     // State
@@ -27,9 +31,13 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [verifyLoading, setVerifyLoading] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // Fetch users
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        setCurrentUser({ role: role || "user" });
+
         const fetchUsers = async () => {
             try {
                 setLoading(true);
@@ -46,17 +54,7 @@ const UserManagement = () => {
         fetchUsers();
     }, []);
 
-    // Sync selectedUser with users data
-    useEffect(() => {
-        if (selectedUser && showDetailModal) {
-            const updatedUser = users.find(user => user._id === selectedUser._id);
-            if (updatedUser) {
-                setSelectedUser(updatedUser);
-            }
-        }
-    }, [users, selectedUser, showDetailModal]);
-
-    // Filter users based on search term
+    // lọc user
     const filteredUsers = useMemo(() => {
         return users.filter(user =>
             Object.values(user).some(
@@ -75,7 +73,7 @@ const UserManagement = () => {
         );
     }, [users, searchTerm]);
 
-    // Formik form for user
+    // formik form cho user
     const formik = useFormik({
         initialValues: {
             username: '',
@@ -96,38 +94,46 @@ const UserManagement = () => {
             },
             isVerifiedByAdmin: false
         },
-        validationSchema: userSchema,
-        onSubmit: (values, { resetForm }) => {
-            setLoading(true);
-            setTimeout(() => {
-                if (isEditing && selectedUser) {
-                    // Update existing user
-                    const updatedUsers = users.map(user =>
-                        user._id === selectedUser._id ? { ...user, ...values } : user
-                    );
-                    setUsers(updatedUsers);
-                    toast.success('Cập nhật người dùng thành công (mock)');
+        validationSchema: isEditing ? editUserSchema : userSchema,
+        enableReinitialize: true,
+        onSubmit: async (values, { resetForm }) => {
+            try {
+                setLoading(true);
+
+                if (isEditing) {
+                    // sửa info user
+                    const updateData = { ...values };
+                    if (!updateData.password) delete updateData.password;
+
+                    const response = await editUserInfo(selectedUser._id, updateData);
+                    if (response.data) {
+                        setUsers(users.map(u => u._id === response.data._id ? response.data : u));
+                        toast.success('Cập nhật thành công');
+                        setShowModal(false);
+                    }
                 } else {
-                    // Add new user
-                    const newUser = {
-                        ...values,
-                        _id: Math.random().toString(36).substring(2, 9), // Mock ID
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-                    setUsers([...users, newUser]);
-                    toast.success('Thêm người dùng thành công (mock)');
+                    // taạo user mới
+                    const response = await createUserByAdmin(values);
+                    if (response.data) {
+                        setUsers([...users, response.data.user]);
+                        toast.success(response.data.message);
+                        setShowModal(false);
+
+                        if (response.data.emailSent) {
+                            toast.info(`Đã gửi thông tin đăng nhập đến ${response.data.user.email}`);
+                        }
+                    }
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                toast.error(error.response?.data?.message || 'Lỗi hệ thống');
+            } finally {
                 setLoading(false);
-                setShowModal(false);
-                setIsEditing(false);
-                setSelectedUser(null);
-                resetForm();
-            }, 1000);
+            }
         }
     });
 
-    // Formik form for verification
+    // formik form cho verification
     const verifyFormik = useFormik({
         initialValues: {
             username: '',
@@ -137,7 +143,6 @@ const UserManagement = () => {
         onSubmit: (values, { resetForm }) => {
             setLoading(true);
             setTimeout(() => {
-                // Mock verify user
                 const updatedUsers = users.map(user =>
                     user._id === selectedUser._id
                         ? {
@@ -159,50 +164,77 @@ const UserManagement = () => {
         }
     });
 
-    // Handle delete user (mock)
-    const handleDelete = (id) => {
+    // Hxóa user
+    const handleDelete = async (id) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-            setLoading(true);
-            setTimeout(() => {
+            try {
+                setLoading(true);
+                await deleteUserById(id); // Gọi API xóa
+
+                // Cập nhật state sau khi xóa thành công
                 const filteredUsers = users.filter(user => user._id !== id);
                 setUsers(filteredUsers);
-                toast.success('Xóa người dùng thành công (mock)');
+                toast.success('Xóa người dùng thành công');
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                toast.error(error.response?.data?.message || 'Xóa người dùng thất bại');
+            } finally {
                 setLoading(false);
-            }, 800);
+            }
         }
     };
 
-    // Handle view detail
-    const handleViewDetail = (user) => {
-        setSelectedUser(user);
-        setShowDetailModal(true);
+    // xem chi tiết user
+    const handleViewDetail = async (user) => {
+        try {
+            setLoading(true);
+            const response = await getUserById(user._id);
+            console.log('Response from getUserById:', response.data);
+            setSelectedUser({
+                ...response.data,
+                rooms: response.data.rooms // Đảm bảo giữ nguyên mảng rooms từ response
+            });
+            setShowDetailModal(true);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            toast.error('Không thể tải thông tin chi tiết');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Handle edit user
-    const handleEdit = (user) => {
-        setSelectedUser(user);
-        formik.setValues({
-            username: user.username || '',
-            room: user.room || '',
-            email: user.email,
-            password: '',
-            fullname: user.fullname,
-            citizen_id: user.citizen_id,
-            phoneNumber: user.phoneNumber,
-            avatar: user.avatar,
-            role: user.role,
-            address: user.address,
-            dateOfBirth: moment(user.dateOfBirth).format('YYYY-MM-DD'),
-            status: user.status,
-            contactEmergency: user.contactEmergency || {
-                name: '',
-                relationship: '',
-                phoneNumber: ''
-            },
-            isVerifiedByAdmin: user.isVerifiedByAdmin
-        });
-        setIsEditing(true);
-        setShowModal(true);
+
+    // sửa thông tin user
+    const handleEdit = async (user) => {
+        try {
+            setSelectedUser(user);
+            setIsEditing(true); // Set trước khi setValues để schema được cập nhật
+
+            formik.setValues({
+                username: user.username || '',
+                email: user.email || '',
+                password: '',
+                fullname: user.fullname || '',
+                citizen_id: user.citizen_id || '',
+                phoneNumber: user.phoneNumber || '',
+                avatar: user.avatar || 'https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png',
+                role: user.role || 'user',
+                address: user.address || '',
+                dateOfBirth: user.dateOfBirth ? moment(user.dateOfBirth).format('YYYY-MM-DD') : '',
+                status: user.status || 'inactive',
+                contactEmergency: user.contactEmergency || {
+                    name: '',
+                    relationship: '',
+                    phoneNumber: ''
+                },
+                isVerifiedByAdmin: user.isVerifiedByAdmin || false
+            });
+
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error preparing edit form:', error);
+            toast.error('Có lỗi xảy ra khi chuẩn bị form chỉnh sửa');
+        }
     };
 
     // Handle verify user
@@ -210,6 +242,16 @@ const UserManagement = () => {
         setSelectedUser(user);
         verifyFormik.resetForm();
         setShowVerifyModal(true);
+    };
+
+    const handleVerifySuccess = (verifiedUser) => {
+        // cập nhật danh sách users
+        const updatedUsers = users.map(user =>
+            user._id === verifiedUser._id
+                ? { ...user, ...verifiedUser, isVerifiedByAdmin: true }
+                : user
+        );
+        setUsers(updatedUsers);
     };
 
     return (
@@ -234,7 +276,7 @@ const UserManagement = () => {
                                 />
                             </InputGroup>
                         </Col>
-                        {/* <Col md={6} className="text-end">
+                        <Col md={6} className="text-end">
                             <Button
                                 variant="primary"
                                 onClick={() => {
@@ -246,7 +288,7 @@ const UserManagement = () => {
                                 <Plus size={18} className="me-1" />
                                 Thêm người dùng
                             </Button>
-                        </Col> */}
+                        </Col>
                     </Row>
                 </Card.Body>
             </Card>
@@ -257,13 +299,15 @@ const UserManagement = () => {
                 </div>
             ) : (
                 <UserTable
-                    users={filteredUsers} 
+                    users={filteredUsers}
                     loading={loading}
                     onViewDetail={handleViewDetail}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onVerify={handleVerify}
+                    currentUser={currentUser}
                 />
+
             )}
 
             <UserFormModal
@@ -275,6 +319,13 @@ const UserManagement = () => {
                 formik={formik}
                 isEditing={isEditing}
                 loading={loading}
+                currentUser={currentUser}
+                onUpdateSuccess={(updatedUser) => {
+                    const updatedUsers = users.map(user =>
+                        user._id === updatedUser._id ? updatedUser : user
+                    );
+                    setUsers(updatedUsers);
+                }}
             />
 
             <VerifyUserModal
@@ -285,17 +336,17 @@ const UserManagement = () => {
                 }}
                 formik={verifyFormik}
                 user={selectedUser}
-                loading={loading}
+                loading={verifyLoading}
+                setLoading={setVerifyLoading}
+                onVerifySuccess={handleVerifySuccess}
             />
 
             <UserDetailModal
                 show={showDetailModal}
                 onHide={() => setShowDetailModal(false)}
                 user={selectedUser}
-                onVerify={() => {
-                    setShowDetailModal(false);
-                    handleVerify(selectedUser);
-                }}
+                onVerify={handleVerify}
+                loading={loading}
             />
         </div>
     );

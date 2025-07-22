@@ -1,12 +1,12 @@
 import { Col, Input, message, Row, Select, Space } from "antd";
-import { useEffect, useMemo, useState } from "react";
-import RequestAPI from "../../../api/requestAPI";
-import { Button, Container } from "react-bootstrap";
-import dayjs from "dayjs"
-import ModalReject from "../../../components/Request/ModalReject";
-import ModalAssignee from "../../../components/Request/ModalAssignee";
-import { MaterialReactTable } from "material-react-table";
+import dayjs from "dayjs";
 import { Ban, ClipboardCheck } from "lucide-react";
+import { MaterialReactTable } from "material-react-table";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Container } from "react-bootstrap";
+import RequestAPI from "../../../api/requestAPI";
+import ModalAssignee from "../../../components/Request/ModalAssignee";
+import ModalReject from "../../../components/Request/ModalReject";
 
 
 const RequestManagement = () => {
@@ -155,7 +155,7 @@ const RequestManagement = () => {
           role === 'admin'
             ? <div>
               {
-                REQUEST_STATUS.find(i => i.value === cell.getValue()).label
+                REQUEST_STATUS.find(i => i.value === cell.getValue())?.label || "Không xác định"
               }
             </div>
             :
@@ -166,12 +166,19 @@ const RequestManagement = () => {
               {
                 REQUEST_STATUS.map(i =>
                   i.isView &&
-                  <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
+                  <Select.Option
+                    disabled={i.isDisabled}
+                    key={i.value}
+                    value={i.value}
+                  >
+                    {i.label}
+                  </Select.Option>
                 )
               }
             </Select>
         ),
-      },
+      }
+
     ],
     []
   );

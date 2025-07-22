@@ -3,24 +3,38 @@ const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
 const EmailService = require("../services/emailService");
 const crypto = require("crypto");
+
+
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
 
         if (!user)
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng!" });
 
-        // const isMatch = await bcrypt.compare(password, user.password);
-        // if (!isMatch)
-        //     return res.status(401).json({ message: "Invalid credentials!" });
+        // Kiểm tra trạng thái tài khoản
+        if (user.status !== "active") {
+            let message = "Tài khoan của bạn không hoạt động";
+            if (user.status === "banned") {
+                message = "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ với quản trị viên";
+            } else if (user.status === "inactive") {
+                message = "Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản.";
+            }
+            return res.status(403).json({ message });
+        }
 
-        // don't use bcrypt to compare the password
-        if (user.password !== password)
+        // Bỏ comment phần này nếu bạn muốn sử dụng bcrypt
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch)
             return res.status(401).json({ message: "Invalid credentials!" });
 
+        // Hiện tại đang so sánh password trực tiếp (không an toàn)
+        // if (user.password !== password)
+        //     return res.status(401).json({ message: "Invalid credentials!" });
+
         const token = generateToken(user._id);
-        
+
         res.status(200).json({
             message: "Login successful!",
             token,
@@ -34,7 +48,7 @@ const loginUser = async (req, res) => {
 // Forgot Password - Gửi email reset password
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
-    
+
     try {
         // Kiểm tra email có tồn tại không
         const user = await User.findOne({ email });
@@ -54,8 +68,8 @@ const forgotPassword = async (req, res) => {
         // Gửi email sử dụng EmailService
         await EmailService.sendForgotPasswordEmail(user, resetToken);
 
-        res.status(200).json({ 
-            message: "Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn." 
+        res.status(200).json({
+            message: "Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn."
         });
 
     } catch (error) {
@@ -80,12 +94,12 @@ const resetPassword = async (req, res) => {
         }
 
         // Hash mật khẩu mới
-        //const salt = await bcrypt.genSalt(10);
-        //const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         // Cập nhật mật khẩu mới và xóa token
-        //user.password = hashedPassword;
-        user.password = newPassword;
+        user.password = hashedPassword;
+        // user.password = newPassword;
         user.resetToken = undefined;
         user.resetTokenExpire = undefined;
         await user.save();
