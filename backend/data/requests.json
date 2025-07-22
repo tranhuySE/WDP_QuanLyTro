@@ -1,32 +1,30 @@
 [
     {
         "_id": {
-            "$oid": "6862d6ee6190888bb2b6b7af"
+            "$oid": "687f89096ad5ee326fad13ae"
         },
-        "title": "Leaking pipe in bathroom",
-        "description": "Water leaking from bathroom pipe",
-        "type": "MAINTENANCE",
-        "priority": "HIGH",
-        "status": "ASSIGNED",
+        "title": "sửa bồn cầu bị tắc",
+        "description": "Xả nước không trôi, có mùi hôi thối",
+        "type": "ROOM_ISSUE",
+        "priority": "MEDIUM",
+        "status": "REJECTED",
         "createdBy": {
-            "$oid": "507f191e810c19729de860ec"
+            "$oid": "507f191e810c19729de860ef"
         },
         "room": {
-            "$oid": "507f191e810c19729de860e1"
+            "$oid": "507f191e810c19729de860e3"
         },
         "statusHistory": [
             {
-                "oldStatus": null,
                 "newStatus": "PENDING",
                 "changedBy": {
-                    "$oid": "507f191e810c19729de860ec"
-                },
-                "note": "Request created",
-                "changedAt": {
-                    "$date": "2025-06-20T10:00:00.000Z"
+                    "$oid": "507f191e810c19729de860ef"
                 },
                 "_id": {
-                    "$oid": "6862d6ee6190888bb2b6b7b0"
+                    "$oid": "687f89096ad5ee326fad13af"
+                },
+                "changedAt": {
+                    "$date": "2025-07-22T12:50:17.685Z"
                 }
             },
             {
@@ -36,83 +34,66 @@
                     "$oid": "507f191e810c19729de860ea"
                 },
                 "_id": {
-                    "$oid": "6862dac622e5451501e3e889"
+                    "$oid": "687f89176ad5ee326fad13bd"
                 },
                 "changedAt": {
-                    "$date": "2025-06-30T18:43:18.341Z"
-                }
-            }
-        ],
-        "attachments": [],
-        "createdAt": {
-            "$date": "2025-06-30T18:26:54.173Z"
-        },
-        "updatedAt": {
-            "$date": "2025-06-30T18:43:18.336Z"
-        },
-        "__v": 0,
-        "approval": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "assignedTo": {
-            "$oid": "507f191e810c19729de860eb"
-        }
-    },
-    {
-        "_id": {
-            "$oid": "6862db6a22e5451501e3e892"
-        },
-        "title": "Room cleaning request",
-        "description": "Need deep cleaning for room",
-        "type": "CLEANING",
-        "priority": "MEDIUM",
-        "status": "REJECTED",
-        "createdBy": {
-            "$oid": "507f191e810c19729de860ed"
-        },
-        "room": {
-            "$oid": "507f191e810c19729de860e2"
-        },
-        "statusHistory": [
-            {
-                "oldStatus": null,
-                "newStatus": "PENDING",
-                "changedBy": {
-                    "$oid": "507f191e810c19729de860ed"
-                },
-                "note": "Request created",
-                "changedAt": {
-                    "$date": "2025-06-20T10:00:00.000Z"
-                },
-                "_id": {
-                    "$oid": "6862db6a22e5451501e3e893"
+                    "$date": "2025-07-22T12:50:31.678Z"
                 }
             },
             {
-                "oldStatus": "PENDING",
-                "newStatus": "REJECTED",
+                "oldStatus": "ASSIGNED",
+                "newStatus": "IN_PROGRESS",
                 "changedBy": {
-                    "$oid": "507f191e810c19729de860ea"
+                    "$oid": "687f74c792dda0bca1b4a651"
                 },
                 "_id": {
-                    "$oid": "6862dc92847c83d929d1faaf"
+                    "$oid": "687f89316ad5ee326fad13dd"
                 },
                 "changedAt": {
-                    "$date": "2025-06-30T18:50:58.550Z"
+                    "$date": "2025-07-22T12:50:57.264Z"
+                }
+            },
+            {
+                "oldStatus": "IN_PROGRESS",
+                "newStatus": "COMPLETED",
+                "changedBy": {
+                    "$oid": "687f74c792dda0bca1b4a651"
+                },
+                "_id": {
+                    "$oid": "687f893b6ad5ee326fad13e5"
+                },
+                "changedAt": {
+                    "$date": "2025-07-22T12:51:07.490Z"
+                }
+            },
+            {
+                "oldStatus": "COMPLETED",
+                "newStatus": "REJECTED",
+                "changedBy": {
+                    "$oid": "687f74c792dda0bca1b4a651"
+                },
+                "note": "không thể sửa, thuê phòng mới đi",
+                "_id": {
+                    "$oid": "687f89676ad5ee326fad1405"
+                },
+                "changedAt": {
+                    "$date": "2025-07-22T12:51:51.997Z"
                 }
             }
         ],
         "attachments": [],
         "createdAt": {
-            "$date": "2025-06-30T18:46:02.292Z"
+            "$date": "2025-07-22T12:50:17.696Z"
         },
         "updatedAt": {
-            "$date": "2025-06-30T18:50:58.541Z"
+            "$date": "2025-07-22T12:51:51.996Z"
         },
         "__v": 0,
         "approval": {
-            "$oid": "507f191e810c19729de860ea"
+            "$oid": "687f74c792dda0bca1b4a651"
         },
-        "reasonReject": "Fuck"
+        "assignedTo": {
+            "$oid": "687f74c792dda0bca1b4a651"
+        }
     }
 ]
