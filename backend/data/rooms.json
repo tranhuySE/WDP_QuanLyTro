@@ -1,224 +1,1474 @@
-[
+[{
+  "_id": {
+    "$oid": "687fa26b76446cf599324aa1"
+  },
+  "roomNumber": "101",
+  "floor": 1,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195045/reoy8yd9aaeazoap89z6.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195100/mdzdt84jdsefgosyksoz.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195105/drfb5hykzggdh2ixx7jm.png"
+  ],
+  "amenities": [
     {
-        "_id": {
-            "$oid": "507f191e810c19729de860e1"
-        },
-        "roomNumber": "101",
-        "floor": 1,
-        "area": 25,
-        "price": 5000000,
-        "tenant": [
-            {
-                "$oid": "507f191e810c19729de860ec"
-            }
-        ],
-        "maxOccupants": 2,
-        "status": "occupied",
-        "room_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439051"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439052"
-            }
-        ],
-        "description": "Cozy room with balcony",
-        "images": [
-            "https://example.com/room101_1.jpg",
-            "https://example.com/room101_2.jpg"
-        ],
-        "amenities": [
-            {
-                "name": "Bed",
-                "quantity": 1,
-                "status": "available"
-            },
-            {
-                "name": "Air Conditioner",
-                "quantity": 1,
-                "status": "available"
-            }
-        ],
-        "assets": [
-            {
-                "type": "motorbike",
-                "description": "Honda Wave",
-                "quantity": 1,
-                "licensePlate": "59A1-12345"
-            }
-        ],
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae0876446cf599324e24"
+      }
     },
     {
-        "_id": {
-            "$oid": "507f191e810c19729de860e2"
-        },
-        "roomNumber": "202",
-        "floor": 2,
-        "area": 20,
-        "price": 4500000,
-        "tenant": [
-            {
-                "$oid": "507f191e810c19729de860ed"
-            }
-        ],
-        "maxOccupants": 2,
-        "status": "occupied",
-        "room_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439053"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439054"
-            }
-        ],
-        "description": "Compact room with good ventilation",
-        "images": [
-            "https://example.com/room202_1.jpg"
-        ],
-        "amenities": [
-            {
-                "name": "Bed",
-                "quantity": 1,
-                "status": "available"
-            },
-            {
-                "name": "Fan",
-                "quantity": 1,
-                "status": "available"
-            }
-        ],
-        "assets": [
-            {
-                "type": "bicycle",
-                "description": "Standard bike",
-                "quantity": 1
-            }
-        ],
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860e3"
-        },
-        "roomNumber": "303",
-        "floor": 3,
-        "area": 30,
-        "price": 5500000,
-        "tenant": [],
-        "maxOccupants": 3,
-        "status": "available",
-        "room_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439051"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439055"
-            }
-        ],
-        "description": "Spacious room with city view",
-        "images": [
-            "https://example.com/room303_1.jpg",
-            "https://example.com/room303_2.jpg"
-        ],
-        "amenities": [
-            {
-                "name": "Bed",
-                "quantity": 2,
-                "status": "available"
-            },
-            {
-                "name": "Air Conditioner",
-                "quantity": 1,
-                "status": "available"
-            }
-        ],
-        "assets": [],
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860e4"
-        },
-        "roomNumber": "104",
-        "floor": 1,
-        "area": 22,
-        "price": 4800000,
-        "tenant": [],
-        "maxOccupants": 2,
-        "status": "under_maintenance",
-        "room_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439052"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439054"
-            }
-        ],
-        "description": "Room under renovation",
-        "images": [],
-        "amenities": [
-            {
-                "name": "Bed",
-                "quantity": 1,
-                "status": "unavailable"
-            }
-        ],
-        "assets": [],
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860e5"
-        },
-        "roomNumber": "205",
-        "floor": 2,
-        "area": 25,
-        "price": 4700000,
-        "tenant": [
-            {
-                "$oid": "507f191e810c19729de860ec"
-            }
-        ],
-        "maxOccupants": 2,
-        "status": "occupied",
-        "room_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439053"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439055"
-            }
-        ],
-        "description": "Modern room with new furniture",
-        "images": [
-            "https://example.com/room205_1.jpg"
-        ],
-        "amenities": [
-            {
-                "name": "Bed",
-                "quantity": 1,
-                "status": "available"
-            },
-            {
-                "name": "Desk",
-                "quantity": 1,
-                "status": "available"
-            }
-        ],
-        "assets": [
-            {
-                "type": "motorbike",
-                "description": "Yamaha Sirius",
-                "quantity": 1,
-                "licensePlate": "59A1-67890"
-            }
-        ],
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae0876446cf599324e25"
+      }
     }
-]
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:38:35.299Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:34:55.699Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa29876446cf599324aa6"
+  },
+  "roomNumber": "102",
+  "floor": 1,
+  "area": 22,
+  "price": 2000000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195670/noffdgtfe4rtodmk2z4j.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195671/mwpqtriu3lnyiyuelkow.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195669/lyxlxzzprc18f4p4ukf8.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae3476446cf599324e7e"
+      }
+    },
+    {
+      "name": "G",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae3476446cf599324e7f"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:39:20.127Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:28:52.370Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa2b676446cf599324aab"
+  },
+  "roomNumber": "103",
+  "floor": 1,
+  "area": 23,
+  "price": 2500000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195750/ogh7s2yopycgctk8p1en.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195750/l7buw7keeo25rvbtq9q4.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195750/htjavvo4plwihrrrmyng.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae4176446cf599324eaf"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae4176446cf599324eb0"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:39:50.213Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:29:05.439Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa2cf76446cf599324ab0"
+  },
+  "roomNumber": "104",
+  "floor": 1,
+  "area": 23,
+  "price": 2500000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195837/fgegsl4ljv05zgurkjwt.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195837/uwbpefybphzhcmrwhpfq.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195838/ru0pn17bcgxnvin3jctw.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195838/gled1datso9h9loq5f86.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195837/fzyx9yuho3nszbpckepu.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae4a76446cf599324ee2"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:40:15.198Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:29:14.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa2f276446cf599324ab5"
+  },
+  "roomNumber": "202",
+  "floor": 2,
+  "area": 20,
+  "price": 1200000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196221/tzcww3nnvp8juty61mjz.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:40:50.290Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T14:57:04.131Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa31176446cf599324aba"
+  },
+  "roomNumber": "201",
+  "floor": 2,
+  "area": 20,
+  "price": 2400000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196182/s6glvopk24nvdartvevr.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196188/pmvkxmnrb0vwdainbako.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:41:21.138Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T14:56:29.891Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa34376446cf599324abf"
+  },
+  "roomNumber": "203",
+  "floor": 2,
+  "area": 23,
+  "price": 2700000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196250/cozshopgwd9suvfpdik0.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196260/gfkucywgb4ytosr451r4.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:42:11.108Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T14:57:41.456Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa35776446cf599324ac4"
+  },
+  "roomNumber": "204",
+  "floor": 2,
+  "area": 20,
+  "price": 3500000,
+  "tenant": [],
+  "maxOccupants": 3,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196387/wwtpd76z7wnl45wox6bu.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196380/uxzmdlyuoshfdwyk82gd.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:42:31.714Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T14:59:50.458Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa38476446cf599324acd"
+  },
+  "roomNumber": "105",
+  "floor": 1,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195884/hrf09ldneqvy78qmtkns.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195905/mtaynilg4lvo2anbrpwf.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195915/x8xxsdznskr7ehqbwljd.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae5376446cf599324f14"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:43:16.772Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:29:23.191Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa39e76446cf599324ad2"
+  },
+  "roomNumber": "106",
+  "floor": 1,
+  "area": 20,
+  "price": 1990000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195981/suyywlytynxrly0khy8a.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195980/a82gxru4ucnlcbkdm8qi.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753195980/efc0ozoqwm7vdkj87u2i.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae7e76446cf599324f47"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:43:42.965Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:30:06.393Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa3bb76446cf599324ad7"
+  },
+  "roomNumber": "107",
+  "floor": 1,
+  "area": 20,
+  "price": 1890000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196024/xtvyjkng5y2kbkpqdgtr.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196024/ex29taoqek3fy4silykt.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae8c76446cf599324f7b"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae8c76446cf599324f7c"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:44:11.306Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:30:20.079Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa3cf76446cf599324adc"
+  },
+  "roomNumber": "108",
+  "floor": 1,
+  "area": 20,
+  "price": 2500000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch, đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196061/rvxgyry9u1tuwlmjh6pi.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196061/z1r0ckekog3llbyftqwf.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fae9676446cf599324fb3"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:44:31.533Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:30:30.641Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa65476446cf599324afd"
+  },
+  "roomNumber": "205",
+  "floor": 2,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, Siêu đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196411/ofpeac0wtfh9cetos3bh.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196412/v9mfy5k9bzugqi2uwqhn.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:55:16.646Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:00:15.595Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa66576446cf599324b02"
+  },
+  "roomNumber": "206",
+  "floor": 2,
+  "area": 20,
+  "price": 3000000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, Siêu đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196432/jo2ojojij7wkfwbcvius.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196444/vgo5gvonohdaubuqlt3o.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:55:33.902Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:00:47.318Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa67776446cf599324b07"
+  },
+  "roomNumber": "207",
+  "floor": 2,
+  "area": 20,
+  "price": 1900000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, Siêu đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196461/fophqb2sy3du4xgenphy.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196460/yuhtwq7vgudb1ero9ehn.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:55:51.732Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:01:03.405Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa68576446cf599324b0c"
+  },
+  "roomNumber": "208",
+  "floor": 2,
+  "area": 20,
+  "price": 2000000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, Siêu đẹp ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196476/zm0g1ahqt1tjgbg3hace.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196475/bdziau2eoqojmsntsqw2.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T14:56:05.368Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:01:18.256Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa7f176446cf599324b31"
+  },
+  "roomNumber": "301",
+  "floor": 3,
+  "area": 20,
+  "price": 1900000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196849/n0i3n4x8w0rodsle0uye.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196854/bu3qtrl0xw0pdbiyxo6y.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:02:09.695Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:07:36.345Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa80976446cf599324b36"
+  },
+  "roomNumber": "302",
+  "floor": 3,
+  "area": 20,
+  "price": 2300000,
+  "tenant": [],
+  "maxOccupants": 2,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196877/b8u7l6xeajjgml5vybpw.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196896/wugwakjoritgkekhemij.png"
+  ],
+  "amenities": [],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:02:33.898Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:08:18.021Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa81776446cf599324b3b"
+  },
+  "roomNumber": "303",
+  "floor": 3,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196959/kqfsgz4ohrbcrmlwpu5q.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753196959/cbif8vi1gymobegqahac.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fa9ca76446cf599324bb5"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fa9ca76446cf599324bb6"
+      }
+    },
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fa9ca76446cf599324bb7"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:02:47.938Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:10:02.701Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa82476446cf599324b40"
+  },
+  "roomNumber": "304",
+  "floor": 3,
+  "area": 20,
+  "price": 2000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197032/sxq9ygv1hfjq1bw8fvh0.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197030/b5c80u1a57c0wfzrammv.png"
+  ],
+  "amenities": [
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fa9eb76446cf599324bc2"
+      }
+    },
+    {
+      "name": "Tủ ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fa9eb76446cf599324bc3"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:03:00.287Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:10:35.040Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa83076446cf599324b45"
+  },
+  "roomNumber": "305",
+  "floor": 3,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197048/wbrngd3slt0mim6hpgmg.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197069/hufj9w94jubnjofmy5vs.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687faa0e76446cf599324bcf"
+      }
+    },
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687faa0e76446cf599324bd0"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:03:12.980Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:11:10.773Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa83b76446cf599324b4a"
+  },
+  "roomNumber": "307",
+  "floor": 3,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197312/fwcconkr0ngamnhpiuve.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197311/rghq0l6yq37zevq1nssi.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fab0376446cf599324bf2"
+      }
+    },
+    {
+      "name": "Tủ ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fab0376446cf599324bf3"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:03:23.927Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:15:15.832Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa84a76446cf599324b4f"
+  },
+  "roomNumber": "306",
+  "floor": 3,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197283/cfmyqjdgyo1bajxokniv.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197278/wm9ytofro0npdkncofv7.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687faaed76446cf599324bde"
+      }
+    },
+    {
+      "name": "Bàn ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687faaed76446cf599324bdf"
+      }
+    },
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687faaed76446cf599324be0"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:03:38.192Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:14:53.309Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa85576446cf599324b54"
+  },
+  "roomNumber": "308",
+  "floor": 3,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197368/xio75wpu2v66t5zjtl6p.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197368/ytzd93rhcwpzlwnssbmd.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fab3e76446cf599324c06"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:03:49.404Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:16:14.608Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa86676446cf599324b59"
+  },
+  "roomNumber": "401",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197387/t7osoop1ledukxedjias.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197398/bkw9xolsu8oqe164yafl.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fab5876446cf599324c19"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:04:06.668Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:16:40.920Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa87276446cf599324b5e"
+  },
+  "roomNumber": "402",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197425/fzpqgtsbs3ojdlke4vln.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197435/fsv6xk1xdgskltuaxljl.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197435/dgqji0sfj45d5cecoqyo.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fab8376446cf599324c2d"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:04:18.077Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:17:23.032Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa88376446cf599324b63"
+  },
+  "roomNumber": "403",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197502/yrnitnzj1tdkor3k8vvz.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197496/p4ihb4yri3avemebmnzp.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fabc076446cf599324c42"
+      }
+    },
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fabc076446cf599324c43"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:04:35.226Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:18:24.480Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa89076446cf599324b68"
+  },
+  "roomNumber": "404",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197528/wfs5surosb6n39z88upv.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197528/aw1mwar7ohxijnxibvso.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fabda76446cf599324c5b"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:04:48.268Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:18:50.827Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa89e76446cf599324b6d"
+  },
+  "roomNumber": "405",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197544/u0cam2mbegysdg6wfxzz.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197553/tawpxu4ch0zozdytbxuz.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fabf976446cf599324c73"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fabf976446cf599324c74"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:05:02.556Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:19:21.107Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8b076446cf599324b72"
+  },
+  "roomNumber": "406",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197620/kbqnnc4xijbvdebsap02.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197624/haamdbefswg2f6aryr1f.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fac3a76446cf599324c8f"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:05:20.400Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:20:26.949Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8bf76446cf599324b77"
+  },
+  "roomNumber": "407",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197647/k3juwguqfmw6gue58c0v.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197648/dapkogf4ubofkimwry1w.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fac5376446cf599324caa"
+      }
+    },
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fac5376446cf599324cab"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:05:35.052Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:20:51.407Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8c876446cf599324b7c"
+  },
+  "roomNumber": "408",
+  "floor": 4,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197665/efhj7ua7l8n69edwxt8p.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197667/laj9jthenydfabhnuwmv.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197666/g8bqo5fxn59wjxcifdci.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197665/ixius6r9sd7ijhzryirf.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fac6c76446cf599324cc9"
+      }
+    },
+    {
+      "name": "Thang máy ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fac6c76446cf599324cca"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:05:44.927Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:21:16.172Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8d876446cf599324b81"
+  },
+  "roomNumber": "501",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197758/pogsbzmo9mdnbtptpr99.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197757/wtnuw60yh7fel6vounji.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687facc276446cf599324cea"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:00.585Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:22:42.892Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8e176446cf599324b86"
+  },
+  "roomNumber": "502",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197775/bgjdxvcdfznl8tnhzhma.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197775/jtsksiwj7iplr68knr1c.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687facd476446cf599324d0a"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687facd476446cf599324d0b"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:09.732Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:23:00.161Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8ea76446cf599324b8b"
+  },
+  "roomNumber": "503",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197836/qktcbffqzii4p6tcc5wc.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197836/xwm2gryho1dtn5qx1rj8.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad1176446cf599324d2e"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad1176446cf599324d2f"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:18.160Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:24:01.170Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8f276446cf599324b90"
+  },
+  "roomNumber": "504",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197853/bmbghh33dzgvt8g3ej2w.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197852/euzrquzgtj1xejbiprpc.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad2376446cf599324d54"
+      }
+    },
+    {
+      "name": "Giường ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad2376446cf599324d55"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:26.198Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:24:19.217Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa8fa76446cf599324b95"
+  },
+  "roomNumber": "505",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197881/lspwdmme4krjmc3vhzu0.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197881/awgan7yxam7xoiscg7lf.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad3e76446cf599324d7c"
+      }
+    },
+    {
+      "name": "Giường đôi",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad3e76446cf599324d7d"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:34.675Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:24:46.265Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa90876446cf599324b9a"
+  },
+  "roomNumber": "506",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197957/rl4ik6qchwwvlng4i2lp.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197958/m45vbsrywcawzudxsv3s.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad8876446cf599324da6"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:48.364Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:26:00.377Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa91176446cf599324b9f"
+  },
+  "roomNumber": "507",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197970/wwjwu9mkdckvwmu4yyhk.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197970/r3ifaxvnv4o5v290s7jm.png"
+  ],
+  "amenities": [
+    {
+      "name": "Tủ quần áo ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fad9576446cf599324dcf"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:06:57.053Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:26:13.298Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687fa91976446cf599324ba4"
+  },
+  "roomNumber": "508",
+  "floor": 5,
+  "area": 20,
+  "price": 1000000,
+  "tenant": [],
+  "maxOccupants": 1,
+  "status": "available",
+  "room_service": [],
+  "description": "Sạch sẽ, thoáng mát ",
+  "images": [
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197988/cdgutyo4j6wtyy9cmmeo.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197988/nur50j98yvtgj5eubkas.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197987/gga6ebflnr3b8kzsusxi.png",
+    "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753197988/p9vbob1e7lkm0rfyifzf.png"
+  ],
+  "amenities": [
+    {
+      "name": "Bàn học ",
+      "quantity": 1,
+      "status": "available",
+      "_id": {
+        "$oid": "687fada876446cf599324df9"
+      }
+    }
+  ],
+  "assets": [],
+  "createdAt": {
+    "$date": "2025-07-22T15:07:05.305Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T15:26:32.192Z"
+  }
+}]
