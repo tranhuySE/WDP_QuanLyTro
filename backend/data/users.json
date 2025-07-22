@@ -1,189 +1,217 @@
-[
+[{
+  "_id": {
+    "$oid": "507f191e810c19729de860ea"
+  },
+  "username": "nqminh21123",
+  "email": "nqminh02112003@gmail.com",
+  "password": "$2b$10$jZBgIlwIHpL/lro0PNz88.pMZOeKc4VYMrhsef3pq.kEIm0JfqObu",
+  "fullname": "Nguyen Quang Minh",
+  "citizen_id": "111222333444",
+  "phoneNumber": "0901112222",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dbyb3icyk/image/upload/v1752741448/users/cl2jyrbm8rqt366enefh.jpg",
+  "role": "admin",
+  "address": "Thôn Đông- Phú Minh- Sóc Sơn",
+  "dateOfBirth": {
+    "$date": "1980-01-01T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "Nguyen Thi A",
+    "relationship": "Father",
+    "phoneNumber": "0901112223"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": "2025-06-20T09:00:00.000Z",
+  "updatedAt": {
+    "$date": "2025-07-22T11:40:39.917Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687dd482a0124fce2727f586"
+  },
+  "username": "nquangduc",
+  "email": "ducnqhe173294@fpt.edu.vn",
+  "password": "$2b$10$VuCh4Ql5Ew4o5M/mY/YAXeev3CRCnoGnZVJrZnK1Scp8SAusekJga",
+  "fullname": "Nguyen Quang Đức",
+  "citizen_id": "035203002085",
+  "phoneNumber": "0327312003",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "staff",
+  "address": "Ninh Bắc - Duy TIên - HÀ Nam",
+  "dateOfBirth": {
+    "$date": "2025-07-18T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "acsdv a",
+    "relationship": "afv fv",
+    "phoneNumber": "0834388989"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": {
+    "$date": "2025-07-21T05:47:46.029Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-21T05:47:46.029Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "507f191e810c19729de860ef"
+  },
+  "username": "minhnqhs170943",
+  "email": "minhnqhs170943@fpt.edu.vn",
+  "password": "$2b$10$cl1f78URQtANdi.XJuDIKeljKLeWMqG9Ss6lmDwK6ibw/zGmPRBOG",
+  "fullname": "Minh Nguyen Quang",
+  "citizen_id": "001203049453",
+  "phoneNumber": "08214621252",
+  "rooms": [
     {
-        "_id": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "username": "nqminh21123",
-        "email": "nqminh02112003@gmail.com",
-        "password": "hashedpassword1",
-        "fullname": "Nguyen Quang Minh",
-        "citizen_id": "111222333444",
-        "phoneNumber": "0901112222",
-        "rooms": [],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "admin",
-        "address": "456 Tran Hung Dao, District 5, HCMC",
-        "dateOfBirth": "1980-01-01T00:00:00.000Z",
-        "status": "active",
-        "contactEmergency": {
-            "name": "Nguyen Thi A",
-            "relationship": "Father",
-            "phoneNumber": "0901112223"
-        },
-        "isVerifiedByAdmin": true,
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860eb"
-        },
-        "username": "staff1",
-        "email": "staff1@example.com",
-        "password": "hashedpassword2",
-        "fullname": "Tran Staff",
-        "citizen_id": "222333444555",
-        "phoneNumber": "0902223333",
-        "rooms": [],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "staff",
-        "address": "789 Nguyen Trai, District 5, HCMC",
-        "dateOfBirth": "1985-05-10T00:00:00.000Z",
-        "status": "active",
-        "contactEmergency": {
-            "name": "Tran Van B",
-            "relationship": "Father",
-            "phoneNumber": "0902223334"
-        },
-        "isVerifiedByAdmin": true,
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860ec"
-        },
-        "username": "tenant1",
-        "email": "tenant1@example.com",
-        "password": "hashedpassword3",
-        "fullname": "Le Tenant",
-        "citizen_id": "333444555666",
-        "phoneNumber": "0903334444",
-        "rooms": [
-            {
-                "$oid": "507f191e810c19729de860e1"
-            },
-            {
-                "$oid": "507f191e810c19729de860e5"
-            }
-        ],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "user",
-        "address": "101 Vo Van Tan, District 3, HCMC",
-        "dateOfBirth": "1990-03-15T00:00:00.000Z",
-        "status": "active",
-        "contactEmergency": {
-            "name": "Le Thi C",
-            "relationship": "Sister",
-            "phoneNumber": "0903334445"
-        },
-        "isVerifiedByAdmin": true,
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860ed"
-        },
-        "username": "tenant2",
-        "email": "tenant2@example.com",
-        "password": "hashedpassword4",
-        "fullname": "Pham Tenant",
-        "citizen_id": "444555666777",
-        "phoneNumber": "0904445555",
-        "rooms": [
-            {
-                "$oid": "507f191e810c19729de860e2"
-            }
-        ],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "user",
-        "address": "202 Ly Tu Trong, District 1, HCMC",
-        "dateOfBirth": "1992-07-20T00:00:00.000Z",
-        "status": "inactive",
-        "contactEmergency": {
-            "name": "Pham Van D",
-            "relationship": "Brother",
-            "phoneNumber": "0904445556"
-        },
-        "isVerifiedByAdmin": false,
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860ee"
-        },
-        "username": "staff2",
-        "email": "staff2@example.com",
-        "password": "hashedpassword5",
-        "fullname": "Hoang Staff",
-        "citizen_id": "555666777888",
-        "phoneNumber": "0905556666",
-        "rooms": [],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "staff",
-        "address": "303 Nguyen Van Cu, District 5, HCMC",
-        "dateOfBirth": "1987-09-25T00:00:00.000Z",
-        "status": "active",
-        "contactEmergency": {
-            "name": "Hoang Thi E",
-            "relationship": "Wife",
-            "phoneNumber": "0905556667"
-        },
-        "isVerifiedByAdmin": true,
-        "createdAt": "2025-06-20T09:00:00.000Z",
-        "updatedAt": "2025-06-20T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f191e810c19729de860ef"
-        },
-        "username": "",
-        "email": "minhnqhs170943@fpt.edu.vn",
-        "password": "",
-        "fullname": "Minh Nguyen Quang",
-        "citizen_id": "001203049453",
-        "phoneNumber": "0834388989",
-        "rooms": [
-            {
-                "$oid": "507f191e810c19729de860e3"
-            }
-        ],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "user",
-        "address": "thôn Đông, xã Phú Minh, thành phố Hà Nội",
-        "dateOfBirth": "2003-11-02T00:00:00.000Z",
-        "status": "inactive",
-        "contactEmergency": {
-            "name": "ABC",
-            "relationship": "Mother",
-            "phoneNumber": "0123456789"
-        },
-        "isVerifiedByAdmin": false,
-        "createdAt": "2025-07-20T09:00:00.000Z",
-        "updatedAt": "2025-07-20T09:00:00.000Z"
-    },
-    {
-        "username": "abcd12345",
-        "email": "okvipdttt@gmail.com",
-        "password": "minhnqhs170943",
-        "fullname": "Minh Nguyen Quang",
-        "citizen_id": "001203049452",
-        "phoneNumber": "0834388988",
-        "rooms": [],
-        "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
-        "role": "user",
-        "address": "thôn Đông, xã Phú Minh, thành phố Hà Nội",
-        "dateOfBirth": "2004-11-02T00:00:00.000Z",
-        "status": "active",
-        "contactEmergency": {
-            "name": "CDEF",
-            "relationship": "Mother",
-            "phoneNumber": "02312345678"
-        },
-        "isVerifiedByAdmin": true,
-        "createdAt": "2025-07-21T09:00:00.000Z",
-        "updatedAt": "2025-07-21T09:00:00.000Z"
+      "$oid": "507f191e810c19729de860e3"
     }
-]
+  ],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "user",
+  "address": "thôn Đông, xã Phú Minh, thành phố Hà Nội",
+  "dateOfBirth": {
+    "$date": "2003-11-02T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "ABC",
+    "relationship": "Brother",
+    "phoneNumber": "0123456789"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": "2025-07-20T09:00:00.000Z",
+  "updatedAt": {
+    "$date": "2025-07-22T12:31:05.336Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687f710792dda0bca1b4a5d1"
+  },
+  "username": "ducnq123",
+  "email": "nduc96271@gmail.com",
+  "password": "$2b$10$xxh.G0amMq857XiThMuayerVh7W91uwLxi0pK9GmYZeOZtNIybHYC",
+  "fullname": "Nguyen Quang Duc",
+  "citizen_id": "0021522352665268",
+  "phoneNumber": "0821235656",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "user",
+  "address": "Thanh Hóa",
+  "dateOfBirth": {
+    "$date": "2025-06-19T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "Nguyen Thi A",
+    "relationship": "Mẹ",
+    "phoneNumber": "0834388989"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": {
+    "$date": "2025-07-22T11:07:51.188Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T11:18:05.103Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687f722d92dda0bca1b4a5f5"
+  },
+  "username": "tranhuy",
+  "email": "huythpt194@gmail.com",
+  "password": "$2b$10$jcmn552ymBrj8P2TxGy/Y.WqJhZwhFS/IE1vkhg9ZjntuwNvW1aUS",
+  "fullname": "Tran Quang Huy",
+  "citizen_id": "0125253252256",
+  "phoneNumber": "0365258545",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "admin",
+  "address": "Hà Nội",
+  "dateOfBirth": {
+    "$date": "2025-07-03T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "Nguyen Thi Mẹ",
+    "relationship": "Mẹ",
+    "phoneNumber": "0511585423"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": {
+    "$date": "2025-07-22T11:12:45.119Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T11:12:45.119Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687f74c792dda0bca1b4a651"
+  },
+  "username": "nqminh021103",
+  "email": "okvipdttt@gmail.com",
+  "password": "$2b$10$fZNXcBPPVOB9jB46fQAwHetqbJJTTS0dgebNtSli4X7Pryy6y/xSm",
+  "fullname": "Minh",
+  "citizen_id": "013538898925",
+  "phoneNumber": "0834388989",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "staff",
+  "address": "Thôn Đông- Phú Minh- Sóc Sơn",
+  "dateOfBirth": {
+    "$date": "2025-07-03T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "Nguyen Thi H",
+    "relationship": "Mẹ",
+    "phoneNumber": "0834388989"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": {
+    "$date": "2025-07-22T11:23:51.210Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T11:23:51.210Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687f84b892dda0bca1b4a72d"
+  },
+  "username": "thangbqhe173004",
+  "email": "thangbqhe173004@fpt.edu.vn",
+  "password": "$2b$10$o0q3IAN4zZsxW51yiZeHQOvOek4imec229dcOGQdFtvLccMK/.LGm",
+  "fullname": "Bui Quang Thang",
+  "citizen_id": "01545564464468",
+  "phoneNumber": "08126546269",
+  "rooms": [],
+  "avatar": "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
+  "role": "user",
+  "address": "Hà Nội",
+  "dateOfBirth": {
+    "$date": "2025-07-04T00:00:00.000Z"
+  },
+  "status": "active",
+  "contactEmergency": {
+    "name": "Le Van Bo",
+    "relationship": "Bố",
+    "phoneNumber": "0584512689"
+  },
+  "isVerifiedByAdmin": true,
+  "createdAt": {
+    "$date": "2025-07-22T12:31:52.650Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T12:34:32.085Z"
+  }
+}]
