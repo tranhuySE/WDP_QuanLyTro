@@ -1,29 +1,29 @@
 [
     {
         "_id": {
-            "$oid": "507f1f77bcf86cd799439061"
+            "$oid": "507f1f77bcf86cd799439099"
         },
         "roomId": {
-            "$oid": "507f191e810c19729de860e1"
+            "$oid": "507f191e810c19729de860e3"
         },
         "tenant": {
-            "$oid": "507f191e810c19729de860ec"
+            "$oid": "507f191e810c19729de860ef"
         },
         "landlord": {
             "$oid": "507f191e810c19729de860ea"
         },
-        "house_address": "456 Tran Hung Dao, District 5, HCMC",
+        "house_address": "456 Trần Hưng Đạo, Phường 7, Quận 5, TP. Hồ Chí Minh",
         "startDate": "2025-07-01T00:00:00.000Z",
         "endDate": "2026-06-30T00:00:00.000Z",
-        "price": 5000000,
+        "price": 4000000,
         "deposit": {
-            "amount": 10000000,
+            "amount": 20000000,
             "paymentDate": "2025-06-20T00:00:00.000Z",
             "status": "paid"
         },
         "file": [
             {
-                "name": "contract1.pdf",
+                "name": "contract9.pdf",
                 "url": "https://example.com/contract1.pdf",
                 "type": "pdf"
             }
@@ -36,194 +36,12 @@
                 "$oid": "507f1f77bcf86cd799439052"
             }
         ],
-        "terms": "No pets, no smoking",
+        "terms": "Không nuôi thú cưng. Không hút thuốc trong nhà. Giữ gìn vệ sinh chung. Không gây ồn ào sau 22h. Khách đến ở qua đêm phải báo trước với chủ nhà.",
         "createBy": {
-            "$oid": "507f191e810c19729de860eb"
+            "$oid": "687dd482a0124fce2727f586"
         },
         "status": "active",
         "createdAt": "2025-06-20T10:00:00.000Z",
         "updatedAt": "2025-06-20T10:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439062"
-        },
-        "roomId": {
-            "$oid": "507f191e810c19729de860e2"
-        },
-        "tenant": {
-            "$oid": "507f191e810c19729de860ed"
-        },
-        "landlord": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "house_address": "456 Tran Hung Dao, District 5, HCMC",
-        "startDate": "2025-07-15T00:00:00.000Z",
-        "endDate": "2026-07-14T00:00:00.000Z",
-        "price": 4500000,
-        "deposit": {
-            "amount": 9000000,
-            "paymentDate": "2025-06-21T00:00:00.000Z",
-            "status": "pending"
-        },
-        "file": [
-            {
-                "name": "contract2.pdf",
-                "url": "https://example.com/contract2.pdf",
-                "type": "pdf"
-            }
-        ],
-        "house_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439053"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439054"
-            }
-        ],
-        "terms": "No loud music after 10 PM",
-        "createBy": {
-            "$oid": "507f191e810c19729de860eb"
-        },
-        "status": "draft",
-        "createdAt": "2025-06-21T09:00:00.000Z",
-        "updatedAt": "2025-06-21T09:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439063"
-        },
-        "roomId": {
-            "$oid": "507f191e810c19729de860e3"
-        },
-        "tenant": {
-            "$oid": "507f191e810c19729de860ec"
-        },
-        "landlord": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "house_address": "456 Tran Hung Dao, District 5, HCMC",
-        "startDate": "2025-08-01T00:00:00.000Z",
-        "endDate": "2026-07-31T00:00:00.000Z",
-        "price": 5500000,
-        "deposit": {
-            "amount": 11000000,
-            "paymentDate": "2025-06-22T00:00:00.000Z",
-            "status": "paid"
-        },
-        "file": [
-            {
-                "name": "contract3.pdf",
-                "url": "https://example.com/contract3.pdf",
-                "type": "pdf"
-            }
-        ],
-        "house_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439051"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439055"
-            }
-        ],
-        "terms": "No subleasing",
-        "createBy": {
-            "$oid": "507f191e810c19729de860eb"
-        },
-        "status": "active",
-        "createdAt": "2025-06-22T08:00:00.000Z",
-        "updatedAt": "2025-06-22T08:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439064"
-        },
-        "roomId": {
-            "$oid": "507f191e810c19729de860e1"
-        },
-        "tenant": {
-            "$oid": "507f191e810c19729de860ed"
-        },
-        "landlord": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "house_address": "456 Tran Hung Dao, District 5, HCMC",
-        "startDate": "2025-07-10T00:00:00.000Z",
-        "endDate": "2026-07-09T00:00:00.000Z",
-        "price": 4800000,
-        "deposit": {
-            "amount": 9600000,
-            "paymentDate": "2025-06-20T00:00:00.000Z",
-            "status": "refunded"
-        },
-        "file": [
-            {
-                "name": "contract4.pdf",
-                "url": "https://example.com/contract4.pdf",
-                "type": "pdf"
-            }
-        ],
-        "house_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439052"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439054"
-            }
-        ],
-        "terms": "No pets, no smoking",
-        "createBy": {
-            "$oid": "507f191e810c19729de860eb"
-        },
-        "status": "terminated",
-        "terminationReason": "Tenant relocated",
-        "terminatedAt": "2025-06-22T00:00:00.000Z",
-        "createdAt": "2025-06-20T11:00:00.000Z",
-        "updatedAt": "2025-06-20T11:00:00.000Z"
-    },
-    {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439065"
-        },
-        "roomId": {
-            "$oid": "507f191e810c19729de860e2"
-        },
-        "tenant": {
-            "$oid": "507f191e810c19729de860ec"
-        },
-        "landlord": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "house_address": "456 Tran Hung Dao, District 5, HCMC",
-        "startDate": "2025-07-20T00:00:00.000Z",
-        "endDate": "2026-07-19T00:00:00.000Z",
-        "price": 4700000,
-        "deposit": {
-            "amount": 9400000,
-            "paymentDate": "2025-06-21T00:00:00.000Z",
-            "status": "paid"
-        },
-        "file": [
-            {
-                "name": "contract5.pdf",
-                "url": "https://example.com/contract5.pdf",
-                "type": "pdf"
-            }
-        ],
-        "house_service": [
-            {
-                "$oid": "507f1f77bcf86cd799439053"
-            },
-            {
-                "$oid": "507f1f77bcf86cd799439055"
-            }
-        ],
-        "terms": "No parties",
-        "createBy": {
-            "$oid": "507f191e810c19729de860eb"
-        },
-        "status": "active",
-        "createdAt": "2025-06-21T10:00:00.000Z",
-        "updatedAt": "2025-06-21T10:00:00.000Z"
     }
 ]
