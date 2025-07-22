@@ -32,6 +32,10 @@ import {
   Stack,
   CardContent,
   Menu,
+  FormControl,
+  InputLabel,
+  Select,
+  Slider,
 } from "@mui/material";
 import {
   Edit,
@@ -59,6 +63,7 @@ import {
   Wallet,
   MeetingRoom,
   MoreVert,
+  FilterList,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -72,7 +77,6 @@ import {
 import { getAllUsers } from "../../api/userAPI";
 
 // ----- CÁC COMPONENT CON (TabPanel, RoomDetails, RoomForm) GIỮ NGUYÊN -----
-// ... Dán code các component con của bạn vào đây ...
 const statusMapping = {
   available: { text: "Còn trống", color: "success" },
   occupied: { text: "Đã thuê", color: "warning" },
@@ -261,6 +265,7 @@ const RoomDetails = ({ room }) => {
     </Box>
   );
 };
+
 const FormikTextField = ({ name, label, ...props }) => (
   <Field name={name}>
     {({ field, meta }) => (
@@ -276,6 +281,7 @@ const FormikTextField = ({ name, label, ...props }) => (
     )}
   </Field>
 );
+
 const RoomForm = ({
   initialValues,
   onSubmit,
@@ -683,9 +689,8 @@ const RoomForm = ({
     </Formik>
   );
 };
-// ----- END OF CHILD COMPONENTS -----
 
-// Component chính hiển thị Sơ đồ phòng
+// ----- MAIN COMPONENT WITH CRUD & FILTERING -----
 const RoomTable = () => {
   const [rooms, setRooms] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -698,14 +703,15 @@ const RoomTable = () => {
   const [editingRoom, setEditingRoom] = useState(null);
   const [viewingRoom, setViewingRoom] = useState(null);
   const [deletingRoomId, setDeletingRoomId] = useState(null);
-
-  // State cho menu
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRoomForMenu, setSelectedRoomForMenu] = useState(null);
 
-  // **MODIFICATION 2: Stop event propagation**
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priceRange, setPriceRange] = useState([0, 0]);
+  const [maxPrice, setMaxPrice] = useState(0);
+
   const handleMenuOpen = (event, room) => {
-    event.stopPropagation(); // Ngăn sự kiện click lan ra Card cha
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedRoomForMenu(room);
   };
@@ -722,9 +728,22 @@ const RoomTable = () => {
         getAllRooms(),
         getAllUsers(),
       ]);
-      setRooms(roomsResponse.data);
+
+      const fetchedRooms = roomsResponse.data || [];
+      setRooms(fetchedRooms);
+
       if (usersResponse.data && Array.isArray(usersResponse.data)) {
         setAllUsers(usersResponse.data.filter((u) => u.role === "user"));
+      }
+
+      if (fetchedRooms.length > 0) {
+        const prices = fetchedRooms
+          .map((r) => r.price)
+          .filter((p) => typeof p === "number");
+        const min = prices.length > 0 ? Math.min(...prices) : 0;
+        const max = prices.length > 0 ? Math.max(...prices) : 10000000;
+        setMaxPrice(max);
+        setPriceRange([min, max]);
       }
     } catch (error) {
       console.error(
@@ -742,9 +761,18 @@ const RoomTable = () => {
   }, []);
 
   const roomsByFloor = useMemo(() => {
-    const sortedRooms = [...rooms].sort((a, b) =>
+    const filteredRooms = rooms.filter((room) => {
+      const statusMatch =
+        statusFilter === "all" || room.status === statusFilter;
+      const priceMatch =
+        room.price >= priceRange[0] && room.price <= priceRange[1];
+      return statusMatch && priceMatch;
+    });
+
+    const sortedRooms = [...filteredRooms].sort((a, b) =>
       a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true })
     );
+
     return sortedRooms.reduce((acc, room) => {
       const floor = room.floor || "N/A";
       if (!acc[floor]) {
@@ -753,7 +781,14 @@ const RoomTable = () => {
       acc[floor].push(room);
       return acc;
     }, {});
-  }, [rooms]);
+  }, [rooms, statusFilter, priceRange]);
+
+  const handleStatusChange = (event) => {
+    setStatusFilter(event.target.value);
+  };
+  const handlePriceChange = (event, newValue) => {
+    setPriceRange(newValue);
+  };
 
   const preparePayload = (values) => {
     const payload = { ...values };
@@ -782,10 +817,6 @@ const RoomTable = () => {
       fetchAllData();
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error(
-        "Lỗi khi thêm phòng:",
-        error.response ? error.response.data : error
-      );
       toast.error(error.response?.data?.message || "Thêm phòng thất bại!");
     } finally {
       setIsSaving(false);
@@ -811,10 +842,6 @@ const RoomTable = () => {
       fetchAllData();
       setIsEditModalOpen(false);
     } catch (error) {
-      console.error(
-        "Lỗi khi cập nhật phòng:",
-        error.response ? error.response.data : error
-      );
       toast.error(error.response?.data?.message || "Cập nhật phòng thất bại!");
     } finally {
       setIsSaving(false);
@@ -829,10 +856,6 @@ const RoomTable = () => {
       toast.success("Xóa phòng thành công!");
       fetchAllData();
     } catch (error) {
-      console.error(
-        "Lỗi khi xóa phòng:",
-        error.response ? error.response.data : error
-      );
       toast.error("Xóa phòng thất bại!");
     } finally {
       setIsDeleteConfirmOpen(false);
@@ -857,7 +880,18 @@ const RoomTable = () => {
   };
 
   const openViewModal = (room) => {
-    setViewingRoom(room);
+    const populatedRoom = {
+      ...room,
+      tenant: (room.tenant || [])
+        .filter(Boolean)
+        .map((tenantInRoom) =>
+          allUsers.find(
+            (user) => user._id === (tenantInRoom._id || tenantInRoom)
+          )
+        )
+        .filter(Boolean),
+    };
+    setViewingRoom(populatedRoom);
     setIsViewModalOpen(true);
   };
 
@@ -885,6 +919,7 @@ const RoomTable = () => {
     setEditingRoom(null);
   };
   const closeCreateModal = () => setIsCreateModalOpen(false);
+  const closeViewModal = () => setIsViewModalOpen(false);
 
   if (isLoading) {
     return (
@@ -901,14 +936,21 @@ const RoomTable = () => {
     );
   }
 
+  const isOriginalRoomListEmpty = rooms.length === 0;
+  const isFilterResultEmpty =
+    !isOriginalRoomListEmpty && Object.keys(roomsByFloor).length === 0;
+
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 4 }}
+        {/* ----- UPDATED: Header layout ----- */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
           <Typography variant="h4" fontWeight="bold">
             Sơ đồ phòng
@@ -917,23 +959,77 @@ const RoomTable = () => {
             variant="contained"
             startIcon={<Add />}
             onClick={() => setIsCreateModalOpen(true)}
-            sx={{
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              borderRadius: "8px",
-            }}
           >
-            Thêm phòng mới
+            Thêm phòng
           </Button>
-        </Stack>
+        </Box>
 
-        {Object.keys(roomsByFloor).length === 0 && (
+        {/* ----- UPDATED: Filter section moved below the header ----- */}
+        {!isOriginalRoomListEmpty && (
+          <Paper variant="outlined" sx={{ p: 2, mb: 4 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item>
+                <Typography variant="subtitle1" fontWeight={500}>
+                  Bộ lọc:
+                </Typography>
+              </Grid>
+              <Grid item>
+                <FormControl sx={{ minWidth: 200 }} size="small">
+                  <InputLabel>Trạng thái</InputLabel>
+                  <Select
+                    value={statusFilter}
+                    label="Trạng thái"
+                    onChange={handleStatusChange}
+                  >
+                    <MenuItem value="all">Tất cả</MenuItem>
+                    {Object.entries(statusMapping).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>
+                        {value.text}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs>
+                <Slider
+                  value={priceRange}
+                  onChange={handlePriceChange}
+                  min={0}
+                  max={maxPrice}
+                  step={100000}
+                  size="small"
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value) =>
+                    `${value.toLocaleString("vi-VN")} VND`
+                  }
+                />
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="caption" color="text.secondary">
+                    {priceRange[0].toLocaleString("vi-VN")} VND
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {priceRange[1].toLocaleString("vi-VN")} VND
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+        )}
+
+        {isOriginalRoomListEmpty && !isLoading && (
           <Box textAlign="center" mt={5}>
             <MeetingRoom sx={{ fontSize: 60, color: "text.secondary" }} />
             <Typography variant="h6" color="text.secondary" mt={2}>
               Chưa có phòng nào được tạo.
             </Typography>
-            <Typography color="text.secondary">
-              Hãy bắt đầu bằng cách nhấn nút "Thêm phòng mới".
+          </Box>
+        )}
+
+        {isFilterResultEmpty && (
+          <Box textAlign="center" mt={5}>
+            <FilterList sx={{ fontSize: 60, color: "text.secondary" }} />
+            <Typography variant="h6" color="text.secondary" mt={2}>
+              Không tìm thấy phòng nào phù hợp với bộ lọc.
             </Typography>
           </Box>
         )}
@@ -965,12 +1061,10 @@ const RoomTable = () => {
                       ?.filter(Boolean)
                       .map((t) => t.fullname)
                       .join(", ") || "Trống";
-
                   const roomImage = room.images?.[0];
 
                   return (
                     <Grid item key={room._id}>
-                      {/* **MODIFICATION 1: Add onClick and cursor style to Card** */}
                       <Card
                         onClick={() => openViewModal(room)}
                         sx={{
@@ -981,9 +1075,8 @@ const RoomTable = () => {
                           flexDirection: "column",
                           borderRadius: "12px",
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                          transition:
-                            "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
-                          cursor: "pointer", // Make it obvious it's clickable
+                          cursor: "pointer",
+                          transition: "box-shadow 0.2s, transform 0.2s",
                           "&:hover": {
                             boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
                             transform: "translateY(-4px)",
@@ -997,7 +1090,7 @@ const RoomTable = () => {
                             position: "absolute",
                             top: 8,
                             right: 8,
-                            zIndex: 2, // Ensure icon is on top
+                            zIndex: 2,
                             backgroundColor: "rgba(255, 255, 255, 0.7)",
                             "&:hover": {
                               backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -1007,13 +1100,12 @@ const RoomTable = () => {
                         >
                           <MoreVert />
                         </IconButton>
-
                         {roomImage ? (
                           <CardMedia
                             component="img"
                             sx={{ height: 160 }}
                             image={roomImage}
-                            alt={`Hình ảnh phòng ${room.roomNumber}`}
+                            alt={`Phòng ${room.roomNumber}`}
                           />
                         ) : (
                           <Box
@@ -1029,7 +1121,6 @@ const RoomTable = () => {
                             <ImageNotSupported sx={{ fontSize: 40 }} />
                           </Box>
                         )}
-
                         <CardContent
                           sx={{ flexGrow: 1, p: 2, overflow: "hidden" }}
                         >
@@ -1045,15 +1136,11 @@ const RoomTable = () => {
                               label={statusInfo.text}
                               color={statusInfo.color}
                               size="small"
-                              sx={{
-                                fontWeight: "bold",
-                                flexShrink: 0,
-                                ml: 1,
-                              }}
+                              sx={{ fontWeight: "bold", flexShrink: 0, ml: 1 }}
                             />
                           </Stack>
                           <Tooltip
-                            title={`Giá thuê: ${room.price.toLocaleString(
+                            title={`Giá: ${room.price.toLocaleString(
                               "vi-VN"
                             )} VND/tháng`}
                             arrow
@@ -1098,7 +1185,7 @@ const RoomTable = () => {
           ))}
       </Box>
 
-      {/* Menu cho các hành động */}
+      {/* --- Menus & Modals (Unchanged) --- */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -1112,8 +1199,7 @@ const RoomTable = () => {
             handleMenuClose();
           }}
         >
-          <Visibility sx={{ mr: 1.5, fontSize: "1.25rem" }} />
-          Xem chi tiết
+          <Visibility sx={{ mr: 1.5 }} /> Xem chi tiết
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -1121,8 +1207,7 @@ const RoomTable = () => {
             handleMenuClose();
           }}
         >
-          <Edit sx={{ mr: 1.5, fontSize: "1.25rem" }} />
-          Chỉnh sửa
+          <Edit sx={{ mr: 1.5 }} /> Chỉnh sửa
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -1131,12 +1216,10 @@ const RoomTable = () => {
           }}
           sx={{ color: "error.main" }}
         >
-          <Delete sx={{ mr: 1.5, fontSize: "1.25rem" }} />
-          Xóa phòng
+          <Delete sx={{ mr: 1.5 }} /> Xóa phòng
         </MenuItem>
       </Menu>
 
-      {/* --- MODALS --- */}
       <Dialog
         open={isCreateModalOpen || isEditModalOpen}
         onClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
@@ -1158,19 +1241,19 @@ const RoomTable = () => {
 
       <Dialog
         open={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
+        onClose={closeViewModal}
         maxWidth="md"
         fullWidth
       >
         <DialogTitle sx={{ m: 0, p: 2, pr: 4 }}>
           <IconButton
             aria-label="close"
-            onClick={() => setIsViewModalOpen(false)}
+            onClick={closeViewModal}
             sx={{
               position: "absolute",
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: (t) => t.palette.grey[500],
             }}
           >
             <Close />
@@ -1180,7 +1263,7 @@ const RoomTable = () => {
           <RoomDetails room={viewingRoom} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsViewModalOpen(false)}>Đóng</Button>
+          <Button onClick={closeViewModal}>Đóng</Button>
         </DialogActions>
       </Dialog>
 
