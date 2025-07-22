@@ -1,8 +1,8 @@
-import { Bell, LogOut, Menu, Settings, User } from "lucide-react";
+import { LogOut, Menu, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SideBar/Topbar.css"; // Adjust the path as necessary
-import { FiLock } from "react-icons/fi";
 const Topbar = ({ sidebarWidth = 250 }) => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -82,47 +82,6 @@ const Topbar = ({ sidebarWidth = 250 }) => {
           <div className="topbar-right">
             {isLoggedIn ? (
               <>
-                {/* Notifications */}
-                <div className="notification-container">
-                  <button
-                    className="action-button"
-                    onClick={() => setShowNotifications(!showNotifications)}
-                  >
-                    <Bell size={18} />
-                    <span className="notification-badge">{notifications.length}</span>
-                  </button>
-
-                  {showNotifications && (
-                    <div className="notifications-dropdown">
-                      <div className="notifications-header">
-                        <h6 className="notifications-title">Thông báo</h6>
-                        <span className="notifications-count">{notifications.length} mới</span>
-                      </div>
-                      <div className="notifications-list">
-                        {notifications.map((notif) => (
-                          <div key={notif.id} className="notification-item">
-                            <div className="notification-content">
-                              <div className={`notification-indicator ${notif.type}`} />
-                              <div>
-                                <p className="notification-message">{notif.message}</p>
-                                <span className="notification-time">{notif.time}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="notifications-footer">
-                        <button className="view-all-button">Xem tất cả</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Settings */}
-                <button className="action-button">
-                  <Settings size={18} />
-                </button>
-
                 {/* User Profile */}
                 <div className="profile-container">
                   <button

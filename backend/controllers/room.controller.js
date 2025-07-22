@@ -161,11 +161,57 @@ const getMyRoomInfo = async (req, res) => {
   }
 };
 
+// room.controller.js
+const getAvailableRooms = async (req, res) => {
+  try {
+    // Lấy các phòng có status available và còn chỗ trống
+    const availableRooms = await Room.find({
+      status: 'available',
+      $expr: { $lt: [{ $size: "$tenant" }, "$maxOccupants"] }
+    })
+      .select('roomNumber floor area price maxOccupants description images amenities tenant')
+      .populate('amenities', 'name quantity status')
+      .lean();
+
+
+    // Format lại dữ liệu trả về
+    const formattedRooms = availableRooms.map(room => ({
+      id: room._id,
+      roomNumber: room.roomNumber,
+      floor: room.floor,
+      area: room.area,
+      price: room.price,
+      availableSlots: room.maxOccupants - room.tenant.length,
+      description: room.description,
+      images: room.images,
+      amenities: room.amenities.map(a => ({
+        name: a.name,
+        quantity: a.quantity,
+        status: a.status
+      }))
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: formattedRooms.length,
+      data: formattedRooms
+    });
+  } catch (error) {
+    console.error('Error fetching available rooms:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi lấy danh sách phòng',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 module.exports = {
   getAllRooms,
-  getRoomById, // export API mới
+  getRoomById,
   addRoom,
   updateRoomById,
   deleteRoomById,
   getMyRoomInfo,
+  getAvailableRooms
 };

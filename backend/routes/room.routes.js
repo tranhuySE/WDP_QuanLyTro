@@ -6,6 +6,7 @@ const {
   updateRoomById,
   deleteRoomById,
   getMyRoomInfo,
+  getAvailableRooms,
 } = require("../controllers/room.controller");
 const {
   validateRoom,
@@ -18,6 +19,9 @@ const roomRouter = express.Router();
 
 // Route lấy phòng cá nhân (đặt trước route động)
 roomRouter.get("/me/room", verifyToken, getMyRoomInfo);
+
+// GET /available - Lấy danh sách phòng trống
+roomRouter.get("/available",  getAvailableRooms);
 
 // GET / - Lấy tất cả các phòng
 roomRouter.get("/", getAllRooms);
@@ -54,5 +58,6 @@ roomRouter.delete(
   handleValidationErrors,
   deleteRoomById
 );
+
 
 module.exports = roomRouter;

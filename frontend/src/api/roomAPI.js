@@ -1,14 +1,5 @@
 import axiosInstance from "./axiosInstance"; // Giả sử bạn có file này để cấu hình base URL và headers
 
-// Nếu chưa có axiosInstance, bạn có thể dùng tạm cách này:
-// import axios from 'axios';
-// const axiosInstance = axios.create({
-//   baseURL: 'http://localhost:9999', // Thay bằng URL backend của bạn
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
-
 export const getAllRooms = () => {
   return axiosInstance.get("/rooms");
 };
@@ -30,4 +21,8 @@ export const deleteRoomById = (id) => {
 };
 export const getMyRoomInfo = () => {
   return axiosInstance.get("/rooms/me/room");
+};
+
+export const getAvailableRooms = () => {
+  return axiosInstance.get('/rooms/available');
 };

@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, mongoose } = require("mongoose");
 
 const userSchema = new Schema(
   {
@@ -8,6 +8,7 @@ const userSchema = new Schema(
     fullname: { type: String, required: true },
     citizen_id: { type: String, required: true },
     phoneNumber: { type: String, required: true },
+    rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }],
     avatar: {
       type: String,
       default: "https://res.cloudinary.com/dqj0v4x5g/image/upload/v1698231234/avt_default.png",
