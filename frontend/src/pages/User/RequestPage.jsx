@@ -123,7 +123,7 @@ const RequestPage = () => {
             disabled={row.original.status !== 'REJECTED'}
             size="sm"
             onClick={() => {
-              setOpenModalViewReson(row?.original?.statusHistory?.find(i => i?.newStatus === "REJECTED"))
+              setOpenModalViewReson(row?.original)
             }}
           >
             <Eye size={16} />
