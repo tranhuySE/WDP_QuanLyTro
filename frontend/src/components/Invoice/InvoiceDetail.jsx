@@ -68,14 +68,16 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
                         {note?.img?.length > 0 && (
                             <div className="mt-2 d-flex flex-wrap gap-2">
                                 {note.img.map((img, idx) => (
-                                    <a
-                                        href={img.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <img
                                         key={idx}
-                                    >
-                                        <FaFilePdf size={32} />
-                                    </a>
+                                        src={img}
+                                        alt={`Note ${idx + 1}`}
+                                        style={{
+                                            width: '100px',
+                                            height: '100px',
+                                            objectFit: 'cover',
+                                        }}
+                                    />
                                 ))}
                             </div>
                         )}

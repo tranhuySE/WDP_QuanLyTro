@@ -8,8 +8,8 @@ const invoiceSchema = new Schema(
         createdAt: { type: Date, default: Date.now },
         invoice_type: {
             type: String,
-            enum: ['', ''],
-            default: '',
+            enum: ['service', 'other'],
+            default: 'service',
         },
         items: [
             {
@@ -27,11 +27,7 @@ const invoiceSchema = new Schema(
             default: '',
         },
         note: {
-            img: [
-                {
-                    url: { type: String },
-                },
-            ],
+            img: [String],
             text: {
                 type: String,
             },
@@ -43,8 +39,8 @@ const invoiceSchema = new Schema(
         },
         payment_status: {
             type: String,
-            enum: [''],
-            default: '',
+            enum: ['pending', 'paid', 'overdue'],
+            default: 'pending',
         },
         paid_date: {
             type: Date,
