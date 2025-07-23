@@ -5,9 +5,17 @@ export const getContract = () => {
 };
 
 export const createContract = (data) => {
-    return axiosInstance.post('/create', data);
+    return axiosInstance.post('/contracts/create', data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
 };
 
-export const updateContract = (id, data) => {
-    return axiosInstance.put(`/update/${id}`, data);
+export const updateStatusContract = (id, formValues) => {
+    return axiosInstance.put(`/contracts/update/${id}`, {
+        status: formValues.status,
+        terminationReason: formValues.terminationReason || '',
+        terminatedAt: formValues.status === 'terminated' ? new Date() : null,
+    });
 };
