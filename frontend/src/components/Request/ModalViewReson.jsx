@@ -1,54 +1,45 @@
-import { Button, Descriptions, Modal, Space } from "antd";
+import { Button, Modal, Space, Typography } from "antd";
+
+const { Title, Text } = Typography;
 
 const ModalViewReson = ({ open, onCancel }) => {
 
-  const itemsCommon = [
-    {
-      key: '1',
-      label: 'Tiêu đề',
-      children: open?.title,
-    },
-    {
-      key: '2',
-      label: 'Nội dung',
-      children: open?.description,
-    },
-  ];
-
-  const itemsReject = [
-    {
-      key: '1',
-      label: 'Lý do',
-      children: open?.statusHistory?.find(i => i?.newStatus === "REJECTED")?.note,
-    },
-  ];
-
+  const rejectedNote = open?.statusHistory?.find(i => i?.newStatus === "REJECTED")?.note;
 
   return (
     <Modal
       open={open}
       onCancel={onCancel}
-      title="Lý do huỷ"
+      title="CHI TIẾT"
       width="30vw"
       footer={
         <Space className="d-flex-end">
-          <Button
-            onClick={() => onCancel()}
-          >
+          <Button onClick={onCancel}>
             Đóng
           </Button>
         </Space>
       }
-    >
-      <div>
-        <Descriptions title="Thông tin yêu cầu" items={itemsCommon} style={{ marginBottom: '16px' }} />;
-        {
-          !!open?.statusHistory?.find(i => i?.newStatus === "REJECTED") &&
-          <Descriptions title="Lý do từ chối" items={itemsReject} />
-        }
-      </div>
+    ><hr />
+      <div style={{ marginBottom: 16 }}>
+        <Title level={5}>Thông tin yêu cầu</Title>
+        <div style={{ marginBottom: 8 }}>
+          <Text strong>Tiêu đề: </Text><br />
+          <Text>{open?.title || '-'}</Text>
+        </div>
+        <div>
+          <Text strong>Nội dung: </Text><br />
+          <Text>{open?.description || '-'}</Text>
+        </div>
+      </div><hr />
+
+      {rejectedNote && (
+        <div>
+          <Title level={5}>Lý do từ chối</Title>
+          <Text>{rejectedNote}</Text>
+        </div>
+      )}
     </Modal>
   );
-}
+};
 
 export default ModalViewReson;
