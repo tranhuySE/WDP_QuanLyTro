@@ -13,6 +13,7 @@ const invoiceSchema = Yup.object().shape({
     content: Yup.string().required('Nội dung bắt buộc'),
     payment_type: Yup.string().required(),
     payment_status: Yup.string().required(),
+    invoice_type: Yup.string().required('Chọn loại hóa đơn'),
     create_by: Yup.string(),
     for_room_id: Yup.string().required('Chọn phòng'),
     items: Yup.array().of(
@@ -41,11 +42,10 @@ const InvoiceModal = ({
     roomOptions = [],
 }) => {
     const isEdit = mode === 'edit';
-    const [previewImages, setPreviewImages] = useState(initialData?.note?.img || []);
+    const [previewImages, setPreviewImages] = useState([]);
     const [files, setFiles] = useState([]);
-
     useEffect(() => {
-        if (initialData.note.img) {
+        if (initialData?.note?.img?.length) {
             setPreviewImages(initialData.note.img);
             setFiles(initialData.note.img);
         } else {
@@ -63,7 +63,6 @@ const InvoiceModal = ({
 
     const handleRemoveImage = (index) => {
         const removed = previewImages[index];
-
         setPreviewImages((prev) => prev.filter((_, i) => i !== index));
 
         if (typeof removed === 'string') {
@@ -99,7 +98,7 @@ const InvoiceModal = ({
                 initialValues={initialData}
                 validationSchema={invoiceSchema}
                 enableReinitialize
-                onSubmit={(values) => {
+                onSubmit={(values, { setSubmitting }) => {
                     values.create_by = user_Id;
                     const imagesToSend = [];
                     previewImages.forEach((preview, i) => {
@@ -111,8 +110,9 @@ const InvoiceModal = ({
                         }
                     });
 
-                    values.img = imagesToSend;
+                    values.note.img = imagesToSend;
                     onSubmit(values);
+                    setSubmitting(false);
                     onHide();
                 }}
             >
@@ -125,6 +125,31 @@ const InvoiceModal = ({
 
                             <Modal.Body>
                                 <h5>Người tạo : {userFullname}</h5>
+                                <Row className="mb-1">
+                                    <Col>
+                                        <Form.Group controlId="invoice_type">
+                                            <Form.Label className="fw-semibold mb-1">
+                                                Loại hóa đơn
+                                            </Form.Label>
+                                            <Field
+                                                as="select"
+                                                name="invoice_type"
+                                                className="form-select shadow-sm"
+                                            >
+                                                <option value="">-- Chọn loại hóa đơn --</option>
+                                                <option value="service">Hóa đơn dịch vụ</option>
+                                                <option value="penalty">Hóa đơn phạt tiền</option>
+                                                <option value="repair">Hóa đơn sửa chữa</option>
+                                                <option value="other">Hóa đơn khác</option>
+                                            </Field>
+                                            <ErrorMessage
+                                                name="invoice_type"
+                                                component="div"
+                                                className="text-danger mt-1 small"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
                                 <Row className="mb-1">
                                     <Col>
                                         <Form.Label>Phòng</Form.Label>
@@ -175,6 +200,7 @@ const InvoiceModal = ({
                                         >
                                             <option value="pending">Chưa thanh toán</option>
                                             <option value="paid">Đã thanh toán</option>
+                                            <option value="overdue">Quá hạn</option>
                                         </Field>
                                     </Col>
                                 </Row>

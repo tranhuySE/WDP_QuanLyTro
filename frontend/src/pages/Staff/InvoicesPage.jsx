@@ -5,18 +5,8 @@ import { Container, Row, Col, Button, ButtonGroup, Badge } from 'react-bootstrap
 import { FaPrint, FaEdit, FaEye, FaPlus } from 'react-icons/fa';
 import InvoiceModal from '../../components/Invoice/InvoiceModal';
 import InvoiceDetail from '../../components/Invoice/InvoiceDetail';
-import { getAllRooms } from '../../api/roomAPI';
+import { getOccupiedRooms } from '../../api/roomAPI';
 import { toast } from 'react-toastify';
-
-const mockRooms = [
-    { _id: 'r1', roomNumber: '101' },
-    { _id: 'r2', roomNumber: '202' },
-];
-
-const mockUsers = [
-    { _id: 'u1', fullname: 'Nguyen Quang Minh' },
-    { _id: 'u2', fullname: 'Tran Staff' },
-];
 
 const InvoicesPage = () => {
     const [invoices, setInvoices] = useState([]);
@@ -31,40 +21,41 @@ const InvoicesPage = () => {
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
 
+    const fetchInvoices = async () => {
+        try {
+            const response = await getInvoices();
+            setInvoices(response.data);
+            return response.data;
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchRooms = async () => {
+        try {
+            const response = await getOccupiedRooms();
+            setRoom(response.data.data);
+            console.log(response.data);
+
+            return response.data;
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchInvoices = async () => {
-            try {
-                const response = await getInvoices();
-                setInvoices(response.data);
-                return response.data;
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchInvoices();
-
-        const fetchRooms = async () => {
-            try {
-                const response = await getAllRooms();
-                setRoom(response.data);
-                return response.data;
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchRooms();
     }, []);
 
     const formatCurrency = (value) => value.toLocaleString('vi-VN') + ' ₫';
 
     const renderStatusBadge = (status) => {
-        const variant = status === 'paid' ? 'success' : 'warning';
+        const variant = status === 'paid' ? 'success' : status === 'overdue' ? 'danger' : 'warning';
         return (
             <Badge bg={variant} className="text-capitalize">
                 {status}
@@ -160,36 +151,50 @@ const InvoicesPage = () => {
     };
     const handlePrint = (invoice) => alert('In hóa đơn: ' + invoice._id);
 
-    const handleSubmitInvoice = async (formValues, uploadedFiles) => {
-        console.log('Submitted form values:', formValues);
-        console.log('Uploaded files:', uploadedFiles);
+    const handleSubmitInvoice = async (values) => {
         try {
-            const isEdit = !!formValues._id;
-            const invoiceData = { ...formValues };
+            const formData = new FormData();
 
-            const oldImages = (formValues.note?.img || [])
-                .filter((img) => !img.url.startsWith('blob:'))
-                .map((img) => img.url);
+            formData.append('create_by', values.create_by);
+            formData.append('for_room_id', values.for_room_id);
+            formData.append('content', values.content);
+            formData.append('payment_type', values.payment_type);
+            formData.append('invoice_type', values.invoice_type);
+            formData.append('payment_status', values.payment_status);
+            formData.append('total_amount', values.total_amount);
+            formData.append('notify_status', values.notify_status || '');
+            formData.append('items', JSON.stringify(values.items));
+            formData.append('note', JSON.stringify({ text: values.note?.text || '' }));
+            const oldImages = values.note?.img?.filter((img) => typeof img === 'string') || [];
+            formData.append('oldImages', JSON.stringify(oldImages));
+            const deleteImages =
+                editData?.note?.img?.filter(
+                    (img) => typeof img === 'string' && !values.note?.img?.includes(img),
+                ) || [];
+            formData.append('deleteImages', JSON.stringify(deleteImages));
+            const newImages = values.note?.img?.filter((img) => img instanceof File) || [];
+            newImages.forEach((file) => {
+                formData.append('img', file);
+            });
 
-            const deletedImages = formValues.deletedImages || [];
-
-            if (isEdit) {
-                await updateInvoice(
-                    invoiceData._id,
-                    invoiceData,
-                    uploadedFiles,
-                    oldImages,
-                    deletedImages,
-                );
-                toast.success('Cập nhật hóa đơn thành công!');
-            } else {
-                await createInvoice(invoiceData, uploadedFiles, oldImages, deletedImages);
-                toast.success('Tạo hóa đơn mới thành công!');
+            console.log('📦 FormData content:');
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
             }
+
+            if (values._id) {
+                const response = await updateInvoice(values._id, formData);
+                if (response.status === 200) return toast.success('Cập nhật hóa đơn thành công!');
+            } else {
+                const response = await createInvoice(formData);
+                if (response.status === 201) return toast.success('Tạo hóa đơn thành công!');
+            }
+        } catch (err) {
+            console.error('❌ Lỗi gửi form:', err);
+            toast.error(err.response?.data?.message || 'Gửi dữ liệu thất bại');
+        } finally {
+            fetchInvoices();
             setShowModal(false);
-        } catch (error) {
-            console.error('Lỗi khi xử lý hóa đơn:', error);
-            toast.error('Đã xảy ra lỗi. Vui lòng thử lại.');
         }
     };
 
@@ -239,23 +244,29 @@ const InvoicesPage = () => {
                 onHide={() => setShowModal(false)}
                 onSubmit={handleSubmitInvoice}
                 initialData={
-                    editData || {
-                        content: '',
-                        total_amount: 0,
-                        payment_type: 'e-banking',
-                        payment_status: 'pending',
-                        for_room_id: '',
-                        create_by: '',
-                        items: [],
-                        note: {
-                            img: [],
-                            text: '',
-                        },
-                    }
+                    editData
+                        ? {
+                              ...editData,
+                              for_room_id: editData?.for_room_id?._id || '',
+                              create_by: editData?.create_by?._id || '',
+                          }
+                        : {
+                              content: '',
+                              total_amount: 0,
+                              invoice_type: '',
+                              payment_type: 'e-banking',
+                              payment_status: 'pending',
+                              for_room_id: '',
+                              create_by: '',
+                              items: [],
+                              note: {
+                                  img: [],
+                                  text: '',
+                              },
+                          }
                 }
                 mode={editData ? 'edit' : 'create'}
                 roomOptions={room}
-                userOptions={mockUsers}
             />
             {selectedInvoice && (
                 <InvoiceDetail

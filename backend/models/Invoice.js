@@ -8,13 +8,13 @@ const invoiceSchema = new Schema(
         createdAt: { type: Date, default: Date.now },
         invoice_type: {
             type: String,
-            enum: ['service', 'other'],
+            enum: ['service', 'penalty', 'repair', 'other'],
             default: 'service',
         },
         items: [
             {
-                name: { type: String, required: true },
-                unit: { type: String },
+                name: { type: String, default: '' },
+                unit: { type: String, default: '' },
                 quantity: { type: Number, default: 1 },
                 price_unit: { type: Number, default: 0 },
                 subTotal: { type: Number, default: 0 },
@@ -27,9 +27,10 @@ const invoiceSchema = new Schema(
             default: '',
         },
         note: {
-            img: [String],
+            img: [{ type: String, default: '' }],
             text: {
                 type: String,
+                default: '',
             },
         },
         payment_type: {
@@ -44,7 +45,7 @@ const invoiceSchema = new Schema(
         },
         paid_date: {
             type: Date,
-            default: Date.now,
+            default: null,
         },
     },
     {

@@ -132,8 +132,9 @@ const getDashboardStats = async (req, res) => {
 const getInvoices = async (req, res) => {
     try {
         const invoices = await Invoice.find()
-            .populate('for_room_id', 'roomNumber -_id')
-            .populate('create_by', 'fullname -_id');
+            .populate('for_room_id', 'roomNumber _id')
+            .populate('create_by', 'fullname _id');
+
         res.status(200).json(invoices);
     } catch (err) {
         console.error(err);
@@ -156,11 +157,23 @@ const createInvoice = async (req, res) => {
             content,
             items,
             total_amount,
+            invoice_type,
             notify_status,
             note,
             payment_type,
+            payment_status,
         } = req.body;
 
+        if (items.length === 0) {
+            return res.status(400).json({ message: 'Hóa đơn phải có ít nhất một mặt hàng.' });
+        }
+
+        if (!total_amount || Number(total_amount) <= 0) {
+            return res.status(400).json({ message: 'Tổng tiền phải lớn hơn 0.' });
+        }
+
+        const parsedItems = typeof items === 'string' ? JSON.parse(items) : items;
+        const parsedNote = typeof note === 'string' ? JSON.parse(note) : note;
         const uploadedImages = [];
         for (const file of req.files || []) {
             const result = await cloudinary.uploader.upload(file.path, {
@@ -174,20 +187,22 @@ const createInvoice = async (req, res) => {
             create_by,
             for_room_id,
             content,
-            items,
+            items: parsedItems,
             total_amount,
+            invoice_type,
             notify_status,
             note: {
                 img: uploadedImages,
-                text: note.text || '',
+                text: parsedNote?.text || '',
             },
             payment_type,
+            payment_status,
         });
-        await newInvoice.save();
 
+        await newInvoice.save();
         res.status(201).json({ message: 'Tạo hóa đơn thành công', invoice: newInvoice });
     } catch (err) {
-        console.error(err);
+        console.error('Lỗi khi tạo hóa đơn:', err);
         res.status(500).json({ message: 'Lỗi tạo hóa đơn', error: err.message });
     }
 };
@@ -195,18 +210,32 @@ const createInvoice = async (req, res) => {
 const updateInvoice = async (req, res) => {
     try {
         const { id } = req.params;
-        const { invoiceData, oldImages = '[]', deletedImages = '[]' } = req.body;
-
-        const parsedData = typeof invoiceData === 'string' ? JSON.parse(invoiceData) : invoiceData;
-        const parsedOldImages = JSON.parse(oldImages);
-        const parsedDeletedImages = JSON.parse(deletedImages);
+        const {
+            create_by,
+            for_room_id,
+            content,
+            items,
+            total_amount,
+            notify_status,
+            note,
+            invoice_type,
+            payment_type,
+            payment_status,
+            oldImages,
+            deleteImages,
+        } = req.body;
+        const parsedItems = typeof items === 'string' ? JSON.parse(items) : items;
+        const parsedNote = typeof note === 'string' ? JSON.parse(note) : note;
+        const parsedOldImages = typeof oldImages === 'string' ? JSON.parse(oldImages) : oldImages;
+        const parsedDeletedImages =
+            typeof deleteImages === 'string' ? JSON.parse(deleteImages) : deleteImages;
 
         const newUploadedImages = [];
         for (const file of req.files || []) {
             const result = await cloudinary.uploader.upload(file.path, {
                 folder: 'invoices',
             });
-            newUploadedImages.push({ url: result.secure_url, public_id: result.public_id });
+            newUploadedImages.push(result.secure_url);
             fs.unlinkSync(file.path);
         }
 
@@ -216,15 +245,27 @@ const updateInvoice = async (req, res) => {
                 await cloudinary.uploader.destroy(publicId);
             }
         }
+        const updatedData = {
+            create_by,
+            for_room_id,
+            content,
+            items: parsedItems,
+            total_amount,
+            notify_status,
+            invoice_type,
+            payment_type,
+            payment_status,
+            note: {
+                ...parsedNote,
+                img: [...parsedOldImages, ...newUploadedImages],
+            },
+        };
 
-        parsedData.note = parsedData.note || {};
-        parsedData.note.img = [...parsedOldImages, ...newUploadedImages];
-
-        const updatedInvoice = await Invoice.findByIdAndUpdate(id, parsedData, { new: true });
+        const updatedInvoice = await Invoice.findByIdAndUpdate(id, updatedData, { new: true });
 
         res.status(200).json({ message: 'Cập nhật hóa đơn thành công', invoice: updatedInvoice });
     } catch (err) {
-        console.error(err);
+        console.error('❌ updateInvoice error:', err);
         res.status(500).json({ message: 'Lỗi cập nhật hóa đơn', error: err.message });
     }
 };
@@ -244,10 +285,9 @@ const getInvoicesByUserId = async (req, res) => {
             return res.status(200).json([]);
         }
 
-        // 2. Tìm tất cả các hóa đơn có for_room_id nằm trong mảng roomIds
         const invoices = await Invoice.find({ for_room_id: { $in: roomIds } })
-            .populate('for_room_id', 'roomNumber -_id') // Lấy roomNumber từ Room
-            .populate('create_by', 'fullname -_id'); // Lấy fullname từ User
+            .populate('for_room_id', 'roomNumber -_id')
+            .populate('create_by', 'fullname -_id');
 
         return res.status(200).json(invoices);
     } catch (err) {
@@ -449,7 +489,7 @@ const receivePayOSWebhook = async (req, res) => {
             console.warn(
                 `Webhook: PayOS order code ${payosOrderCode} not found in cache. Cannot find corresponding invoice.`,
             );
-            return res.status(200).send('ok'); // Trả về OK để PayOS không retry
+            return res.status(200).send('ok');
         }
 
         const invoice = await Invoice.findById(invoiceIdFromCache);
@@ -480,10 +520,6 @@ const receivePayOSWebhook = async (req, res) => {
         } else {
             // Xử lý các trạng thái khác (hủy, hết hạn, thất bại)
             if (invoice.payment_status !== 'paid') {
-                // Chỉ cập nhật nếu chưa paid
-                // Bạn có thể đặt trạng thái khác nếu muốn, ví dụ 'failed_payment'
-                // invoice.payment_status = 'failed_payment';
-                // await invoice.save();
                 paymentCache[invoiceIdFromCache].status = 'failed_or_cancelled';
                 console.log(
                     `Webhook: PayOS order ${payosOrderCode} status: ${eventCode}. Invoice ${invoice._id} remains ${invoice.payment_status}.`,

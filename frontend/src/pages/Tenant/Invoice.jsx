@@ -10,6 +10,7 @@ import {
     Alert,
     Spinner,
     Modal,
+    Accordion,
 } from 'react-bootstrap';
 import moment from 'moment'; // Để định dạng ngày tháng dễ hơn
 import { checkPaymentStatus, createPayment, getInvoicesByUserId } from '../../api/invoiceAPI';
@@ -194,89 +195,105 @@ const Invoice = () => {
         );
     }
 
+    const invoiceTypeLabels = {
+        service: 'Hóa đơn dịch vụ',
+        penalty: 'Hóa đơn phạt tiền',
+        repair: 'Hóa đơn sửa chữa',
+        other: 'Hóa đơn khác',
+    };
+
     return (
-        <Container className="m-1">
-            <h2 className="mb-1 text-center">Your Invoices</h2>
-            <Row xs={1} md={2} lg={3} className="g-4">
-                {invoices.map((invoice) => (
-                    <Col key={invoice._id}>
-                        <Card className="h-100 shadow-sm">
-                            <Card.Header className="d-flex justify-content-between align-items-center">
-                                <h5>Invoice for Room {invoice.for_room_id.roomNumber}</h5>
+        <Container fluid>
+            <h3 className="mb-4 text-center">Danh sách hóa đơn của bạn</h3>
+            <Accordion defaultActiveKey={null}>
+                {invoices.map((invoice, index) => (
+                    <Accordion.Item eventKey={index.toString()} key={invoice._id} className="mb-3">
+                        <Accordion.Header>
+                            <div className="d-flex justify-content-between w-100">
+                                <div>
+                                    <strong>Phòng:</strong> {invoice.for_room_id.roomNumber} |{' '}
+                                    <strong>Loại:</strong>{' '}
+                                    {invoiceTypeLabels[invoice.invoice_type] || 'Không xác định'}
+                                </div>
                                 <Badge
                                     bg={invoice.payment_status === 'paid' ? 'success' : 'warning'}
-                                    className="p-2"
+                                    className="ms-auto"
                                 >
-                                    {invoice.payment_status === 'paid' ? 'Paid' : 'Pending'}
+                                    {invoice.payment_status === 'paid'
+                                        ? 'Đã thanh toán'
+                                        : 'Chưa thanh toán'}
                                 </Badge>
-                            </Card.Header>
-                            <Card.Body>
-                                <Card.Title>{invoice.content}</Card.Title>
-                                <Card.Text>
-                                    Created by: **{invoice.create_by.fullname}**
-                                    <br />
-                                    Created At: {moment(invoice.createdAt).format('LL')}
-                                </Card.Text>
-                                <ListGroup variant="flush">
-                                    {invoice.items.map((item) => (
-                                        <ListGroup.Item
-                                            key={item._id}
-                                            className="d-flex justify-content-between align-items-center"
-                                        >
-                                            {item.name} ({item.quantity} {item.unit})
-                                            <span>{item.subTotal.toLocaleString('vi-VN')} VND</span>
-                                        </ListGroup.Item>
-                                    ))}
-                                    <ListGroup.Item className="d-flex justify-content-between align-items-center fw-bold">
-                                        Total Amount:
-                                        <span>
-                                            {invoice.total_amount.toLocaleString('vi-VN')} VND
-                                        </span>
+                            </div>
+                        </Accordion.Header>
+                        <Accordion.Body>
+                            <Row className="mb-2">
+                                <Col>
+                                    <strong>Người tạo:</strong> {invoice.create_by.fullname}
+                                </Col>
+                                <Col>
+                                    <strong>Ngày tạo:</strong>{' '}
+                                    {moment(invoice.createdAt).format('DD/MM/YYYY')}
+                                </Col>
+                            </Row>
+
+                            <p>
+                                <strong>Nội dung:</strong> {invoice.content}
+                            </p>
+
+                            <ListGroup className="mb-3">
+                                {invoice.items.map((item) => (
+                                    <ListGroup.Item
+                                        key={item._id}
+                                        className="d-flex justify-content-between"
+                                    >
+                                        {item.name} ({item.quantity} {item.unit})
+                                        <span>{item.subTotal.toLocaleString('vi-VN')} VND</span>
                                     </ListGroup.Item>
-                                </ListGroup>
-                                {invoice.note && invoice.note.text && (
-                                    <Alert variant="info" className="mt-3 p-2">
-                                        Note: {invoice.note.text}
-                                        {invoice.note.img && invoice.note.img.length > 0 && (
-                                            <div className="mt-2 text-center">
-                                                {invoice.note.img.map((imgSrc, index) => (
-                                                    <img
-                                                        key={index}
-                                                        src={imgSrc}
-                                                        alt="Note Image"
-                                                        className="img-fluid rounded mt-1"
-                                                        style={{
-                                                            maxHeight: '100px',
-                                                            maxWidth: '100px',
-                                                            objectFit: 'cover',
-                                                        }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                    </Alert>
-                                )}
-                            </Card.Body>
-                            <Card.Footer className="text-end">
+                                ))}
+                                <ListGroup.Item className="d-flex justify-content-between fw-bold">
+                                    Tổng cộng:
+                                    <span>{invoice.total_amount.toLocaleString('vi-VN')} VND</span>
+                                </ListGroup.Item>
+                            </ListGroup>
+
+                            {invoice.note?.text && (
+                                <Alert variant="info">
+                                    <strong>Ghi chú:</strong> {invoice.note.text}
+                                    {invoice.note.img?.length > 0 && (
+                                        <div className="mt-2 d-flex flex-wrap gap-2">
+                                            {invoice.note.img.map((img, idx) => (
+                                                <img
+                                                    key={idx}
+                                                    src={img}
+                                                    alt="Ghi chú"
+                                                    className="img-thumbnail"
+                                                    style={{ height: '100px', objectFit: 'cover' }}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </Alert>
+                            )}
+
+                            <div className="text-end">
                                 {invoice.payment_status === 'pending' ? (
                                     <Button
                                         variant="primary"
                                         onClick={() => handleShowPaymentModal(invoice)}
                                     >
-                                        Pay Now
+                                        Thanh toán ngay
                                     </Button>
                                 ) : (
                                     <Button variant="success" disabled>
-                                        Paid on {moment(invoice.paid_date).format('LL')}
+                                        Đã thanh toán lúc{' '}
+                                        {moment(invoice.paid_date).format('HH:mm DD/MM/YYYY')}
                                     </Button>
                                 )}
-                            </Card.Footer>
-                        </Card>
-                    </Col>
+                            </div>
+                        </Accordion.Body>
+                    </Accordion.Item>
                 ))}
-            </Row>
-
-            {/* Payment Confirmation/QR Modal */}
+            </Accordion>
             <Modal show={showPaymentModal} onHide={handleClosePaymentModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Pay for Invoice</Modal.Title>
@@ -290,19 +307,18 @@ const Invoice = () => {
                                 Total: {selectedInvoice.total_amount.toLocaleString('vi-VN')} VND
                             </h3>
 
-                            {!qrCodeData &&
-                                !paymentProcessing && ( // Khi chưa có QR code và không đang xử lý
-                                    <>
-                                        <Button variant="primary" onClick={initiatePaymentProcess}>
-                                            Generate PayOS QR
-                                        </Button>
-                                        {paymentMessage && (
-                                            <Alert variant="info" className="mt-3">
-                                                {paymentMessage}
-                                            </Alert>
-                                        )}
-                                    </>
-                                )}
+                            {!qrCodeData && !paymentProcessing && (
+                                <>
+                                    <Button variant="primary" onClick={initiatePaymentProcess}>
+                                        Generate PayOS QR
+                                    </Button>
+                                    {paymentMessage && (
+                                        <Alert variant="info" className="mt-3">
+                                            {paymentMessage}
+                                        </Alert>
+                                    )}
+                                </>
+                            )}
                             {paymentProcessing &&
                                 !qrCodeData && ( // Khi đang tạo QR code
                                     <div className="d-flex flex-column align-items-center mt-3">
@@ -337,7 +353,6 @@ const Invoice = () => {
                                     </a>
                                 </>
                             )}
-                            {/* Hiển thị thông báo chung sau khi có QR hoặc khi có lỗi */}
                             {paymentMessage &&
                                 (qrCodeData || (!qrCodeData && !paymentProcessing)) && (
                                     <Alert
