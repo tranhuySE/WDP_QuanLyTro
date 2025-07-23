@@ -120,7 +120,6 @@ const RequestPage = () => {
         <Space Space size="small">
           <Button
             variant="primary"
-            disabled={row.original.status !== 'REJECTED'}
             size="sm"
             onClick={() => {
               setOpenModalViewReson(row?.original)
