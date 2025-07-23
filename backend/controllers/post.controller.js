@@ -43,10 +43,10 @@ const updatePost = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-    const { content, title, tag } = req.body;
+    const { content, title, tag, author } = req.body;
 
     try {
-        const author = req.userID;
+        // const author = req.userID;
 
         const newPost = new Post({
             content,
