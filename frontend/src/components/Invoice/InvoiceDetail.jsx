@@ -16,9 +16,17 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
         items,
         total_amount,
         payment_type,
+        invoice_type,
         payment_status,
         note,
     } = invoice;
+
+    const INVOICE_TYPE_LABELS = {
+        service: 'Hóa đơn dịch vụ',
+        penalty: 'Hóa đơn phạt tiền',
+        repair: 'Hóa đơn sửa chữa',
+        other: 'Hóa đơn khác',
+    };
 
     return (
         <Modal show={show} onHide={onHide} size="lg" centered>
@@ -33,6 +41,10 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
                     </Col>
                     <Col>
                         <strong>Phòng:</strong> {for_room_id?.roomNumber}
+                    </Col>
+                    <Col>
+                        <strong>Loại hóa đơn:</strong>{' '}
+                        {INVOICE_TYPE_LABELS[invoice_type] || 'Không xác định'}
                     </Col>
                 </Row>
 
@@ -53,7 +65,6 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
                         </Badge>
                     </Col>
                 </Row>
-
                 <Row className="mb-3">
                     <Col>
                         <strong>Nội dung:</strong>
@@ -61,7 +72,7 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
                     </Col>
                 </Row>
 
-                <Row className="mb-3">
+                <Row className="mb-2">
                     <Col>
                         <strong>Ghi chú:</strong>
                         <div>{note?.text}</div>
