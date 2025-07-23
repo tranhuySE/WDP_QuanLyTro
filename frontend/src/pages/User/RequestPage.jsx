@@ -1,11 +1,12 @@
-import { message } from "antd";
+import { message, Space } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Button, Container } from "react-bootstrap";
 import dayjs from "dayjs"
 import { MaterialReactTable } from "material-react-table";
 import RequestAPI from "../../api/requestAPI";
-import { Plus } from "lucide-react";
-import ModalCreateRequest from "../../components/Request/ModalCreateRequest";
+import { Eye, Plus } from "lucide-react";
+import ModalCreateRequest, { REQUEST_TYPE } from "../../components/Request/ModalCreateRequest";
+import ModalViewReson from "../../components/Request/ModalViewReson";
 
 
 const RequestPage = () => {
@@ -13,6 +14,7 @@ const RequestPage = () => {
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(false)
   const [openModalCreateRequest, setOpenModalCreateRequest] = useState(false)
+  const [openModalViewReson, setOpenModalViewReson] = useState(false)
 
   const REQUEST_STATUS = [
     {
@@ -75,7 +77,14 @@ const RequestPage = () => {
       {
         accessorKey: "type",
         header: "Loại yêu cầu",
-        size: 80
+        size: 80,
+        Cell: ({ cell }) => (
+          <div>
+            {
+              REQUEST_TYPE.find(i => i.value === cell.getValue()).label
+            }
+          </div>
+        ),
       },
       {
         accessorKey: "createdAt",
@@ -103,6 +112,27 @@ const RequestPage = () => {
     []
   );
 
+  const actionColumn = useMemo(
+    () => ({
+      header: "Thao tác",
+      size: 70,
+      Cell: ({ row }) => (
+        <Space Space size="small">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setOpenModalViewReson(row?.original)
+            }}
+          >
+            <Eye size={16} />
+          </Button>
+        </Space >
+      ),
+    }),
+    []
+  );
+
   return (
     <Container fluid className="user-management-container" style={{ padding: 0 }}>
       <div className="main-card shadow rounded bg-white" style={{ margin: 0, padding: '1rem' }}>
@@ -116,7 +146,7 @@ const RequestPage = () => {
           </Button>
         </div>
         <MaterialReactTable
-          columns={columns}
+          columns={[...columns, actionColumn]}
           data={requests}
           enableColumnActions={false}
           enableColumnFilters={false}
@@ -140,6 +170,14 @@ const RequestPage = () => {
           open={openModalCreateRequest}
           onCancel={() => setOpenModalCreateRequest(false)}
           onOk={getListRequest}
+        />
+      }
+
+      {
+        !!openModalViewReson &&
+        <ModalViewReson
+          open={openModalViewReson}
+          onCancel={() => setOpenModalViewReson(false)}
         />
       }
 

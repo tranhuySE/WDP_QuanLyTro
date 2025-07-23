@@ -14,7 +14,7 @@ const ModalAssignee = ({ open, onCancel, onOk }) => {
       setStaffs(
         res?.data?.map(i => ({
           value: i?._id,
-          label: i?.username,
+          label: i?.fullname,
           data: i
         }))
       )
