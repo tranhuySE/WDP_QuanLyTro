@@ -102,7 +102,6 @@ const InvoiceModal = ({
                 onSubmit={(values) => {
                     values.create_by = user_Id;
                     const imagesToSend = [];
-
                     previewImages.forEach((preview, i) => {
                         const file = files[i];
                         if (typeof file === 'string') {
@@ -195,13 +194,13 @@ const InvoiceModal = ({
                                         size="lg"
                                         accept="image/*"
                                         multiple
-                                        onChange={(e) => handleImageChange(e, setFieldValue)}
+                                        onChange={(e) => handleImageChange(e)}
                                     />
                                     <div className="mt-1 d-flex flex-wrap gap-2">
                                         {previewImages.map((img, idx) => (
                                             <div key={idx} style={{ position: 'relative' }}>
                                                 <img
-                                                    src={img.url}
+                                                    src={img}
                                                     width={80}
                                                     height={80}
                                                     style={{

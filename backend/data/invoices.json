@@ -1,16 +1,10 @@
 [
     {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439071"
-        },
-        "create_by": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "for_room_id": {
-            "$oid": "507f191e810c19729de860e1"
-        },
+        "_id": { "$oid": "507f1f77bcf86cd799439071" },
+        "create_by": { "$oid": "507f191e810c19729de860ea" },
+        "for_room_id": { "$oid": "507f191e810c19729de860e1" },
         "content": "Monthly rent for July 2025",
-        "createdAt": "2025-06-20T10:00:00.000Z",
+        "createdAt": { "$date": "2025-06-20T10:00:00.000Z" },
         "invoice_type": "rent",
         "items": [
             {
@@ -31,30 +25,20 @@
         "total_amount": 5175000,
         "notify_status": "sent",
         "note": {
-            "img": [
-                {
-                    "url": "https://example.com/invoice1_receipt.pdf"
-                }
-            ],
+            "img": ["https://example.com/invoice1_receipt.pdf"],
             "text": "Please pay by June 30, 2025"
         },
         "payment_type": "e-banking",
         "payment_status": "pending",
         "paid_date": null,
-        "updatedAt": "2025-06-20T10:00:00.000Z"
+        "updatedAt": { "$date": "2025-06-20T10:00:00.000Z" }
     },
     {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439072"
-        },
-        "create_by": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "for_room_id": {
-            "$oid": "507f191e810c19729de860e2"
-        },
+        "_id": { "$oid": "507f1f77bcf86cd799439072" },
+        "create_by": { "$oid": "507f191e810c19729de860ea" },
+        "for_room_id": { "$oid": "507f191e810c19729de860e2" },
         "content": "Monthly rent for July 2025",
-        "createdAt": "2025-06-21T09:00:00.000Z",
+        "createdAt": { "$date": "2025-06-21T09:00:00.000Z" },
         "invoice_type": "rent",
         "items": [
             {
@@ -75,30 +59,20 @@
         "total_amount": 4700000,
         "notify_status": "sent",
         "note": {
-            "img": [
-                {
-                    "url": "https://example.com/invoice2_receipt.pdf"
-                }
-            ],
+            "img": ["https://example.com/invoice2_receipt.pdf"],
             "text": "Payment due by June 30, 2025"
         },
         "payment_type": "Cash",
         "payment_status": "paid",
-        "paid_date": "2025-06-22T00:00:00.000Z",
-        "updatedAt": "2025-06-21T09:00:00.000Z"
+        "paid_date": { "$date": "2025-06-22T00:00:00.000Z" },
+        "updatedAt": { "$date": "2025-06-21T09:00:00.000Z" }
     },
     {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439073"
-        },
-        "create_by": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "for_room_id": {
-            "$oid": "507f191e810c19729de860e3"
-        },
+        "_id": { "$oid": "507f1f77bcf86cd799439073" },
+        "create_by": { "$oid": "507f191e810c19729de860ea" },
+        "for_room_id": { "$oid": "507f191e810c19729de860e3" },
         "content": "Monthly rent for August 2025",
-        "createdAt": "2025-06-22T08:00:00.000Z",
+        "createdAt": { "$date": "2025-06-22T08:00:00.000Z" },
         "invoice_type": "rent",
         "items": [
             {
@@ -125,20 +99,14 @@
         "payment_type": "e-banking",
         "payment_status": "pending",
         "paid_date": null,
-        "updatedAt": "2025-06-22T08:00:00.000Z"
+        "updatedAt": { "$date": "2025-06-22T08:00:00.000Z" }
     },
     {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439074"
-        },
-        "create_by": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "for_room_id": {
-            "$oid": "507f191e810c19729de860e1"
-        },
+        "_id": { "$oid": "507f1f77bcf86cd799439074" },
+        "create_by": { "$oid": "507f191e810c19729de860ea" },
+        "for_room_id": { "$oid": "507f191e810c19729de860e1" },
         "content": "Cleaning service fee",
-        "createdAt": "2025-06-20T11:00:00.000Z",
+        "createdAt": { "$date": "2025-06-20T11:00:00.000Z" },
         "invoice_type": "service",
         "items": [
             {
@@ -152,30 +120,20 @@
         "total_amount": 150000,
         "notify_status": "sent",
         "note": {
-            "img": [
-                {
-                    "url": "https://example.com/invoice4_receipt.pdf"
-                }
-            ],
+            "img": ["https://example.com/invoice4_receipt.pdf"],
             "text": "Payment due by June 25, 2025"
         },
         "payment_type": "e-banking",
         "payment_status": "paid",
-        "paid_date": "2025-06-21T00:00:00.000Z",
-        "updatedAt": "2025-06-20T11:00:00.000Z"
+        "paid_date": { "$date": "2025-06-21T00:00:00.000Z" },
+        "updatedAt": { "$date": "2025-06-20T11:00:00.000Z" }
     },
     {
-        "_id": {
-            "$oid": "507f1f77bcf86cd799439075"
-        },
-        "create_by": {
-            "$oid": "507f191e810c19729de860ea"
-        },
-        "for_room_id": {
-            "$oid": "507f191e810c19729de860e2"
-        },
+        "_id": { "$oid": "507f1f77bcf86cd799439075" },
+        "create_by": { "$oid": "507f191e810c19729de860ea" },
+        "for_room_id": { "$oid": "507f191e810c19729de860e2" },
         "content": "Monthly rent for July 2025",
-        "createdAt": "2025-06-21T10:00:00.000Z",
+        "createdAt": { "$date": "2025-06-21T10:00:00.000Z" },
         "invoice_type": "rent",
         "items": [
             {
@@ -202,6 +160,6 @@
         "payment_type": "e-banking",
         "payment_status": "pending",
         "paid_date": null,
-        "updatedAt": "2025-06-21T10:00:00.000Z"
+        "updatedAt": { "$date": "2025-06-21T10:00:00.000Z" }
     }
 ]
