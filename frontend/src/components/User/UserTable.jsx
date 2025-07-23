@@ -3,7 +3,8 @@ import { MaterialReactTable } from 'material-react-table';
 import { useMemo } from 'react';
 import { Badge, Button } from 'react-bootstrap';
 
-const UserTable = ({ users, loading, onViewDetail, onEdit, onDelete, onVerify }) => {
+
+const UserTable = ({ users, loading, onViewDetail, onEdit, onDelete, onVerify, currentUser }) => {
     const columns = useMemo(
         () => [
             {
@@ -74,6 +75,7 @@ const UserTable = ({ users, loading, onViewDetail, onEdit, onDelete, onVerify })
                                 size="sm"
                                 className="ms-2"
                                 onClick={() => onVerify(row.original)}
+                                disabled={currentUser.role === 'staff'}
                             >
                                 <CheckCircle size={14} />
                             </Button>

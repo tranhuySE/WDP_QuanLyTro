@@ -2,6 +2,7 @@ import {
   FileText,
   Home,
   LifeBuoy,
+  Building2,
   Users
 } from 'lucide-react';
 import { useState } from "react";
@@ -22,6 +23,7 @@ const StaffLayout = () => {
   const navItems = [
     { path: '/staff/homepage', label: 'Trang chủ', icon: Home },
     { path: '/staff/users', label: 'Đăng ký thông tin', icon: Users },
+    { path: '/staff/rooms', label: 'Quản lý phòng', icon: Building2 },
     { path: '/staff/invoices', label: 'Quản lý hóa đơn', icon: FileText },
     { path: '/staff/requests', label: 'Yêu cầu', icon: LifeBuoy }
   ];

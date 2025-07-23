@@ -165,7 +165,7 @@ const RequestManagement = () => {
           role === 'admin'
             ? <div>
               {
-                REQUEST_STATUS.find(i => i.value === cell.getValue()).label
+                REQUEST_STATUS.find(i => i.value === cell.getValue())?.label || "Không xác định"
               }
             </div>
             :
@@ -176,12 +176,19 @@ const RequestManagement = () => {
               {
                 REQUEST_STATUS.map(i =>
                   i.isView &&
-                  <Select.Option disabled={i.isDisabled} key={i.value} value={i.value}>{i.label}</Select.Option>
+                  <Select.Option
+                    disabled={i.isDisabled}
+                    key={i.value}
+                    value={i.value}
+                  >
+                    {i.label}
+                  </Select.Option>
                 )
               }
             </Select>
         ),
-      },
+      }
+
     ],
     []
   );
