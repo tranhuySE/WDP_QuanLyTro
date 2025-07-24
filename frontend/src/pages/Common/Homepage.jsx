@@ -5,7 +5,7 @@ import {
     ChevronUp,
     ClipboardList,
     Info,
-    Pin
+    Pin,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button, Card, Container, ListGroup } from 'react-bootstrap';
@@ -24,10 +24,10 @@ const HomePage = () => {
             try {
                 const [postsResponse, tagsResponse] = await Promise.all([
                     getAllPosts(),
-                    getAllTags()
+                    getAllTags(),
                 ]);
 
-                const transformedData = postsResponse.data.map(post => ({
+                const transformedData = postsResponse.data.map((post) => ({
                     id: post._id,
                     title: post.title,
                     content: post.content,
@@ -35,7 +35,7 @@ const HomePage = () => {
                     date: new Date(post.createdAt).toLocaleDateString('vi-VN'),
                     author: post.author?.fullname || 'Ban quản lý',
                     pinned: post.pinned,
-                    createdAt: post.createdAt
+                    createdAt: post.createdAt,
                 }));
 
                 setAnnouncements(transformedData);
@@ -107,8 +107,6 @@ const HomePage = () => {
         }
     };
 
-
-
     // sắp xếp thông báo
     const sortedAnnouncements = [...announcements].sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
@@ -139,7 +137,7 @@ const HomePage = () => {
     }
 
     return (
-        <Container className="py-4">
+        <Container fluid className="p-1">
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0">
@@ -152,14 +150,18 @@ const HomePage = () => {
             {error && (
                 <div className="alert alert-danger mb-4">
                     {error}
-                    <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setError(null)}
+                    ></button>
                 </div>
             )}
 
             {/* Announcements List */}
             <ListGroup>
                 {sortedAnnouncements.length > 0 ? (
-                    sortedAnnouncements.map(announcement => {
+                    sortedAnnouncements.map((announcement) => {
                         const isExpanded = expandedAnnouncements.has(announcement.id);
                         const isLong = isContentLong(announcement.content);
 
@@ -169,13 +171,15 @@ const HomePage = () => {
                                 className="mb-3 rounded position-relative p-0 overflow-visible"
                                 style={{
                                     border: getBorderColor(announcement),
-                                    boxShadow: announcement.pinned ? '0 0.5rem 1rem rgba(255, 193, 7, 0.15)' : 'none',
-                                    zIndex: 0
+                                    boxShadow: announcement.pinned
+                                        ? '0 0.5rem 1rem rgba(255, 193, 7, 0.15)'
+                                        : 'none',
+                                    zIndex: 0,
                                 }}
                             >
-
                                 {announcement.pinned && (
-                                    <div className="position-absolute top-0 start-0 bg-warning rounded-circle p-2 shadow"
+                                    <div
+                                        className="position-absolute top-0 start-0 bg-warning rounded-circle p-2 shadow"
                                         style={{
                                             zIndex: 1,
                                             transform: 'translate(-30%, -30%)',
@@ -183,28 +187,37 @@ const HomePage = () => {
                                         onClick={(e) => {
                                             e.stopPropagation();
                                         }}
-                                        title="Bỏ ghim">
+                                        title="Bỏ ghim"
+                                    >
                                         <Pin size={20} className="text-white" fill="white" />
                                     </div>
                                 )}
 
                                 <Card className="border-0">
-                                    <Card.Body className={announcement.pinned ? "bg-warning bg-opacity-10" : ""}>
-                                        <div className="d-flex align-items-start" style={{ marginLeft: '10px' }}>
+                                    <Card.Body
+                                        className={
+                                            announcement.pinned ? 'bg-warning bg-opacity-10' : ''
+                                        }
+                                    >
+                                        <div
+                                            className="d-flex align-items-start"
+                                            style={{ marginLeft: '10px' }}
+                                        >
                                             {getIconByTag(announcement.tag)}
                                             <div className="flex-grow-1">
                                                 <div className="d-flex justify-content-between align-items-start">
                                                     <h5 className="mb-1">{announcement.title}</h5>
-
                                                 </div>
                                                 <small className="text-muted d-block mb-2">
                                                     {announcement.date} • {announcement.tag}
                                                 </small>
-                                                <div className="mb-2" style={{ whiteSpace: 'pre-line' }}>
+                                                <div
+                                                    className="mb-2"
+                                                    style={{ whiteSpace: 'pre-line' }}
+                                                >
                                                     {isLong && !isExpanded
                                                         ? getTruncatedContent(announcement.content)
-                                                        : announcement.content
-                                                    }
+                                                        : announcement.content}
                                                 </div>
                                                 <div>
                                                     {isLong && (
@@ -212,30 +225,40 @@ const HomePage = () => {
                                                             variant="link"
                                                             size="sm"
                                                             className="p-0 mb-2 text-primary"
-                                                            onClick={() => toggleExpanded(announcement.id)}
+                                                            onClick={() =>
+                                                                toggleExpanded(announcement.id)
+                                                            }
                                                             style={{ textDecoration: 'none' }}
                                                         >
                                                             {isExpanded ? (
                                                                 <>
-                                                                    <ChevronUp size={16} className="me-1" />
+                                                                    <ChevronUp
+                                                                        size={16}
+                                                                        className="me-1"
+                                                                    />
                                                                     Thu gọn
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <ChevronDown size={16} className="me-1" />
+                                                                    <ChevronDown
+                                                                        size={16}
+                                                                        className="me-1"
+                                                                    />
                                                                     Xem thêm
                                                                 </>
                                                             )}
                                                         </Button>
                                                     )}
                                                 </div>
-                                                <small className="text-muted">Đăng bởi: {announcement.author} - Quản trị viên</small>
+                                                <small className="text-muted">
+                                                    Đăng bởi: {announcement.author} - Quản trị viên
+                                                </small>
                                             </div>
                                         </div>
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>
-                        )
+                        );
                     })
                 ) : (
                     <div className="text-center py-4">
@@ -243,8 +266,6 @@ const HomePage = () => {
                     </div>
                 )}
             </ListGroup>
-
-
         </Container>
     );
 };

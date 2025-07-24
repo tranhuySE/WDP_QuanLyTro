@@ -31,6 +31,31 @@ const ContractDetailModal = ({ show, handleClose, contract }) => {
         terminationReason,
     } = contract;
 
+    const getVariant = (status) => {
+        switch (status) {
+            case 'active':
+                return 'success';
+            case 'draft':
+                return 'warning';
+            case 'terminated':
+                return 'danger';
+            default:
+                return 'secondary';
+        }
+    };
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'active':
+                return 'Hợp đồng';
+            case 'draft':
+                return 'Bản nháp';
+            case 'terminated':
+                return 'Đã hủy';
+            default:
+                return status;
+        }
+    };
+
     return (
         <Modal show={show} onHide={handleClose} size="lg" centered scrollable>
             <Modal.Header closeButton>
@@ -73,9 +98,7 @@ const ContractDetailModal = ({ show, handleClose, contract }) => {
                             <ListGroup.Item>Giá thuê: {formatCurrency(price)}</ListGroup.Item>
                             <ListGroup.Item>
                                 Trạng thái:{' '}
-                                <Badge bg={status === 'active' ? 'success' : 'secondary'}>
-                                    {status}
-                                </Badge>
+                                <Badge bg={getVariant(status)}>{getStatusText(status)}</Badge>
                             </ListGroup.Item>
                             {terminationReason && (
                                 <ListGroup.Item>

@@ -4,11 +4,13 @@ const {
     createContract,
     updateContractStatus,
     getContractUserId,
+    downloadContractPdf,
 } = require('../controllers/contract.controller');
 const upload = require('../middlewares/upload');
 
 const contractRouter = express.Router();
 contractRouter.get('/', getContract);
+contractRouter.get('/:id/pdf', downloadContractPdf);
 contractRouter.get('/detail/:userId', getContractUserId);
 contractRouter.post('/create', upload.array('file', 5), createContract);
 contractRouter.put('/update/:id', updateContractStatus);
