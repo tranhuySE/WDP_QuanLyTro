@@ -1,15 +1,18 @@
 // src/App.js
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider } from "./contexts/AuthContext";
-import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage";
-import LoginPage from "./pages/Auth/LoginPage";
-import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
-import AdminRoutes from "./routes/AdminRoutes";
-import ProtectedRoute from "./routes/ProtectedRoute";
-import StaffRoutes from "./routes/StaffRoutes";
-import TenantRoutes from "./routes/TenantRoutes";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './contexts/AuthContext';
+import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+import LoginPage from './pages/Auth/LoginPage';
+import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
+import AdminRoutes from './routes/AdminRoutes';
+import ProtectedRoute from './routes/ProtectedRoute';
+import StaffRoutes from './routes/StaffRoutes';
+import TenantRoutes from './routes/TenantRoutes';
+import NotFoundPage from './pages/Error/ErrorPage';
+import CancelPayment from './pages/Error/CancelPayment';
+import PaymentSuccess from './pages/Error/PaymentSuccess';
 
 function App() {
     return (
@@ -21,6 +24,8 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                    <Route path="payment-cancel" element={<CancelPayment />} />
+                    <Route path="payment-success" element={<PaymentSuccess />} />
 
                     {/* Admin routes */}
                     <Route
@@ -77,7 +82,7 @@ function App() {
                     </Route>
 
                     {/* Fallback route */}
-                    <Route path="*" element={<LoginPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </BrowserRouter>
 
@@ -97,4 +102,4 @@ function App() {
     );
 }
 
-    export default App;
+export default App;

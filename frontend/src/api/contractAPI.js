@@ -19,3 +19,7 @@ export const updateStatusContract = (id, formValues) => {
         terminatedAt: formValues.status === 'terminated' ? new Date() : null,
     });
 };
+
+export const getContractByUserIdFE = (id) => {
+    return axiosInstance.get(`/contracts/detail/${id}`);
+};

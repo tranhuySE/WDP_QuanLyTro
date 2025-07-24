@@ -7,6 +7,8 @@ import {
     CalendarCheck,
     GeoAlt,
 } from 'react-bootstrap-icons';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 const formatCurrency = (value) => value.toLocaleString('vi-VN') + ' ₫';
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('vi-VN');
@@ -139,11 +141,22 @@ const ContractDetailModal = ({ show, handleClose, contract }) => {
                             Tệp hợp đồng
                         </h6>
                         <ListGroup className="mb-3">
-                            {file.map((f) => (
-                                <ListGroup.Item key={f._id}>
-                                    <a href={f.url} target="_blank" rel="noopener noreferrer">
-                                        {f.name}
-                                    </a>
+                            {file.map((f, index) => (
+                                <ListGroup.Item key={f._id || index}>
+                                    <Zoom>
+                                        <img
+                                            src={f}
+                                            alt={`img-${index}`}
+                                            style={{
+                                                width: 100,
+                                                height: 100,
+                                                objectFit: 'cover',
+                                                borderRadius: 8,
+                                                border: '1px solid #ccc',
+                                                cursor: 'zoom-in',
+                                            }}
+                                        />
+                                    </Zoom>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
