@@ -13,6 +13,7 @@ import UpdateContractStatusModal from './UpdateContractStatusModal';
 import { Plus } from 'react-bootstrap-icons';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
+import axios from 'axios';
 
 const ContractList = () => {
     const [contract, setContract] = useState([]);
@@ -159,6 +160,36 @@ const ContractList = () => {
         }
     };
 
+    const handleDownloadPdf = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:9999/contracts/${id}/pdf`, {
+                responseType: 'blob',
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = `hop-dong-${id}.pdf`;
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="(.+)"/);
+                if (match && match[1]) {
+                    filename = match[1];
+                }
+            }
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            toast.error('Không thể tải file hợp đồng.');
+        }
+    };
+
     const columns = [
         {
             header: 'Người Thuê',
@@ -241,7 +272,19 @@ const ContractList = () => {
                             return 'secondary';
                     }
                 };
-                return <Badge bg={getVariant(status)}>{status.toUpperCase()}</Badge>;
+                const getStatusText = (status) => {
+                    switch (status) {
+                        case 'active':
+                            return 'Hợp đồng';
+                        case 'draft':
+                            return 'Bản nháp';
+                        case 'terminated':
+                            return 'Đã hủy';
+                        default:
+                            return status;
+                    }
+                };
+                return <Badge bg={getVariant(status)}>{getStatusText(status).toUpperCase()}</Badge>;
             },
             size: 40,
         },
@@ -290,6 +333,12 @@ const ContractList = () => {
                         </Button>
                         <Button variant="warning" onClick={handleEdit} className="mx-1">
                             <FaEdit />
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={() => handleDownloadPdf(row.original._id)}
+                        >
+                            <FaFilePdf />
                         </Button>
                     </ButtonGroup>
                 );

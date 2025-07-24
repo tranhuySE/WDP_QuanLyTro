@@ -80,7 +80,7 @@ const Invoice = () => {
     }
 
     return (
-        <Container className="py-4">
+        <Container fluid className="py-4">
             <h3 className="text-center mb-4">Hóa đơn của bạn</h3>
             <Accordion>
                 {invoices.map((inv, idx) => (

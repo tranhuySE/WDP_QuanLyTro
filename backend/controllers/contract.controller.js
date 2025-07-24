@@ -3,6 +3,8 @@ const Room = require('../models/Room');
 const User = require('../models/User');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const PDFDocument = require('pdfkit');
+const path = require('path');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -161,4 +163,74 @@ const getContractUserId = async (req, res) => {
     }
 };
 
-module.exports = { getContract, createContract, updateContractStatus, getContractUserId };
+const downloadContractPdf = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const contract = await Contract.findById(id)
+            .populate('roomId')
+            .populate('tenant')
+            .populate('house_service');
+
+        if (!contract) {
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng' });
+        }
+
+        const doc = new PDFDocument({ size: 'A4', margin: 40 });
+
+        doc.registerFont('Roboto', path.join(__dirname, '../fonts/Roboto-Regular.ttf'));
+
+        let filename = `hop-dong-${contract._id}.pdf`;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        doc.pipe(res);
+
+        doc.font('Roboto')
+            .fontSize(18)
+            .text('HỢP ĐỒNG THUÊ PHÒNG', { align: 'center' })
+            .moveDown(1.5);
+
+        doc.fontSize(12);
+        doc.text(`Mã hợp đồng: ${contract._id}`);
+        doc.text(`Người thuê: ${contract.tenant.fullname}`);
+        doc.text(`Số điện thoại: ${contract.tenant.phoneNumber}`);
+        doc.text(`Phòng: ${contract.roomId.roomNumber} - Tầng ${contract.roomId.floor}`);
+        doc.text(`Địa chỉ: ${contract.house_address}`);
+        doc.text(`Giá thuê: ${contract.price.toLocaleString()} VNĐ`);
+        doc.text(
+            `Thời hạn: từ ${new Date(contract.startDate).toLocaleDateString()} đến ${new Date(
+                contract.endDate,
+            ).toLocaleDateString()}`,
+        );
+        doc.text(
+            `Tiền đặt cọc: ${contract.deposit.amount.toLocaleString()} VNĐ (${
+                contract.deposit.status
+            })`,
+        );
+
+        doc.moveDown().text('Các dịch vụ sử dụng:', { underline: true });
+        contract.house_service.forEach((s, i) => {
+            doc.text(`  • ${s.name}: ${s.price.toLocaleString()} VNĐ / ${s.unit}`);
+        });
+
+        doc.moveDown().text(`Ghi chú: ${contract.terms || 'Không có'}`);
+
+        doc.moveDown().text(`Trạng thái: ${contract.status}`);
+        if (contract.status === 'terminated') {
+            doc.text(`Lý do chấm dứt: ${contract.terminationReason || 'Không ghi rõ'}`);
+            doc.text(`Ngày chấm dứt: ${new Date(contract.terminatedAt).toLocaleDateString()}`);
+        }
+
+        doc.end();
+    } catch (error) {
+        console.error('Lỗi tạo PDF:', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
+module.exports = {
+    getContract,
+    createContract,
+    updateContractStatus,
+    getContractUserId,
+    downloadContractPdf,
+};

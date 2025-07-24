@@ -11,7 +11,7 @@ import {
     Pin,
     Plus,
     Trash2,
-    X
+    X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button, Card, Container, Dropdown, Form, ListGroup, Modal } from 'react-bootstrap';
@@ -34,12 +34,12 @@ const AdminHomePage = () => {
     const [newAnnouncement, setNewAnnouncement] = useState({
         title: '',
         content: '',
-        tag: 'Thông báo'
+        tag: 'Thông báo',
     });
 
     useEffect(() => {
-        const role = localStorage.getItem("role");
-        if (role === "admin") {
+        const role = localStorage.getItem('role');
+        if (role === 'admin') {
             setCurrentUser({ role: 'Quản trị viên' });
         }
 
@@ -47,10 +47,10 @@ const AdminHomePage = () => {
             try {
                 const [postsResponse, tagsResponse] = await Promise.all([
                     getAllPosts(),
-                    getAllTags()
+                    getAllTags(),
                 ]);
 
-                const transformedData = postsResponse.data.map(post => ({
+                const transformedData = postsResponse.data.map((post) => ({
                     id: post._id,
                     title: post.title,
                     content: post.content,
@@ -58,7 +58,7 @@ const AdminHomePage = () => {
                     date: new Date(post.createdAt).toLocaleDateString('vi-VN'),
                     author: post.author?.fullname || 'Ban quản lý',
                     pinned: post.pinned,
-                    createdAt: post.createdAt
+                    createdAt: post.createdAt,
                 }));
 
                 setAnnouncements(transformedData);
@@ -131,19 +131,18 @@ const AdminHomePage = () => {
         }
     };
 
-
     // Handle input change for new/edit announcement
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (currentAnnouncement) {
             setCurrentAnnouncement({
                 ...currentAnnouncement,
-                [name]: value
+                [name]: value,
             });
         } else {
             setNewAnnouncement({
                 ...newAnnouncement,
-                [name]: value
+                [name]: value,
             });
         }
     };
@@ -158,7 +157,7 @@ const AdminHomePage = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
-            console.log(user)
+            console.log(user);
 
             if (!user || !user._id) {
                 throw new Error('Không tìm thấy thông tin người dùng');
@@ -169,7 +168,7 @@ const AdminHomePage = () => {
                 content: newAnnouncement.content,
                 tag: newAnnouncement.tag,
                 pinned: false,
-                author: user._id
+                author: user._id,
             });
 
             const newPost = {
@@ -180,14 +179,14 @@ const AdminHomePage = () => {
                 date: new Date(response.data.createdAt).toLocaleDateString('vi-VN'),
                 author: user.fullname || 'Ban quản lý', // Sử dụng tên người dùng thực tế
                 pinned: response.data.pinned,
-                createdAt: response.data.createdAt
+                createdAt: response.data.createdAt,
             };
 
             setAnnouncements([newPost, ...announcements]);
             setNewAnnouncement({
                 title: '',
                 content: '',
-                tag: 'Thông báo'
+                tag: 'Thông báo',
             });
             setShowModal(false);
             setError(null);
@@ -216,15 +215,19 @@ const AdminHomePage = () => {
             await updatePost(currentAnnouncement.id, {
                 title: currentAnnouncement.title,
                 content: currentAnnouncement.content,
-                tag: currentAnnouncement.tag
+                tag: currentAnnouncement.tag,
             });
 
-            setAnnouncements(announcements.map(a =>
-                a.id === currentAnnouncement.id ? {
-                    ...currentAnnouncement,
-                    date: new Date().toLocaleDateString('vi-VN')
-                } : a
-            ));
+            setAnnouncements(
+                announcements.map((a) =>
+                    a.id === currentAnnouncement.id
+                        ? {
+                              ...currentAnnouncement,
+                              date: new Date().toLocaleDateString('vi-VN'),
+                          }
+                        : a,
+                ),
+            );
             setShowEditModal(false);
             setCurrentAnnouncement(null);
             setError(null);
@@ -243,7 +246,7 @@ const AdminHomePage = () => {
     const handleConfirmDelete = async () => {
         try {
             await deletePost(currentAnnouncement.id);
-            setAnnouncements(announcements.filter(a => a.id !== currentAnnouncement.id));
+            setAnnouncements(announcements.filter((a) => a.id !== currentAnnouncement.id));
             setShowDeleteModal(false);
             setCurrentAnnouncement(null);
             setError(null);
@@ -256,16 +259,16 @@ const AdminHomePage = () => {
     // ghim thông báo
     const togglePin = async (id) => {
         try {
-            const announcement = announcements.find(a => a.id === id);
+            const announcement = announcements.find((a) => a.id === id);
             const updatedPinStatus = !announcement.pinned;
 
             await updatePost(id, {
-                pinned: updatedPinStatus
+                pinned: updatedPinStatus,
             });
 
-            setAnnouncements(announcements.map(a =>
-                a.id === id ? { ...a, pinned: updatedPinStatus } : a
-            ));
+            setAnnouncements(
+                announcements.map((a) => (a.id === id ? { ...a, pinned: updatedPinStatus } : a)),
+            );
         } catch (err) {
             console.error('Error toggling pin:', err);
             setError('Thay đổi trạng thái ghim thất bại. Vui lòng thử lại.');
@@ -281,7 +284,7 @@ const AdminHomePage = () => {
 
     if (loading) {
         return (
-            <Container className="py-4 text-center">
+            <Container fluid className="py-4 text-center">
                 <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
@@ -292,7 +295,7 @@ const AdminHomePage = () => {
 
     if (error) {
         return (
-            <Container className="py-4 text-center text-danger">
+            <Container fluid className="py-4 text-center text-danger">
                 <p>{error}</p>
                 <Button variant="primary" onClick={() => window.location.reload()}>
                     Thử lại
@@ -302,7 +305,7 @@ const AdminHomePage = () => {
     }
 
     return (
-        <Container className="py-4">
+        <Container fluid className="p-1">
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0">
@@ -319,14 +322,18 @@ const AdminHomePage = () => {
             {error && (
                 <div className="alert alert-danger mb-4">
                     {error}
-                    <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setError(null)}
+                    ></button>
                 </div>
             )}
 
             {/* Announcements List */}
             <ListGroup>
                 {sortedAnnouncements.length > 0 ? (
-                    sortedAnnouncements.map(announcement => {
+                    sortedAnnouncements.map((announcement) => {
                         const isExpanded = expandedAnnouncements.has(announcement.id);
                         const isLong = isContentLong(announcement.content);
 
@@ -336,13 +343,16 @@ const AdminHomePage = () => {
                                 className="mb-3 rounded position-relative p-0 overflow-visible"
                                 style={{
                                     border: getBorderColor(announcement),
-                                    boxShadow: announcement.pinned ? '0 0.5rem 1rem rgba(255, 193, 7, 0.15)' : 'none',
-                                    zIndex: 0
+                                    boxShadow: announcement.pinned
+                                        ? '0 0.5rem 1rem rgba(255, 193, 7, 0.15)'
+                                        : 'none',
+                                    zIndex: 0,
                                 }}
                             >
                                 {/* Pin icon in top-left corner */}
                                 {announcement.pinned && (
-                                    <div className="position-absolute top-0 start-0 bg-warning rounded-circle p-2 shadow"
+                                    <div
+                                        className="position-absolute top-0 start-0 bg-warning rounded-circle p-2 shadow"
                                         style={{
                                             zIndex: 1,
                                             transform: 'translate(-30%, -30%)',
@@ -351,35 +361,64 @@ const AdminHomePage = () => {
                                             e.stopPropagation();
                                             togglePin(announcement.id);
                                         }}
-                                        title="Bỏ ghim">
+                                        title="Bỏ ghim"
+                                    >
                                         <Pin size={20} className="text-white" fill="white" />
                                     </div>
                                 )}
 
                                 <Card className="border-0">
-                                    <Card.Body className={announcement.pinned ? "bg-warning bg-opacity-10" : ""}>
-                                        <div className="d-flex align-items-start" style={{ marginLeft: '10px' }}>
+                                    <Card.Body
+                                        className={
+                                            announcement.pinned ? 'bg-warning bg-opacity-10' : ''
+                                        }
+                                    >
+                                        <div
+                                            className="d-flex align-items-start"
+                                            style={{ marginLeft: '10px' }}
+                                        >
                                             {getIconByTag(announcement.tag)}
                                             <div className="flex-grow-1">
                                                 <div className="d-flex justify-content-between align-items-start">
                                                     <h5 className="mb-1">{announcement.title}</h5>
                                                     <Dropdown>
-                                                        <Dropdown.Toggle variant="light" size="sm" className="p-1">
+                                                        <Dropdown.Toggle
+                                                            variant="light"
+                                                            size="sm"
+                                                            className="p-1"
+                                                        >
                                                             <MoreVertical size={18} />
                                                         </Dropdown.Toggle>
                                                         <Dropdown.Menu>
-                                                            <Dropdown.Item onClick={() => handleEdit(announcement)}>
-                                                                <Edit size={16} className="me-2" /> Sửa
-                                                            </Dropdown.Item>
-                                                            <Dropdown.Item onClick={() => togglePin(announcement.id)}>
-                                                                <Pin size={16} className="me-2" />
-                                                                {announcement.pinned ? 'Bỏ ghim' : 'Ghim'}
+                                                            <Dropdown.Item
+                                                                onClick={() =>
+                                                                    handleEdit(announcement)
+                                                                }
+                                                            >
+                                                                <Edit size={16} className="me-2" />{' '}
+                                                                Sửa
                                                             </Dropdown.Item>
                                                             <Dropdown.Item
-                                                                onClick={() => handleDeleteClick(announcement)}
+                                                                onClick={() =>
+                                                                    togglePin(announcement.id)
+                                                                }
+                                                            >
+                                                                <Pin size={16} className="me-2" />
+                                                                {announcement.pinned
+                                                                    ? 'Bỏ ghim'
+                                                                    : 'Ghim'}
+                                                            </Dropdown.Item>
+                                                            <Dropdown.Item
+                                                                onClick={() =>
+                                                                    handleDeleteClick(announcement)
+                                                                }
                                                                 className="text-danger"
                                                             >
-                                                                <Trash2 size={16} className="me-2" /> Xóa
+                                                                <Trash2
+                                                                    size={16}
+                                                                    className="me-2"
+                                                                />{' '}
+                                                                Xóa
                                                             </Dropdown.Item>
                                                         </Dropdown.Menu>
                                                     </Dropdown>
@@ -387,11 +426,13 @@ const AdminHomePage = () => {
                                                 <small className="text-muted d-block mb-2">
                                                     {announcement.date} • {announcement.tag}
                                                 </small>
-                                                <div className="mb-2" style={{ whiteSpace: 'pre-line' }}>
+                                                <div
+                                                    className="mb-2"
+                                                    style={{ whiteSpace: 'pre-line' }}
+                                                >
                                                     {isLong && !isExpanded
                                                         ? getTruncatedContent(announcement.content)
-                                                        : announcement.content
-                                                    }
+                                                        : announcement.content}
                                                 </div>
                                                 <div>
                                                     {/* Show/Hide button for long content */}
@@ -400,24 +441,35 @@ const AdminHomePage = () => {
                                                             variant="link"
                                                             size="sm"
                                                             className="p-0 mb-2 text-primary"
-                                                            onClick={() => toggleExpanded(announcement.id)}
+                                                            onClick={() =>
+                                                                toggleExpanded(announcement.id)
+                                                            }
                                                             style={{ textDecoration: 'none' }}
                                                         >
                                                             {isExpanded ? (
                                                                 <>
-                                                                    <ChevronUp size={16} className="me-1" />
+                                                                    <ChevronUp
+                                                                        size={16}
+                                                                        className="me-1"
+                                                                    />
                                                                     Thu gọn
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <ChevronDown size={16} className="me-1" />
+                                                                    <ChevronDown
+                                                                        size={16}
+                                                                        className="me-1"
+                                                                    />
                                                                     Xem thêm
                                                                 </>
                                                             )}
                                                         </Button>
                                                     )}
                                                 </div>
-                                                <small className="text-muted">Đăng bởi: {announcement.author} - {currentUser.role}</small>
+                                                <small className="text-muted">
+                                                    Đăng bởi: {announcement.author} -{' '}
+                                                    {currentUser.role}
+                                                </small>
                                             </div>
                                         </div>
                                     </Card.Body>
@@ -476,7 +528,9 @@ const AdminHomePage = () => {
                                 required
                             >
                                 {tags.map((tag, index) => (
-                                    <option key={index} value={tag}>{tag}</option>
+                                    <option key={index} value={tag}>
+                                        {tag}
+                                    </option>
                                 ))}
                             </Form.Select>
                         </Form.Group>
@@ -536,7 +590,9 @@ const AdminHomePage = () => {
                                     required
                                 >
                                     {tags.map((tag, index) => (
-                                        <option key={index} value={tag}>{tag}</option>
+                                        <option key={index} value={tag}>
+                                            {tag}
+                                        </option>
                                     ))}
                                 </Form.Select>
                             </Form.Group>
