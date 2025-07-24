@@ -36,14 +36,6 @@ export const createPayment = (invoiceId, userId) => {
     return axiosInstance.post('/invoices/create-payment', { invoiceId: invoiceId, userId: userId });
 };
 
-export const receivePayOSWebhook = (data) => {
-    return axiosInstance.post('/invoices/payos-webhook', data, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-};
-
-export const checkPaymentStatus = (invoiceId, userId) => {
+export const updateInvoiceStatus = (invoiceId, userId) => {
     return axiosInstance.get(`/invoices/${invoiceId}/${userId}/payment-status`);
 };

@@ -6,17 +6,17 @@ const {
     updateInvoice,
     getInvoicesByUserId,
     createPayment,
-    receivePayOSWebhook,
-    checkPaymentStatus,
+    getElectricWaterStats,
+    updatePaymentStatus,
 } = require('../controllers/invoice.controller');
 const invoiceRouter = express.Router();
 const upload = require('../middlewares/upload');
 
+invoiceRouter.get('/electric-water', getElectricWaterStats);
 invoiceRouter.get('/stats', getDashboardStats);
 invoiceRouter.get('/user/:id', getInvoicesByUserId);
 invoiceRouter.post('/create-payment', createPayment);
-invoiceRouter.post('/payos-webhook', express.json(), receivePayOSWebhook);
-invoiceRouter.get('/:invoiceId/:userId/payment-status', checkPaymentStatus);
+invoiceRouter.get('/:invoiceId/:userId/payment-status', updatePaymentStatus);
 invoiceRouter.get('/', getInvoices);
 invoiceRouter.post('/', upload.array('img', 5), createInvoice);
 invoiceRouter.put('/:id', upload.array('img', 5), updateInvoice);

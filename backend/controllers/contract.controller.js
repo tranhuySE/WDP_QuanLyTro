@@ -150,4 +150,18 @@ const updateContractStatus = async (req, res) => {
     }
 };
 
-module.exports = { getContract, createContract, updateContractStatus };
+const getContractUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const data = await Contract.findOne({ tenant: userId })
+            .populate('roomId')
+            .populate('tenant')
+            .populate('house_service');
+
+        return res.status(200).json(data);
+    } catch (error) {
+        return res.status(500).json({ message: 'Loi server!' });
+    }
+};
+
+module.exports = { getContract, createContract, updateContractStatus, getContractUserId };

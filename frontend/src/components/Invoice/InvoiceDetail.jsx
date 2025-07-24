@@ -1,5 +1,6 @@
 import { Modal, Row, Col, Table, Badge } from 'react-bootstrap';
-import { FaFilePdf } from 'react-icons/fa';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 const formatCurrency = (value) => {
     return value?.toLocaleString('vi-VN') + ' ₫';
@@ -79,16 +80,19 @@ const InvoiceDetail = ({ show, onHide, invoice }) => {
                         {note?.img?.length > 0 && (
                             <div className="mt-2 d-flex flex-wrap gap-2">
                                 {note.img.map((img, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={img}
-                                        alt={`Note ${idx + 1}`}
-                                        style={{
-                                            width: '100px',
-                                            height: '100px',
-                                            objectFit: 'cover',
-                                        }}
-                                    />
+                                    <Zoom>
+                                        <img
+                                            src={img}
+                                            alt={`room-img-${idx}`}
+                                            style={{
+                                                width: 50,
+                                                height: 50,
+                                                objectFit: 'cover',
+                                                borderRadius: 8,
+                                                border: '1px solid #ccc',
+                                            }}
+                                        />
+                                    </Zoom>
                                 ))}
                             </div>
                         )}

@@ -161,11 +161,6 @@ const ContractList = () => {
 
     const columns = [
         {
-            header: 'Mã Hợp Đồng',
-            accessorKey: '_id',
-            size: 100,
-        },
-        {
             header: 'Người Thuê',
             accessorFn: (row) => row.tenant?.fullname || 'Chưa có',
             size: 40,
@@ -201,7 +196,7 @@ const ContractList = () => {
         },
         {
             header: 'Tệp Hợp Đồng',
-            accessorKey: 'file', // vẫn cần để MRT hoạt động đúng
+            accessorKey: 'file',
             Cell: ({ row }) => {
                 const files = row.original.file || [];
 

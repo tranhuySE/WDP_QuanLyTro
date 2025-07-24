@@ -10,12 +10,11 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
-import { FaMoneyBillWave, FaBed, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
+import { FaMoneyBillWave, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
 import { BsFillHouseFill } from 'react-icons/bs';
 import { MdPayments } from 'react-icons/md';
 import UtilityStats from './Water_electric';
 import { getStats } from '../../../api/invoiceAPI';
-// import api from '../api';
 
 const Analyst = () => {
     const [loading, setLoading] = useState(true);
@@ -41,95 +40,9 @@ const Analyst = () => {
         monthlyRevenue: [],
     });
 
-    const data = [
-        {
-            name: 'Tầng 1',
-            children: [
-                { name: 'P101', size: 20, value: 2500000, color: '#8884d8' },
-                { name: 'P102', size: 25, value: 3000000, color: '#83a6ed' },
-                { name: 'P103', size: 18, value: 2200000, color: '#8dd1e1' },
-            ],
-        },
-        {
-            name: 'Tầng 2',
-            children: [
-                { name: 'P201', size: 22, value: 2800000, color: '#82ca9d' },
-                { name: 'P202', size: 30, value: 3500000, color: '#a4de6c' },
-                { name: 'P203', size: 15, value: 2000000, color: '#d0ed57' },
-            ],
-        },
-    ];
-
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Gọi API để lấy dữ liệu thống kê
-                // const response = await api.get('/stats');
-                // setStats(response.data);
-
-                // Dữ liệu mẫu (sau này sẽ thay bằng API thực)
-                // const mockData = {
-                //     revenue: {
-                //         total: 125000000,
-                //         thisMonth: 45000000,
-                //         lastMonth: 38000000,
-                //         trend: 18.42, // %
-                //     },
-                //     debt: {
-                //         total: 12000000,
-                //         overdue: 3500000,
-                //         trend: -5.2,
-                //     },
-                //     occupancy: {
-                //         totalRooms: 50,
-                //         occupied: 42,
-                //         rate: 84,
-                //         trend: 2.5,
-                //     },
-                //     recentPayments: [
-                //         {
-                //             id: 1,
-                //             room: 'P101',
-                //             tenant: 'Nguyễn Văn A',
-                //             amount: 2500000,
-                //             date: '15/06/2023',
-                //             status: 'paid',
-                //         },
-                //         {
-                //             id: 2,
-                //             room: 'P205',
-                //             tenant: 'Trần Thị B',
-                //             amount: 3000000,
-                //             date: '14/06/2023',
-                //             status: 'paid',
-                //         },
-                //         {
-                //             id: 3,
-                //             room: 'P302',
-                //             tenant: 'Lê Văn C',
-                //             amount: 2800000,
-                //             date: '10/06/2023',
-                //             status: 'paid',
-                //         },
-                //         {
-                //             id: 4,
-                //             room: 'P104',
-                //             tenant: 'Phạm Thị D',
-                //             amount: 2500000,
-                //             date: '05/06/2023',
-                //             status: 'overdue',
-                //         },
-                //     ],
-                //     monthlyRevenue: [
-                //         { month: 'Tháng 1', revenue: 38000000 },
-                //         { month: 'Tháng 2', revenue: 42000000 },
-                //         { month: 'Tháng 3', revenue: 40000000 },
-                //         { month: 'Tháng 4', revenue: 43000000 },
-                //         { month: 'Tháng 5', revenue: 38000000 },
-                //         { month: 'Tháng 6', revenue: 45000000 },
-                //     ],
-                // };
-
                 const data = await getStats();
                 const mockData = data.data;
 
@@ -416,9 +329,6 @@ const Analyst = () => {
                     </Row>
                 </Tab>
             </Tabs>
-            <Row>
-                <UtilityStats />
-            </Row>
         </Container>
     );
 };

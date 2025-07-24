@@ -19,8 +19,8 @@ export const updateRoomById = (id, roomData) => {
 export const deleteRoomById = (id) => {
     return axiosInstance.delete(`/rooms/${id}`);
 };
-export const getMyRoomInfo = () => {
-    return axiosInstance.get('/rooms/me/room');
+export const getMyRoomInfo = (id) => {
+    return axiosInstance.get(`/rooms/room/${id}`);
 };
 
 export const getAvailableRooms = () => {

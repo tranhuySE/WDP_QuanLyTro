@@ -19,7 +19,7 @@ const { verifyToken } = require('../middlewares/authMiddleware');
 const roomRouter = express.Router();
 
 // Route lấy phòng cá nhân (đặt trước route động)
-roomRouter.get('/me/room', verifyToken, getMyRoomInfo);
+roomRouter.get('/room/:userId', getMyRoomInfo);
 
 // GET /available - Lấy danh sách phòng trống
 roomRouter.get('/available', getAvailableRooms);

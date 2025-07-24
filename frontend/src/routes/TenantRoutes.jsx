@@ -6,8 +6,8 @@ import RequestPage from '../pages/User/RequestPage.jsx';
 import RoomInfoPage from '../pages/User/RoomInfoPage.jsx';
 import Payment_History from '../pages/Tenant/Payment_History.jsx';
 import Invoice from '../pages/Tenant/Invoice.jsx';
+import ContractDetailPage from '../pages/Tenant/ContractDetailPage.jsx';
 
-// Tạo component wrapper riêng cho TenantLayout
 const TenantLayoutWrapper = () => <TenantLayout />;
 
 const TenantRoutes = {
@@ -20,6 +20,7 @@ const TenantRoutes = {
         { path: 'change-password', element: <ChangePasswordPage /> },
         { path: 'profile', element: <EditProfilePage /> },
         { path: 'requests', element: <RequestPage /> },
+        { path: 'contracts', element: <ContractDetailPage /> },
         { path: 'payment-history', element: <Payment_History /> },
     ],
 };
