@@ -93,7 +93,10 @@ const Invoice = () => {
                                     <strong>Loại:</strong>{' '}
                                     {invoiceTypeLabels[inv.invoice_type] || 'Không xác định'}
                                 </div>
-                                <Badge bg={inv.payment_status === 'paid' ? 'success' : 'warning'}>
+                                <Badge
+                                    className="mx-1"
+                                    bg={inv.payment_status === 'paid' ? 'success' : 'warning'}
+                                >
                                     {inv.payment_status === 'paid'
                                         ? 'Đã thanh toán'
                                         : 'Chưa thanh toán'}
@@ -120,7 +123,7 @@ const Invoice = () => {
                                         key={item._id}
                                         className="d-flex justify-content-between"
                                     >
-                                        {item.name} ({item.quantity} {item.unit})
+                                        {item.name} (SL: {item.quantity} | Đơn vị tính: {item.unit})
                                         <span>{item.subTotal.toLocaleString('vi-VN')} VND</span>
                                     </ListGroup.Item>
                                 ))}
