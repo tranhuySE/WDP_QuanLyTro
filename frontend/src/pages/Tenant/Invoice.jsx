@@ -51,7 +51,6 @@ const Invoice = () => {
                 toast.error('Không thể lấy link thanh toán.');
             }
         } catch (err) {
-            console.error('Lỗi khi tạo thanh toán:', err);
             toast.error(`Không thể tạo thanh toán: ${err.response?.data?.message || err.message}`);
         }
     };

@@ -104,47 +104,44 @@ const createContract = async (req, res) => {
 const updateContractStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status, terminationReason } = req.body;
+        const { status, terminationReason, terminatedAt } = req.body;
         const validStatuses = ['draft', 'active', 'terminated'];
         if (!validStatuses.includes(status)) {
-            return res.status(400).json({ message: 'Invalid status' });
+            return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
         }
-        const updates = { status };
 
         const contract = await Contract.findById(id);
         if (!contract) {
-            return res.status(404).json({ message: 'Contract not found' });
+            return res.status(404).json({ message: 'Không tìm thấy hợp đồng' });
         }
 
-        if (status === 'terminated' && contract.status !== 'terminated') {
-            updates.terminationReason = terminationReason || '';
-            updates.terminatedAt = new Date();
+        if (contract.status === 'terminated') {
+            return res.status(400).json({ message: 'Hợp đồng đã bị chấm dứt trước đó' });
+        }
+        if (status === 'terminated') {
             const user = await User.findById(contract.tenant);
-            user.rooms.push(contract.roomId);
+            user.rooms = [];
             await user.save();
-            const room = await Room.findById(contract.roomId);
-            room.tenant.push(contract.tenant);
-            await room.save();
-        } else {
-            return res.status(400).json({ message: 'Hợp đồng đã chấm dứt!' });
-        }
-        const updatedContract = await Contract.findByIdAndUpdate(id, updates, {
-            new: true,
-            runValidators: true,
-        });
 
-        if (!updatedContract) {
-            return res.status(404).json({ message: 'Contract not found' });
+            const room = await Room.findById(contract.roomId);
+            room.tenant = [];
+            await room.save();
+
+            contract.terminationReason = terminationReason || '';
+            contract.terminatedAt = terminatedAt;
         }
+
+        contract.status = status;
+        const updatedContract = await contract.save();
 
         return res.status(200).json({
-            message: 'Contract status updated successfully',
+            message: 'Cập nhật trạng thái hợp đồng thành công',
             data: updatedContract,
         });
     } catch (error) {
-        console.error('Error updating contract status:', error);
+        console.error('Lỗi cập nhật trạng thái hợp đồng:', error);
         return res.status(500).json({
-            message: 'Internal Server Error',
+            message: 'Lỗi máy chủ nội bộ',
             error: error.message,
         });
     }

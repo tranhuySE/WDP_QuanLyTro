@@ -22,11 +22,7 @@
             "status": "paid"
         },
         "file": [
-            {
-                "name": "contract9.pdf",
-                "url": "https://example.com/contract1.pdf",
-                "type": "pdf"
-            }
+            "https://res.cloudinary.com/dbyb3icyk/image/upload/v1753299555/contracts/xrvica41vnweougjnxaf.jpg"
         ],
         "house_service": [
             {
