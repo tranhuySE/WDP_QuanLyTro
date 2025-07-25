@@ -1,8 +1,20 @@
 import { useEffect, useState } from 'react';
-import { createContract, getContract, updateStatusContract } from '../../api/contractAPI';
+import {
+    AddUserContract,
+    createContract,
+    getContract,
+    updateStatusContract,
+} from '../../api/contractAPI';
 import { MaterialReactTable } from 'material-react-table';
-import { Container, Spinner, Alert, Badge, ButtonGroup, Button } from 'react-bootstrap';
-import { FaFilePdf, FaCheckCircle, FaHourglassHalf, FaInfoCircle, FaEdit } from 'react-icons/fa';
+import { Spinner, Alert, Badge, ButtonGroup, Button } from 'react-bootstrap';
+import {
+    FaFilePdf,
+    FaCheckCircle,
+    FaHourglassHalf,
+    FaInfoCircle,
+    FaEdit,
+    FaPlus,
+} from 'react-icons/fa';
 import ContractDetailModal from './ContractDetailModal';
 import ContractModal from './ContractModal';
 import { getAllRooms } from '../../api/roomAPI';
@@ -14,6 +26,7 @@ import { Plus } from 'react-bootstrap-icons';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 import axios from 'axios';
+import AddUserInContract from './AddUserInContract';
 
 const ContractList = () => {
     const [contract, setContract] = useState([]);
@@ -25,6 +38,8 @@ const ContractList = () => {
     const [selectedContractAction, setSelectedContractAction] = useState(null);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [selectedContractStatus, setSelectedContractStatus] = useState(null);
+    const [showDialog, setShowDialog] = useState(false);
+    const [roomAddUser, setRoomAddUser] = useState(null);
 
     const [roomList, setRoomList] = useState([]);
     const [userList, setUserList] = useState([]);
@@ -61,7 +76,7 @@ const ContractList = () => {
 
     const initialValue = {
         roomId: '',
-        tenant: '',
+        tenant: [],
         landlord: '',
         house_address: '',
         startDate: '',
@@ -122,6 +137,9 @@ const ContractList = () => {
             toast.error(error.response.data.message);
         } finally {
             getData();
+            fetchRoom();
+            fetchUser();
+            fetchService();
         }
     };
 
@@ -129,7 +147,9 @@ const ContractList = () => {
         try {
             const formData = new FormData();
             formData.append('roomId', data.roomId);
-            formData.append('tenant', data.tenant);
+            data.tenant.forEach((id) => {
+                formData.append('tenant[]', id);
+            });
             formData.append('landlord', data.landlord);
             formData.append('house_address', data.house_address);
             formData.append('startDate', data.startDate);
@@ -156,6 +176,32 @@ const ContractList = () => {
         } catch (error) {
             toast.error(error?.response?.data?.message || 'Tạo hợp đồng thất bại');
         } finally {
+            getData();
+            fetchRoom();
+            fetchUser();
+            fetchService();
+        }
+    };
+
+    const handleOpenAddUserContract = (room) => {
+        setRoomAddUser(room);
+        setShowDialog(true);
+    };
+
+    const handleSubmitAddUserContract = async (values) => {
+        try {
+            const formData = new FormData();
+            values.tenants.forEach((u) => {
+                formData.append('tenant[]', u._id);
+            });
+            const res = await AddUserContract(roomAddUser._id, formData);
+            if (res.status === 200) toast.success('Đã thêm mới thành viên vào phòng!');
+        } catch (error) {
+            return toast.error(error.response.data.message);
+        } finally {
+            fetchRoom();
+            fetchService();
+            fetchUser();
             getData();
         }
     };
@@ -193,7 +239,7 @@ const ContractList = () => {
     const columns = [
         {
             header: 'Người Thuê',
-            accessorFn: (row) => row.tenant?.fullname || 'Chưa có',
+            accessorFn: (row) => row.tenant.fullname || 'Chưa xác định',
             size: 40,
         },
         {
@@ -320,12 +366,6 @@ const ContractList = () => {
                     handleEditStatusContract(contractData);
                 };
 
-                const handleDelete = () => {
-                    if (window.confirm('Bạn có chắc muốn xóa hợp đồng này?')) {
-                        console.log('Xóa hợp đồng:', contractData._id);
-                    }
-                };
-
                 return (
                     <ButtonGroup size="sm">
                         <Button variant="info" onClick={handleInfo}>
@@ -334,6 +374,16 @@ const ContractList = () => {
                         <Button variant="warning" onClick={handleEdit} className="mx-1">
                             <FaEdit />
                         </Button>
+                        {row.original.roomId.tenant.length < row.original.roomId.maxOccupants &&
+                            row.original.status === 'active' && (
+                                <Button
+                                    variant="success"
+                                    className="me-1"
+                                    onClick={() => handleOpenAddUserContract(row.original.roomId)}
+                                >
+                                    <FaPlus />
+                                </Button>
+                            )}
                         <Button
                             variant="primary"
                             onClick={() => handleDownloadPdf(row.original._id)}
@@ -412,6 +462,14 @@ const ContractList = () => {
                 onHide={() => setShowStatusModal(false)}
                 contract={selectedContractStatus}
                 onSubmit={handleUpdateStatus}
+            />
+
+            <AddUserInContract
+                open={showDialog}
+                onClose={() => setShowDialog(false)}
+                room={roomAddUser}
+                userOptions={userList}
+                onConfirm={handleSubmitAddUserContract}
             />
         </div>
     );

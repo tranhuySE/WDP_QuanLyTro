@@ -20,7 +20,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     {/* Public routes */}
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                     <Route path="payment-cancel" element={<CancelPayment />} />

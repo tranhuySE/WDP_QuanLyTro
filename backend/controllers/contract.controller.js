@@ -29,7 +29,6 @@ const createContract = async (req, res) => {
     try {
         const {
             roomId,
-            tenant,
             landlord,
             house_address,
             startDate,
@@ -40,6 +39,7 @@ const createContract = async (req, res) => {
             status = 'draft',
         } = req.body;
 
+        const tenant = req.body.tenant || [];
         const house_service = req.body.house_service || [];
         const deposit = {
             amount: req.body['deposit.amount'],
@@ -64,9 +64,11 @@ const createContract = async (req, res) => {
             uploadedImages = results.map((result) => result.secure_url);
         }
 
+        const tenantArray = Array.isArray(tenant) ? tenant : [tenant];
+
         const newContract = new Contract({
             roomId,
-            tenant,
+            tenant: tenantArray[0],
             landlord,
             house_address,
             startDate,
@@ -80,12 +82,19 @@ const createContract = async (req, res) => {
             status,
         });
 
-        const user = await User.findById(tenant);
-        user.rooms.push(roomId);
-        await user.save();
+        await Promise.all(
+            tenantArray.map(async (userId) => {
+                const user = await User.findById(userId);
+                if (user && !user.rooms.includes(roomId)) {
+                    user.rooms.push(roomId);
+                    await user.save();
+                }
+            }),
+        );
 
         const room = await Room.findById(roomId);
-        room.tenant.push(tenant);
+        room.tenant = tenantArray;
+        room.status = 'occupied';
         await room.save();
 
         const savedContract = await newContract.save();
@@ -121,12 +130,16 @@ const updateContractStatus = async (req, res) => {
             return res.status(400).json({ message: 'Hợp đồng đã bị chấm dứt trước đó' });
         }
         if (status === 'terminated') {
-            const user = await User.findById(contract.tenant);
-            user.rooms = [];
-            await user.save();
-
             const room = await Room.findById(contract.roomId);
+            await Promise.all(
+                room.tenant.map(async (userId) => {
+                    const user = await User.findById(userId);
+                    user.rooms = [];
+                    await user.save();
+                }),
+            );
             room.tenant = [];
+            room.status = 'available';
             await room.save();
 
             contract.terminationReason = terminationReason || '';
@@ -142,6 +155,31 @@ const updateContractStatus = async (req, res) => {
         });
     } catch (error) {
         console.error('Lỗi cập nhật trạng thái hợp đồng:', error);
+        return res.status(500).json({
+            message: 'Lỗi máy chủ nội bộ',
+            error: error.message,
+        });
+    }
+};
+
+const AddUserInContract = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const tenant = req.body.tenant || [];
+        const tenantArray = Array.isArray(tenant) ? tenant : [tenant];
+        const data = await Room.findById(roomId);
+
+        if (!data) return res.status(404).json({ message: 'Room not found' });
+
+        tenantArray.forEach((userId) => {
+            if (!data.tenant.includes(userId)) {
+                data.tenant.push(userId);
+            }
+        });
+        await data.save();
+
+        return res.status(200).json(data);
+    } catch (error) {
         return res.status(500).json({
             message: 'Lỗi máy chủ nội bộ',
             error: error.message,
@@ -231,6 +269,7 @@ module.exports = {
     getContract,
     createContract,
     updateContractStatus,
+    AddUserInContract,
     getContractUserId,
     downloadContractPdf,
 };
