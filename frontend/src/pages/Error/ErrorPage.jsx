@@ -24,9 +24,6 @@ const NotFoundPage = () => {
                         <Button variant="secondary" onClick={() => navigate(-1)}>
                             ⬅ Quay lại
                         </Button>
-                        <Button variant="primary" onClick={() => navigate('/')}>
-                            🏠 Trang chủ
-                        </Button>
                     </div>
                 </Col>
             </Row>

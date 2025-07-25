@@ -1,33 +1,31 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const generateToken = require("../utils/generateToken");
-const EmailService = require("../services/emailService");
-const crypto = require("crypto");
-
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const generateToken = require('../utils/generateToken');
+const EmailService = require('../services/emailService');
+const crypto = require('crypto');
 
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
 
-        if (!user)
-            return res.status(404).json({ message: "Không tìm thấy người dùng!" });
+        if (!user) return res.status(404).json({ message: 'Không tìm thấy người dùng!' });
 
         // Kiểm tra trạng thái tài khoản
-        if (user.status !== "active") {
-            let message = "Tài khoan của bạn không hoạt động";
-            if (user.status === "banned") {
-                message = "Tài khoản của bạn đã bị cấm. Vui lòng liên hệ với quản trị viên";
-            } else if (user.status === "inactive") {
-                message = "Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản.";
+        if (user.status !== 'active') {
+            let message = 'Tài khoan của bạn không hoạt động';
+            if (user.status === 'banned') {
+                message = 'Tài khoản của bạn đã bị cấm. Vui lòng liên hệ với quản trị viên';
+            } else if (user.status === 'inactive') {
+                message =
+                    'Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản.';
             }
             return res.status(403).json({ message });
         }
 
         // Bỏ comment phần này nếu bạn muốn sử dụng bcrypt
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch)
-            return res.status(401).json({ message: "Invalid credentials!" });
+        if (!isMatch) return res.status(411).json({ message: 'Invalid credentials!' });
 
         // Hiện tại đang so sánh password trực tiếp (không an toàn)
         // if (user.password !== password)
@@ -36,7 +34,7 @@ const loginUser = async (req, res) => {
         const token = generateToken(user._id);
 
         res.status(200).json({
-            message: "Login successful!",
+            message: 'Login successful!',
             token,
             user: user,
         });
@@ -53,7 +51,7 @@ const forgotPassword = async (req, res) => {
         // Kiểm tra email có tồn tại không
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "Email không tồn tại trong hệ thống!" });
+            return res.status(404).json({ message: 'Email không tồn tại trong hệ thống!' });
         }
 
         // Tạo reset token
@@ -69,12 +67,11 @@ const forgotPassword = async (req, res) => {
         await EmailService.sendForgotPasswordEmail(user, resetToken);
 
         res.status(200).json({
-            message: "Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn."
+            message: 'Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn.',
         });
-
     } catch (error) {
         console.error('Forgot password error:', error);
-        res.status(500).json({ message: "Có lỗi xảy ra khi gửi email đặt lại mật khẩu!" });
+        res.status(500).json({ message: 'Có lỗi xảy ra khi gửi email đặt lại mật khẩu!' });
     }
 };
 
@@ -86,11 +83,11 @@ const resetPassword = async (req, res) => {
         // Tìm user với token hợp lệ
         const user = await User.findOne({
             resetToken: token,
-            resetTokenExpire: { $gt: Date.now() }
+            resetTokenExpire: { $gt: Date.now() },
         });
 
         if (!user) {
-            return res.status(400).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
+            return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn!' });
         }
 
         // Hash mật khẩu mới
@@ -105,15 +102,14 @@ const resetPassword = async (req, res) => {
         await user.save();
 
         // Gửi email thông báo thành công
-        EmailService.sendPasswordResetSuccessEmail(user).catch(err => {
+        EmailService.sendPasswordResetSuccessEmail(user).catch((err) => {
             console.error('Send success email error:', err);
         });
 
-        res.status(200).json({ message: "Mật khẩu đã được đặt lại thành công!" });
-
+        res.status(200).json({ message: 'Mật khẩu đã được đặt lại thành công!' });
     } catch (error) {
         console.error('Reset password error:', error);
-        res.status(500).json({ message: "Có lỗi xảy ra khi đặt lại mật khẩu!" });
+        res.status(500).json({ message: 'Có lỗi xảy ra khi đặt lại mật khẩu!' });
     }
 };
 

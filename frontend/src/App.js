@@ -20,7 +20,6 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     {/* Public routes */}
-                    <Route path="/" element={<LoginPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
@@ -80,7 +79,6 @@ function App() {
                             />
                         ))}
                     </Route>
-
                     {/* Fallback route */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
@@ -88,7 +86,7 @@ function App() {
 
             <ToastContainer
                 position="top-right"
-                autoClose={5000}
+                autoClose={3000}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick

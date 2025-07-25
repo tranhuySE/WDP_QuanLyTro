@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: false,
         role: null,
         user: null,
-        initialized: false // Thêm flag để track trạng thái khởi tạo
+        initialized: false, // Thêm flag để track trạng thái khởi tạo
     });
 
     useEffect(() => {
@@ -20,12 +20,12 @@ export const AuthProvider = ({ children }) => {
                 role,
                 user: {
                     fullname: localStorage.getItem('fullname'),
-                    id: localStorage.getItem('id')
+                    id: localStorage.getItem('id'),
                 },
-                initialized: true
+                initialized: true,
             });
         } else {
-            setAuth(prev => ({ ...prev, initialized: true }));
+            setAuth((prev) => ({ ...prev, initialized: true }));
         }
     }, []);
 
@@ -34,12 +34,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('role', user.role);
         localStorage.setItem('fullname', user.fullname);
         localStorage.setItem('id', user._id);
-            localStorage.setItem('userData', JSON.stringify(user));
+        localStorage.setItem('userData', JSON.stringify(user));
         setAuth({
             isAuthenticated: true,
             role: user.role,
             user,
-            initialized: true
+            initialized: true,
         });
     };
 
@@ -49,15 +49,11 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated: false,
             role: null,
             user: null,
-            initialized: true
+            initialized: true,
         });
     };
 
-    return (
-        <AuthContext.Provider value={{ auth, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={{ auth, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);
