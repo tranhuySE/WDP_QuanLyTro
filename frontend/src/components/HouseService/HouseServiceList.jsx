@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Button, Container, Row, Col, ButtonGroup } from 'react-bootstrap';
-import { Trash3Fill, PlusLg } from 'react-bootstrap-icons';
-import { IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { createHouseService, getAllHouseService, updateHouseService } from '../../api/houseService';
+import { PlusLg } from 'react-bootstrap-icons';
+import {
+    createHouseService,
+    deleteHouseService,
+    getAllHouseService,
+    updateHouseService,
+} from '../../api/houseService';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import HouseServiceModal from './HouseServiceModal';
-import { EditAttributes } from '@mui/icons-material';
-import { FaEdit, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const HouseServiceList = () => {
     const [services, setServices] = useState([]);
     const [modalShow, setModalShow] = useState(false);
     const [editData, setEditData] = useState(null);
+    const [showModalConfirm, setShowModalConfirm] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
 
     const fetchService = async () => {
         try {
@@ -41,6 +46,18 @@ const HouseServiceList = () => {
         setModalShow(true);
     };
 
+    const handleDeleteHService = async () => {
+        try {
+            const res = await deleteHouseService(deleteId);
+            if (res.status === 200) return toast.success('Đã xóa dịch vụ');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } finally {
+            setShowModalConfirm(false);
+            fetchService();
+        }
+    };
+
     const handleSubmitService = async (newService) => {
         try {
             if (newService._id) {
@@ -59,6 +76,11 @@ const HouseServiceList = () => {
         } finally {
             fetchService();
         }
+    };
+
+    const handleDeleted = (id) => {
+        setDeleteId(id);
+        setShowModalConfirm(true);
     };
 
     const columns = [
@@ -83,7 +105,11 @@ const HouseServiceList = () => {
                     <Button variant="info" onClick={() => handleEdit(row)}>
                         <FaEdit />
                     </Button>
-                    <Button variant="warning" className="mx-1">
+                    <Button
+                        variant="danger"
+                        className="mx-1"
+                        onClick={() => handleDeleted(row.original._id)}
+                    >
                         <FaTrash />
                     </Button>
                 </ButtonGroup>
@@ -110,6 +136,12 @@ const HouseServiceList = () => {
                 onHide={() => setModalShow(false)}
                 initialData={editData}
                 onSubmit={handleSubmitService}
+            />
+            <ConfirmDeleteModal
+                show={showModalConfirm}
+                onHide={() => setShowModalConfirm(false)}
+                onConfirm={handleDeleteHService}
+                message="Bạn có chắc muốn xóa sản phẩm này không?"
             />
         </Container>
     );
