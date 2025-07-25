@@ -1,14 +1,7 @@
 import { Home, Lock, Phone, Save, X } from 'lucide-react';
 import { Button, Col, Form, InputGroup, Modal, Row, Spinner, Tab, Tabs } from 'react-bootstrap';
 
-const UserFormModal = ({
-    show,
-    onHide,
-    formik,
-    isEditing,
-    loading,
-    currentUser = {}
-}) => {
+const UserFormModal = ({ show, onHide, formik, isEditing, loading, currentUser = {} }) => {
     const handleRoleChange = (e) => {
         formik.setFieldValue('role', e.target.value);
         if (e.target.value !== 'user') {
@@ -17,7 +10,6 @@ const UserFormModal = ({
     };
 
     const isStaff = currentUser?.role === 'staff';
-
 
     return (
         <Modal show={show} onHide={onHide} size="lg">
@@ -40,7 +32,9 @@ const UserFormModal = ({
                                             value={formik.values.email}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            isInvalid={formik.touched.email && !!formik.errors.email}
+                                            isInvalid={
+                                                formik.touched.email && !!formik.errors.email
+                                            }
                                             disabled={isEditing}
                                         />
                                         <Form.Control.Feedback type="invalid">
@@ -56,7 +50,9 @@ const UserFormModal = ({
                                             value={formik.values.fullname}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            isInvalid={formik.touched.fullname && !!formik.errors.fullname}
+                                            isInvalid={
+                                                formik.touched.fullname && !!formik.errors.fullname
+                                            }
                                         />
                                         <Form.Control.Feedback type="invalid">
                                             {formik.errors.fullname}
@@ -74,7 +70,10 @@ const UserFormModal = ({
                                             value={formik.values.citizen_id}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            isInvalid={formik.touched.citizen_id && !!formik.errors.citizen_id}
+                                            isInvalid={
+                                                formik.touched.citizen_id &&
+                                                !!formik.errors.citizen_id
+                                            }
                                         />
                                         <Form.Control.Feedback type="invalid">
                                             {formik.errors.citizen_id}
@@ -93,12 +92,15 @@ const UserFormModal = ({
                                                 value={formik.values.phoneNumber}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                isInvalid={formik.touched.phoneNumber && !!formik.errors.phoneNumber}
+                                                isInvalid={
+                                                    formik.touched.phoneNumber &&
+                                                    !!formik.errors.phoneNumber
+                                                }
                                             />
+                                            <Form.Control.Feedback type="invalid">
+                                                {formik.errors.phoneNumber}
+                                            </Form.Control.Feedback>
                                         </InputGroup>
-                                        <Form.Control.Feedback type="invalid">
-                                            {formik.errors.phoneNumber}
-                                        </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -113,7 +115,10 @@ const UserFormModal = ({
                                             value={formik.values.dateOfBirth}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            isInvalid={formik.touched.dateOfBirth && !!formik.errors.dateOfBirth}
+                                            isInvalid={
+                                                formik.touched.dateOfBirth &&
+                                                !!formik.errors.dateOfBirth
+                                            }
                                         />
                                         <Form.Control.Feedback type="invalid">
                                             {formik.errors.dateOfBirth}
@@ -168,7 +173,9 @@ const UserFormModal = ({
                                         value={formik.values.address}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        isInvalid={formik.touched.address && !!formik.errors.address}
+                                        isInvalid={
+                                            formik.touched.address && !!formik.errors.address
+                                        }
                                     />
                                 </InputGroup>
                                 <Form.Control.Feedback type="invalid">
@@ -197,7 +204,9 @@ const UserFormModal = ({
                                             value={formik.values.username}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            isInvalid={formik.touched.username && !!formik.errors.username}
+                                            isInvalid={
+                                                formik.touched.username && !!formik.errors.username
+                                            }
                                             disabled={isEditing}
                                         />
                                         <Form.Control.Feedback type="invalid">
@@ -215,7 +224,10 @@ const UserFormModal = ({
                                                     value={formik.values.password}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
-                                                    isInvalid={formik.touched.password && !!formik.errors.password}
+                                                    isInvalid={
+                                                        formik.touched.password &&
+                                                        !!formik.errors.password
+                                                    }
                                                 />
                                                 <InputGroup.Text>
                                                     <Lock size={18} />
@@ -248,7 +260,9 @@ const UserFormModal = ({
                                         <Form.Label>Mối quan hệ</Form.Label>
                                         <Form.Control
                                             name="contactEmergency.relationship"
-                                            value={formik.values.contactEmergency?.relationship || ''}
+                                            value={
+                                                formik.values.contactEmergency?.relationship || ''
+                                            }
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                         />

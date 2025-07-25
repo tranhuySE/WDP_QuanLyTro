@@ -13,6 +13,7 @@ import {
     PatchCheckFill,
 } from 'react-bootstrap-icons';
 import { FaTrash } from 'react-icons/fa';
+import Select from 'react-select';
 
 const ContractModal = ({
     show,
@@ -25,14 +26,17 @@ const ContractModal = ({
 }) => {
     const [files, setFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
+    const landlord = userOptions.filter((u) => u.role === 'admin');
+    const tenant = userOptions.filter((u) => u.isVerifiedByAdmin && u.role === 'user');
+    const rooms = roomOptions.filter((r) => r.tenant.length === 0);
+    const tenantOptions = tenant.map((u) => ({
+        value: u._id,
+        label: u.fullname,
+    }));
 
     useEffect(() => {
         setPreviewImages([]);
     }, []);
-
-    const landlord = userOptions.filter((u) => u.role === 'admin');
-    const tenant = userOptions.filter((u) => u.rooms.length === 0 && u.isVerifiedByAdmin);
-    const rooms = roomOptions.filter((r) => r.status === 'available' && r.tenant.length === 0);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -49,18 +53,58 @@ const ContractModal = ({
 
     const validationSchema = Yup.object().shape({
         roomId: Yup.string().required('Bắt buộc chọn phòng'),
-        tenant: Yup.string().required('Bắt buộc chọn người thuê'),
+        tenant: Yup.array()
+            .min(1, 'Phải chọn ít nhất một người thuê')
+            .test('max-occupants', 'Vượt quá số người cho phép trong phòng', function (value) {
+                const { roomId } = this.parent;
+                const room = rooms.find((r) => r._id === roomId);
+                if (!room) return true;
+                return value.length <= room.maxOccupants;
+            }),
         landlord: Yup.string().required('Bắt buộc chọn chủ nhà'),
         house_address: Yup.string().required('Bắt buộc nhập địa chỉ'),
-        startDate: Yup.date().required('Bắt buộc chọn ngày bắt đầu').typeError('Ngày không hợp lệ'),
+        startDate: Yup.date()
+            .required('Bắt buộc chọn ngày bắt đầu')
+            .typeError('Ngày không hợp lệ')
+            .test('is-today', 'Ngày bắt đầu phải là hôm nay', function (value) {
+                if (!value) return false;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const selectedDate = new Date(value);
+                selectedDate.setHours(0, 0, 0, 0);
+
+                return selectedDate.getTime() === today.getTime();
+            }),
         endDate: Yup.date()
             .nullable()
-            .min(Yup.ref('startDate'), 'Ngày kết thúc phải sau ngày bắt đầu')
-            .typeError('Ngày không hợp lệ'),
+            .typeError('Ngày không hợp lệ')
+            .required('Vui lòng chọn ngày kết thúc')
+            .test('min-1-month', 'Ngày kết thúc phải sau ít nhất 1 tháng', function (value) {
+                const { startDate } = this.parent;
+                if (!startDate || !value) return true;
+                const oneMonthLater = new Date(startDate);
+                oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+                return value >= oneMonthLater;
+            }),
         price: Yup.number()
             .required('Bắt buộc nhập giá thuê')
             .typeError('Phải là số')
-            .min(1, 'Số tiền phải lớn hơn 0'),
+            .min(1, 'Số tiền phải lớn hơn 0')
+            .test(
+                'price-between-half-and-full',
+                'Giá thuê phải từ 50% đến 100% giá phòng',
+                function (value) {
+                    const { roomId } = this.parent;
+                    const room = rooms.find((r) => r._id === roomId);
+                    if (!room || !value) return true;
+
+                    const min = room.price * 0.5;
+                    const max = room.price;
+
+                    return value >= min && value <= max;
+                },
+            ),
         deposit: Yup.object().shape({
             amount: Yup.number()
                 .required('Bắt buộc nhập số tiền đặt cọc')
@@ -77,7 +121,6 @@ const ContractModal = ({
                         if (!value || !startDate) return true;
                         const paymentDate = new Date(value);
                         const contractStartDate = new Date(startDate);
-
                         return paymentDate < contractStartDate;
                     },
                 ),
@@ -91,7 +134,7 @@ const ContractModal = ({
 
     const initialValues = {
         roomId: '',
-        tenant: '',
+        tenant: [],
         landlord: '',
         house_address: '',
         startDate: today,
@@ -146,13 +189,16 @@ const ContractModal = ({
                                         <Form.Select
                                             name="roomId"
                                             value={values.roomId}
-                                            onChange={handleChange}
+                                            onChange={(e) => {
+                                                setFieldValue('roomId', e.target.value);
+                                            }}
                                             isInvalid={!!errors.roomId && touched.roomId}
                                         >
                                             <option value="">-- Chọn phòng --</option>
                                             {rooms.map((r) => (
                                                 <option key={r._id} value={r._id}>
-                                                    {r.roomNumber}
+                                                    {r.roomNumber} - max : {r.maxOccupants} người ở
+                                                    - {r.price.toLocaleString()}đ
                                                 </option>
                                             ))}
                                         </Form.Select>
@@ -163,30 +209,35 @@ const ContractModal = ({
                                 </Col>
 
                                 <Col md={6}>
-                                    <Form.Group>
+                                    <Form.Group className="mb-3">
                                         <Form.Label>
                                             <PersonFill className="me-2" />
                                             Người thuê
                                         </Form.Label>
-                                        <Form.Select
+                                        <Select
+                                            options={tenantOptions}
+                                            isMulti
                                             name="tenant"
-                                            value={values.tenant}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.tenant && touched.tenant}
-                                        >
-                                            <option value="">-- Chọn người thuê --</option>
-                                            {tenant.map((u) => (
-                                                <option key={u._id} value={u._id}>
-                                                    {u.fullname}
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                        <Form.Control.Feedback type="invalid">
-                                            {errors.tenant}
-                                        </Form.Control.Feedback>
+                                            value={tenantOptions.filter((option) =>
+                                                values.tenant.includes(option.value),
+                                            )}
+                                            onChange={(selected) => {
+                                                const selectedIds = selected.map(
+                                                    (option) => option.value,
+                                                );
+                                                setFieldValue('tenant', selectedIds);
+                                            }}
+                                            className={
+                                                touched.tenant && errors.tenant ? 'is-invalid' : ''
+                                            }
+                                        />
+                                        {touched.tenant && errors.tenant && (
+                                            <div className="invalid-feedback d-block">
+                                                {errors.tenant}
+                                            </div>
+                                        )}
                                     </Form.Group>
                                 </Col>
-
                                 <Col md={6}>
                                     <Form.Group>
                                         <Form.Label>
@@ -340,10 +391,8 @@ const ContractModal = ({
                                                 !!errors.deposit?.status && touched.deposit?.status
                                             }
                                         >
-                                            <option value="">------Chọn------</option>
-                                            <option value="pending">Chờ thanh toán</option>
+                                            <option value="">---Chọn---</option>
                                             <option value="paid">Đã thanh toán</option>
-                                            <option value="refunded">Đã hoàn trả</option>
                                         </Form.Select>
                                         <Form.Control.Feedback type="invalid">
                                             {errors.deposit?.status}

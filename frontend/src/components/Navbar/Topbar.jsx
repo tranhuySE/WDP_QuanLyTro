@@ -44,7 +44,7 @@ const Topbar = ({ sidebarWidth = 250 }) => {
         localStorage.removeItem('fullname');
         setIsLoggedIn(false);
         setShowProfileMenu(false);
-        navigate('/login');
+        navigate('/');
     };
 
     const handleProfileClick = () => {

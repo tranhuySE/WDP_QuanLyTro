@@ -20,6 +20,10 @@ export const updateStatusContract = (id, formValues) => {
     });
 };
 
+export const AddUserContract = (id, data) => {
+    return axiosInstance.post(`/contracts/add-user/${id}`, data);
+};
+
 export const getContractByUserIdFE = (id) => {
     return axiosInstance.get(`/contracts/detail/${id}`);
 };
