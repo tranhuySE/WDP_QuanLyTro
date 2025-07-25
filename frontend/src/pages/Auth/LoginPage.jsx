@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import authAPI from '../../api/authAPI';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/Auth/LoginPage.css';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
     const { login } = useAuth();
@@ -26,10 +27,11 @@ const LoginPage = () => {
             if (res.status === 200) {
                 const { token, user } = res.data;
                 login(token, user);
-                // Chuyển hướng
+                // Chuyển hương
                 if (user.role === 'admin') navigate('/admin/homepage');
                 else if (user.role === 'staff') navigate('/staff/homepage');
                 else if (user.role === 'user') navigate('/tenant/homepage');
+                toast.success('Đăng nhập thành công!');
             }
         } catch (err) {
             console.error('Login error:', err);
@@ -45,7 +47,7 @@ const LoginPage = () => {
                         // User không tồn tại
                         setError('Tài khoản không tồn tại');
                         break;
-                    case 401:
+                    case 411:
                         // Sai mật khẩu
                         setError('Mật khẩu không đúng');
                         break;

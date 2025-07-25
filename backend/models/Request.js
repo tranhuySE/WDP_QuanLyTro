@@ -1,133 +1,134 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const requestsSchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      maxlength: 255,
-    },
-    description: {
-      type: String,
-      trim: true,
-    },
-    type: {
-      type: String,
-      enum: [
-        "MAINTENANCE",
-        "CLEANING",
-        "COMPLAINT",
-        "TASK_ASSIGNMENT",
-        "ROOM_ISSUE",
-        "PAYMENT_ISSUE",
-        "OTHER",
-      ],
-      required: true,
-      default: "OTHER",
-    },
-    priority: {
-      type: String,
-      enum: ["LOW", "MEDIUM", "HIGH", "URGENT"],
-      required: true,
-      default: "MEDIUM",
-    },
-    status: {
-      type: String,
-      enum: [
-        "PENDING",
-        "APPROVED",
-        "ASSIGNED",
-        "IN_PROGRESS",
-        "COMPLETED",
-        "REJECTED",
-        "CANCELLED",
-      ],
-      required: true,
-      default: "PENDING",
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    assignedTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    room: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Room",
-    },
-    approval: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    completion: {
-      completedAt: Date,
-      note: String,
-      rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-      },
-      feedback: String,
-    },
-    attachments: [
-      {
-        fileName: {
-          type: String,
-          required: true,
+    {
+        title: {
+            type: String,
+            required: true,
+            maxlength: 255,
         },
-        filePath: {
-          type: String,
-          required: true,
+        description: {
+            type: String,
+            trim: true,
         },
-        fileType: {
-          type: String,
-          required: true,
+        type: {
+            type: String,
+            enum: [
+                'MAINTENANCE',
+                'CLEANING',
+                'COMPLAINT',
+                'TASK_ASSIGNMENT',
+                'ROOM_ISSUE',
+                'PAYMENT_ISSUE',
+                'OTHER',
+            ],
+            required: true,
+            default: 'OTHER',
         },
-        fileSize: {
-          type: Number,
-          required: true,
+        priority: {
+            type: String,
+            enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
+            required: true,
+            default: 'MEDIUM',
         },
-        uploadedBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
+        status: {
+            type: String,
+            enum: [
+                'PENDING',
+                'APPROVED',
+                'ASSIGNED',
+                'IN_PROGRESS',
+                'COMPLETED',
+                'REJECTED',
+                'CANCELLED',
+                'CONFIRM',
+            ],
+            required: true,
+            default: 'PENDING',
         },
-        uploadedAt: {
-          type: Date,
-          default: Date.now,
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
         },
-      },
-    ],
-    statusHistory: [
-      {
-        oldStatus: String,
-        newStatus: {
-          type: String,
-          required: true,
+        assignedTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
         },
-        changedBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
+        room: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Room',
         },
-        note: String,
-        changedAt: {
-          type: Date,
-          default: Date.now,
+        approval: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
         },
-      },
-    ],
-    dueDate: Date,
-  },
-  {
-    timestamps: true,
-    collection: "requests",
-  }
+        completion: {
+            completedAt: Date,
+            note: String,
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5,
+            },
+            feedback: String,
+        },
+        attachments: [
+            {
+                fileName: {
+                    type: String,
+                    required: true,
+                },
+                filePath: {
+                    type: String,
+                    required: true,
+                },
+                fileType: {
+                    type: String,
+                    required: true,
+                },
+                fileSize: {
+                    type: Number,
+                    required: true,
+                },
+                uploadedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                uploadedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+        statusHistory: [
+            {
+                oldStatus: String,
+                newStatus: {
+                    type: String,
+                    required: true,
+                },
+                changedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                note: String,
+                changedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+        dueDate: Date,
+    },
+    {
+        timestamps: true,
+        collection: 'requests',
+    },
 );
 
-const Request = model("Request", requestsSchema);
+const Request = model('Request', requestsSchema);
 module.exports = Request;
